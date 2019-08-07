@@ -17,7 +17,11 @@ package dev.bombinating.gradle.jooq
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.*
+import org.gradle.api.tasks.Classpath
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 import org.jooq.Constants
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
@@ -43,14 +47,14 @@ open class JooqTask @Inject constructor(
     }
 
     init {
-        description = jooqTaskDesc
-        group = jooqTaskGroupName
+        description = JOOQ_TASK_DESC
+        group = JOOQ_TASK_GROUP
     }
 
     @TaskAction
     fun generate() {
         project.javaexec { spec ->
-            val configFile = File(temporaryDir, jooqConfigFilename)
+            val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
             configFile.parentFile.mkdirs()
             spec.main = GenerationTool::class.java.canonicalName
             spec.classpath = jooqClassPath

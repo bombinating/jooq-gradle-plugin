@@ -4,12 +4,15 @@ plugins {
     kotlin("jvm") version "1.3.41"
     `java-gradle-plugin`
     `maven-publish`
+    id("net.researchgate.release") version "2.8.1"
+    id("io.gitlab.arturbosch.detekt") version "1.0.0-RC16"
 }
 
 group = "dev.bombinating"
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -31,4 +34,3 @@ gradlePlugin {
         }
     }
 }
-

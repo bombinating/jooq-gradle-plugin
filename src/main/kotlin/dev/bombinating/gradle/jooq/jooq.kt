@@ -13,28 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("TooManyFunctions")
+
 package dev.bombinating.gradle.jooq
 
-import org.jooq.meta.jaxb.*
+
+import org.jooq.meta.jaxb.Configuration
+import org.jooq.meta.jaxb.Database
+import org.jooq.meta.jaxb.ForcedType
+import org.jooq.meta.jaxb.Generate
+import org.jooq.meta.jaxb.Generator
+import org.jooq.meta.jaxb.Jdbc
+import org.jooq.meta.jaxb.MatcherRule
+import org.jooq.meta.jaxb.Matchers
+import org.jooq.meta.jaxb.MatchersTableType
+import org.jooq.meta.jaxb.Strategy
 import org.jooq.meta.jaxb.Target
 
-internal const val defaultJooqVersion = "3.11.11"
-internal const val jooqConfigFilename = "config.xml"
-internal const val jooqRuntimeName = "jooqRuntime"
-internal const val jooqRuntimeDesc =
+internal const val DEFAULT_JOOQ_VERSION = "3.11.11"
+internal val DEFAULT_JOOQ_EDITION = JooqEdition.OpenSource
+internal const val JOOQ_CONFIG_NAME = "config.xml"
+internal const val JOOQ_RUNTIME_NAME = "jooqRuntime"
+internal const val JOOQ_RUNTIME_DESC =
     "The classpath used to invoke the jOOQ generator. Add your JDBC drivers or generator extensions here."
-internal const val jooqExtName = "jooq"
-internal const val jooqTaskGroupName = jooqExtName
-internal const val jooqTaskDesc = "Generates the jOOQ configuration"
-internal val jooqCodeGenDeps = listOf(
-    "org.jooq:jooq-codegen:$defaultJooqVersion",
+internal const val JOOQ_EXT_NAME = "jooq"
+internal const val JOOQ_TASK_GROUP = JOOQ_EXT_NAME
+internal const val JOOQ_TASK_DESC = "Generates the jOOQ configuration"
+internal val JOOQ_CODE_GEN_DEPS = listOf(
+    "org.jooq:jooq-codegen:$DEFAULT_JOOQ_VERSION",
     "javax.xml.bind:jaxb-api:2.3.1",
     "javax.activation:activation:1.1.1",
     "com.sun.xml.bind:jaxb-core:2.3.0.1",
     "com.sun.xml.bind:jaxb-impl:2.3.0.1"
 )
-internal val defaultJooqEdition = JooqEdition.OpenSource
-//internal fun String.outputDirName() = "generated/src/main/java"
 
 fun Configuration.jdbc(action: Jdbc.() -> Unit) {
     jdbc = (jdbc ?: Jdbc()).apply(action)

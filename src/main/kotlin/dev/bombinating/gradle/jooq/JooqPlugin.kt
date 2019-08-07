@@ -23,10 +23,10 @@ class JooqPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         project.plugins.apply(JavaBasePlugin::class.java)
-        val jooqRuntime = project.configurations.create(jooqRuntimeName).apply {
-            description = jooqRuntimeDesc
+        val jooqRuntime = project.configurations.create(JOOQ_RUNTIME_NAME).apply {
+            description = JOOQ_RUNTIME_DESC
         }
-        jooqCodeGenDeps.forEach { project.dependencies.add(jooqRuntime.name, it) }
+        JOOQ_CODE_GEN_DEPS.forEach { project.dependencies.add(jooqRuntime.name, it) }
         val configurer: (JooqConfig, JooqExt) -> Unit = { config, ext ->
             project.tasks.create(config.jooqTaskName, JooqTask::class.java, config.config, jooqRuntime)
             config.sourceSet.let {
@@ -42,7 +42,7 @@ class JooqPlugin : Plugin<Project> {
                 }
             }
         }
-        project.extensions.create(jooqExtName, JooqExt::class.java, configurer, jooqExtName)
+        project.extensions.create(JOOQ_EXT_NAME, JooqExt::class.java, configurer, JOOQ_EXT_NAME)
     }
 
 }
