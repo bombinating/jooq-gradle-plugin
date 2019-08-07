@@ -20,6 +20,12 @@ dependencies {
     api(kotlin("stdlib-jdk8"))
     api(group = "org.jooq", name = "jooq-codegen", version = "3.11.11")
     testImplementation(gradleTestKit())
+    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version = "1.3.41")
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.5.1")
+    testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.5.1")
+    testImplementation(group = "org.testcontainers", name = "junit-jupiter", version = "1.11.3")
+    testImplementation(group = "org.testcontainers", name = "postgresql", version = "1.11.3")
+    testImplementation(group = "org.postgresql", name = "postgresql", version = "42.2.6")
 }
 
 tasks.withType<KotlinCompile> {
@@ -32,5 +38,12 @@ gradlePlugin {
             id = "dev.bombinating.jooq"
             implementationClass = "dev.bombinating.gradle.jooq.JooqPlugin"
         }
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
     }
 }
