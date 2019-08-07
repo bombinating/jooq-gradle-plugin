@@ -77,4 +77,6 @@ jooq {
 }
 ----
 
+The name of the task to execute to generate the Java code is `generate<Name>Jooq`. In the example above, the name of the task will be `generateOracleJooq`.
+
 An advantage to using a Kotlin-based plugin is that the generation config is typed and the IDE can provide code completion aid.
