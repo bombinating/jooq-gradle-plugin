@@ -33,7 +33,7 @@ internal val jooqCodeGenDeps = listOf(
     "com.sun.xml.bind:jaxb-core:2.3.0.1",
     "com.sun.xml.bind:jaxb-impl:2.3.0.1"
 )
-internal val defaultJooqEdition = JooqEdition.OSS
+internal val defaultJooqEdition = JooqEdition.OpenSource
 //internal fun String.outputDirName() = "generated/src/main/java"
 
 fun Configuration.jdbc(action: Jdbc.() -> Unit) {

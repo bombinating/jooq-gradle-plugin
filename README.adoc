@@ -1,0 +1,80 @@
+= jOOQ Codegen Plugin
+
+== Overview
+
+A https://gradle.org[Gradle] plugin for generating https://www.jooq.org/doc/3.11/manual/code-generation/codegen-configuration/[Java sources for jOOQ 3.11+] that works with the https://docs.gradle.org/current/userguide/kotlin_dsl.html[Gradle Kotlin DSL]
+
+This is a Kotlin port of https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin].
+
+== Using the plugin
+
+The plugin needs to be included in the `build.gradle.kts` file in order to be used.
+
+[source,build.gradle.kts]
+----
+plugins {
+    id("dev.bombinating.jooq") version "1.0-SNAPSHOT"
+}
+----
+
+The JDBC driver for introspecting the database is provided in the `dependencies` block using the `jooqRuntime` scope.
+
+[source,build.gradle.kts]
+----
+dependencies {
+    jooqRuntime(group = "org.postgresql", name = "postgresql", version = "42.2.6")
+}
+----
+
+In the jOOQ extension block, the version and edition of jOOQ can be specified.
+The defaults are shown below.
+
+[source,build.gradle.kts]
+----
+import import dev.bombinating.gradle.jooq.JooqEdition.OpenSource
+...
+jooq {
+    version = "3.11.11"
+    edition = OpenSource
+}
+----
+
+Generation configurations are also configured in the `jooq` block by providing a name for the config, along with the source set and the configuration itself, based on the https://www.jooq.org/xsd/jooq-codegen-3.11.0.xsd[jOOQ codegen XSD]
+
+[source,build.gradle.kts]
+----
+import import dev.bombinating.gradle.jooq.JooqEdition.Professional
+...
+val dbUrl: String? by project
+val dbUsername: String? by project
+val dbPassword: String? by project
+val dbSchema: String? by project
+val genDir: String = "$projectDir/generated/src/main/java"
+...
+jooq {
+    edition = Professional
+    "oracle"(sourceSets["main"]) {
+        jdbc {
+            driver = "oracle.jdbc.driver.OracleDriver"
+            url = dbUrl
+            user = dbUsername
+            password = dbPassword
+        }
+        generator {
+            database {
+                name = "org.jooq.meta.oracle.OracleDatabase"
+                includes = ".*"
+                excludes = "^BIN\\$.*|flyway_schema_history"
+                inputSchema = dbSchema
+            }
+            target {
+                directory = genDir
+                packageName = "com.acme.domain.generated"
+            }
+        }
+        logging = Logging.INFO
+    }
+}
+----
+
+An advantage to using a Kotlin-based plugin is that the generation config is typed and the IDE can provide code completion aid.
