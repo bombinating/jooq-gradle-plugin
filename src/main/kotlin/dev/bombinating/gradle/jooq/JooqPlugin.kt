@@ -33,7 +33,7 @@ class JooqPlugin : Plugin<Project> {
                 }
             }
         }
-        project.extensions.create(jooqExtName, JooqExt::class.java, configurer, jooqExtName, project)
+        project.extensions.create(jooqExtName, JooqExt::class.java, configurer, jooqExtName)
     }
 
 }
