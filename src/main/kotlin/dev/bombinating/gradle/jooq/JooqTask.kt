@@ -1,11 +1,23 @@
+/*
+ * Copyright 2019 Andrew Geery
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package dev.bombinating.gradle.jooq
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
-import org.gradle.api.tasks.Classpath
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import org.jooq.Constants
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
@@ -17,18 +29,18 @@ import javax.xml.bind.JAXBContext
 import javax.xml.validation.SchemaFactory
 
 open class JooqTask @Inject constructor(
-    config: Configuration,
+    @get:Input val config: Configuration,
     @get:InputFiles @get:Classpath val jooqClassPath: FileCollection
 ) : DefaultTask() {
 
-    private val _config: Configuration = config
-
-    private val config: Configuration
-            get() = relativeTo(_config, project.projectDir)
+    private val outputDirName by lazy { config.generator.target.directory }
 
     @get:OutputDirectory
-    val outputDirectory: File
-        get() = project.file(config.generator.target.directory)
+    val outputDirectory: File by lazy {
+        File(outputDirName).let { dir ->
+            if (dir.isAbsolute) dir else project.file(outputDirName)
+        }
+    }
 
     init {
         description = jooqTaskDesc
@@ -37,41 +49,24 @@ open class JooqTask @Inject constructor(
 
     @TaskAction
     fun generate() {
-        execJooq(File(temporaryDir, "config.xml"))
-    }
-
-    private fun execJooq(configFile: File) = project.javaexec { spec ->
-        spec.main = "org.jooq.codegen.GenerationTool"
-        spec.classpath = jooqClassPath
-        spec.args = listOf(configFile.absolutePath)
-        spec.workingDir = project.projectDir
-        configFile.parentFile.mkdirs()
-        writeConfig(config, configFile)
-    }
-
-    private fun writeConfig(config: Configuration, file: File) {
-        val factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-        val schema = factory.newSchema(GenerationTool::class.java.getResource("/xsd/${Constants.XSD_CODEGEN}"))
-        val ctx = JAXBContext.newInstance(Configuration::class.java)
-        val marshaller = ctx.createMarshaller()
-        marshaller.schema = schema
-        FileOutputStream(file).use { fs ->
-            marshaller.marshal(config, fs)
+        project.javaexec { spec ->
+            val configFile = File(temporaryDir, jooqConfigFilename)
+            configFile.parentFile.mkdirs()
+            spec.main = GenerationTool::class.java.canonicalName
+            spec.classpath = jooqClassPath
+            spec.args = listOf(configFile.absolutePath)
+            spec.workingDir = project.projectDir
+            writeConfig(config, configFile)
         }
     }
 
-    //  FIXME: is this actually used?!
-    private fun relativeTo(config: Configuration, dir: File) =
-        config.generator.target.directory?.let {
-            val file = File(it)
-            if (file.isAbsolute) {
-                var relativized = dir.toURI().relativize(file.toURI()).path
-                if (relativized.endsWith(File.separator)) {
-                    relativized = relativized.substring(0, -2)
-                }
-                config.generator.target.directory = relativized
-            }
-            config
-        } ?: config
+    private fun writeConfig(config: Configuration, file: File) {
+        logger.debug("Marshalling jOOQ config to '${file.absolutePath}': $config")
+        val factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+        val marshaller = JAXBContext.newInstance(Configuration::class.java).createMarshaller().apply {
+            this.schema = factory.newSchema(GenerationTool::class.java.getResource("/xsd/${Constants.XSD_CODEGEN}"))
+        }
+        FileOutputStream(file).use { fs -> marshaller.marshal(config, fs) }
+    }
 
 }

@@ -7,7 +7,6 @@ plugins {
 }
 
 group = "dev.bombinating"
-version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -27,7 +26,7 @@ tasks.withType<KotlinCompile> {
 gradlePlugin {
     plugins {
         create("jooqPlugin") {
-            id = "dev.bombinating.jooq-gradle"
+            id = "dev.bombinating.jooq"
             implementationClass = "dev.bombinating.gradle.jooq.JooqPlugin"
         }
     }
