@@ -15,7 +15,7 @@
  */
 @file:Suppress("TooManyFunctions")
 
-package dev.bombinating.gradle.jooq.config
+package dev.bombinating.gradle.jooq
 
 import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Database

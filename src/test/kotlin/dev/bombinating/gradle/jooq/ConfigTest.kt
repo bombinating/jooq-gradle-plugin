@@ -1,7 +1,5 @@
-package dev.bombinating.gradle.jooq.config
+package dev.bombinating.gradle.jooq
 
-import dev.bombinating.gradle.jooq.JooqTask
-import dev.bombinating.gradle.jooq.marshall
 import mu.KotlinLogging
 import org.gradle.testfixtures.ProjectBuilder
 import org.jooq.meta.jaxb.Configuration
@@ -24,7 +22,7 @@ class ConfigTest {
     fun f() {
         val project = ProjectBuilder.builder().build()
         val ext = project.configurations.create("jooq")
-        val task = project.tasks.create("jooq", JooqTask::class.java, Configuration(), ext)
+        /*val task =*/ project.tasks.create("jooq", JooqTask::class.java, Configuration(), ext)
 //        val plugin = JooqTask(config = Configuration(), jooqClassPath = FileTreeAdapter(DefaultSingletonFileTree(File("temp"))))
 //        plugin.
     }
