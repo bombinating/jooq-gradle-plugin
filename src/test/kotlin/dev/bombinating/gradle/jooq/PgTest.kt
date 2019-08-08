@@ -123,7 +123,7 @@ class PgTest {
                 }
                 target {
                     directory = genDir
-                    packageName = $packageName
+                    packageName = "$packageName"
                 }
             }
             logging = Logging.TRACE
