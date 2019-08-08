@@ -13,7 +13,7 @@ import java.nio.file.Path
 import java.sql.DriverManager
 
 @Testcontainers
-class Test {
+class PgTest {
 
     companion object {
 
@@ -38,6 +38,10 @@ class Test {
     //val testKitDir = File("build/testkit").absoluteFile
     @TempDir
     lateinit var workspaceDir: Path
+
+    private val packageName = "com.acme.domain.generated"
+    private val genDir = "generated/src/main/java"
+    private fun tableDir() = File(workspaceDir.toFile(), packageName.replace(".", "/"))
 
     @Test
     fun f() {
@@ -76,7 +80,7 @@ class Test {
     import dev.bombinating.gradle.jooq.target
     import org.jooq.meta.jaxb.Logging
     
-    val genDir = "${'$'}projectDir/generated/src/main/java"
+    val genDir = "${'$'}projectDir/$genDir"
     
     plugins {
         java
@@ -119,7 +123,7 @@ class Test {
                 }
                 target {
                     directory = genDir
-                    packageName = "com.acme.domain.generated"
+                    packageName = $packageName
                 }
             }
             logging = Logging.TRACE

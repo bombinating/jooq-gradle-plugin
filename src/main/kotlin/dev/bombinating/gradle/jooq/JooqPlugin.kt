@@ -36,7 +36,7 @@ class JooqPlugin : Plugin<Project> {
             project.configurations.forEach {
                 it.resolutionStrategy.eachDependency { details ->
                     val requested = details.requested
-                    if (JooqEdition.jooqGroupIds.contains(requested.group)) {
+                    if (JOOQ_GROUP_IDS.contains(requested.group)) {
                         details.useTarget("${ext.edition.groupId}:${requested.name}:${ext.version}")
                     }
                 }

@@ -25,7 +25,10 @@ dependencies {
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.5.1")
     testImplementation(group = "org.testcontainers", name = "junit-jupiter", version = "1.11.3")
     testImplementation(group = "org.testcontainers", name = "postgresql", version = "1.11.3")
+    testImplementation(group = "org.testcontainers", name = "mssqlserver", version = "1.11.3")
     testImplementation(group = "org.postgresql", name = "postgresql", version = "42.2.6")
+    testImplementation(group = "com.microsoft.sqlserver", name = "mssql-jdbc", version = "7.4.1.jre8")
+    testImplementation(group = "com.sun.istack", name = "istack-commons-runtime", version = "3.0.8")
 }
 
 tasks.withType<KotlinCompile> {

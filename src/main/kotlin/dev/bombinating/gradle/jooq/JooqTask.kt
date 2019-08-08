@@ -22,15 +22,11 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.jooq.Constants
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
-import javax.xml.XMLConstants
-import javax.xml.bind.JAXBContext
-import javax.xml.validation.SchemaFactory
 
 open class JooqTask @Inject constructor(
     @get:Input val config: Configuration,
@@ -60,17 +56,8 @@ open class JooqTask @Inject constructor(
             spec.classpath = jooqClassPath
             spec.args = listOf(configFile.absolutePath)
             spec.workingDir = project.projectDir
-            writeConfig(config, configFile)
+            config.marshall(FileOutputStream(configFile))
         }
-    }
-
-    private fun writeConfig(config: Configuration, file: File) {
-        logger.debug("Marshalling jOOQ config to '${file.absolutePath}': $config")
-        val factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-        val marshaller = JAXBContext.newInstance(Configuration::class.java).createMarshaller().apply {
-            this.schema = factory.newSchema(GenerationTool::class.java.getResource("/xsd/${Constants.XSD_CODEGEN}"))
-        }
-        FileOutputStream(file).use { fs -> marshaller.marshal(config, fs) }
     }
 
 }

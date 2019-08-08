@@ -19,10 +19,5 @@ enum class JooqEdition(val groupId: String) {
     OpenSource("org.jooq"),
     Professional("org.jooq.pro"),
     ProfessionalJava6("org.jooq.pro-java-6"),
-    Trial("org.jooq.trial");
-
-    companion object {
-        val jooqGroupIds = values().map { it.groupId }.toSet()
-    }
-
+    Trial("org.jooq.trial")
 }
