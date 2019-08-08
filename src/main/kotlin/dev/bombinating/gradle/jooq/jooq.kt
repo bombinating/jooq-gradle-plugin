@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package dev.bombinating.gradle.jooq
 
 import org.jooq.Constants.XSD_CODEGEN
@@ -28,11 +27,10 @@ internal const val DEFAULT_JOOQ_VERSION = "3.11.11"
 internal val DEFAULT_JOOQ_EDITION = JooqEdition.OpenSource
 internal const val JOOQ_CONFIG_NAME = "config.xml"
 internal const val JOOQ_RUNTIME_NAME = "jooqRuntime"
-internal const val JOOQ_RUNTIME_DESC =
-    "The classpath used to invoke the jOOQ generator. Add JDBC drivers or generator extensions here."
+internal const val JOOQ_RUNTIME_DESC = "The classpath for the jOOQ generator"
 internal const val JOOQ_EXT_NAME = "jooq"
 internal const val JOOQ_TASK_GROUP = JOOQ_EXT_NAME
-internal const val JOOQ_TASK_DESC = "Generates the jOOQ configuration"
+internal const val JOOQ_TASK_DESC = "jOOQ code generator"
 internal val JOOQ_CODE_GEN_DEPS = listOf(
     "org.jooq:jooq-codegen:$DEFAULT_JOOQ_VERSION",
     "javax.xml.bind:jaxb-api:2.3.1",

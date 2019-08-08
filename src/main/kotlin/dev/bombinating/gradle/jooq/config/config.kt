@@ -1,6 +1,21 @@
+/*
+ * Copyright 2019 Andrew Geery
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 @file:Suppress("TooManyFunctions")
 
-package dev.bombinating.gradle.jooq
+package dev.bombinating.gradle.jooq.config
 
 import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Database
@@ -13,6 +28,12 @@ import org.jooq.meta.jaxb.Matchers
 import org.jooq.meta.jaxb.MatchersTableType
 import org.jooq.meta.jaxb.Strategy
 import org.jooq.meta.jaxb.Target
+
+internal fun config(x: Configuration.() -> Unit): Configuration {
+    val y = Configuration()
+    x(y)
+    return y
+}
 
 fun Configuration.jdbc(action: Jdbc.() -> Unit) {
     jdbc = (jdbc ?: Jdbc()).apply(action)

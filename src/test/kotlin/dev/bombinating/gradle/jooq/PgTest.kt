@@ -74,10 +74,10 @@ class PgTest {
     """.trimIndent()
 
     fun createBuild(url: String, username: String, password: String) = """
-    import dev.bombinating.gradle.jooq.jdbc
-    import dev.bombinating.gradle.jooq.generator
-    import dev.bombinating.gradle.jooq.database
-    import dev.bombinating.gradle.jooq.target
+    import dev.bombinating.gradle.jooq.config.jdbc
+    import dev.bombinating.gradle.jooq.config.generator
+    import dev.bombinating.gradle.jooq.config.database
+    import dev.bombinating.gradle.jooq.config.target
     import org.jooq.meta.jaxb.Logging
     
     val genDir = "${'$'}projectDir/$genDir"
