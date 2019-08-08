@@ -30,6 +30,7 @@ dependencies {
     testImplementation(group = "com.microsoft.sqlserver", name = "mssql-jdbc", version = "7.4.1.jre8")
     testImplementation(group = "com.sun.istack", name = "istack-commons-runtime", version = "3.0.8")
     testImplementation(group = "io.github.microutils", name = "kotlin-logging", version = "1.7.3")
+    testImplementation(group = "org.apache.commons", name = "commons-lang3", version = "3.9")
 }
 
 tasks.withType<KotlinCompile> {

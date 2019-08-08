@@ -29,11 +29,7 @@ import org.jooq.meta.jaxb.MatchersTableType
 import org.jooq.meta.jaxb.Strategy
 import org.jooq.meta.jaxb.Target
 
-internal fun config(x: Configuration.() -> Unit): Configuration {
-    val y = Configuration()
-    x(y)
-    return y
-}
+internal fun config(action: Configuration.() -> Unit): Configuration = Configuration().apply { action(this) }
 
 fun Configuration.jdbc(action: Jdbc.() -> Unit) {
     jdbc = (jdbc ?: Jdbc()).apply(action)
