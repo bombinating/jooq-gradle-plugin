@@ -82,7 +82,7 @@ class ConfigTest {
     @Test
     fun `single property`() {
         ConfigTypes.values().forEach { type ->
-            val values = type.type.configs.forEach {
+            type.type.configs.forEach {
                 val objConfig = Configuration()
                 val dslConfig = Configuration()
                 val randomValue = type.type.generator.invoke()
@@ -101,7 +101,7 @@ class ConfigTest {
         val objConfig = Configuration()
         val dslConfig = Configuration()
         ConfigTypes.values().forEach { type ->
-            val values = type.type.configs.forEach {
+            type.type.configs.forEach {
                 val randomValue = type.type.generator.invoke()
                 logger.info {"${(it as Enum<*>).name} - value: $randomValue"}
                 (it.dslSetter as Configuration.(Any?)-> Unit).invoke(dslConfig, randomValue)
