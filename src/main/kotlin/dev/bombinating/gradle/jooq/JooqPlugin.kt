@@ -31,7 +31,9 @@ class JooqPlugin : Plugin<Project> {
             project.tasks.create(config.jooqTaskName, JooqTask::class.java, config.config, jooqRuntime)
             config.sourceSet.let {
                 it.java.srcDir { config.config.generator.target.directory }
-                project.tasks.getByName(it.compileJavaTaskName).dependsOn(config.jooqTaskName)
+                if (ext.compileDep) {
+                    project.tasks.getByName(it.compileJavaTaskName).dependsOn(config.jooqTaskName)
+                }
             }
             project.configurations.forEach {
                 it.resolutionStrategy.eachDependency { details ->

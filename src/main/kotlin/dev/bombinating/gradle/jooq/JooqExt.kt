@@ -22,6 +22,7 @@ open class JooqExt(val jooqConfigurer: (JooqConfig, JooqExt) -> Unit, val name: 
 
     var version: String = DEFAULT_JOOQ_VERSION
     var edition: JooqEdition = DEFAULT_JOOQ_EDITION
+    var compileDep: Boolean = false
 
     private val configs: MutableMap<String, JooqConfig> = mutableMapOf()
 
