@@ -53,7 +53,7 @@ fun createBuildContent(genDir: String, depBlock: String, pluginVersion: String =
     
     plugins {
         java
-        id("dev.bombinating.jooq") version "$pluginVersion"
+        id("dev.bombinating.jooq-codegen") version "$pluginVersion"
     }
     
     sourceSets["main"].java {
