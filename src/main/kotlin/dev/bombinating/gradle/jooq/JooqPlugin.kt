@@ -15,8 +15,10 @@
  */
 package dev.bombinating.gradle.jooq
 
+import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.UnknownTaskException
 import org.gradle.api.plugins.JavaBasePlugin
 
 class JooqPlugin : Plugin<Project> {
@@ -28,11 +30,21 @@ class JooqPlugin : Plugin<Project> {
         }
         JOOQ_CODE_GEN_DEPS.forEach { project.dependencies.add(jooqRuntime.name, it) }
         val configurer: (JooqConfig, JooqExt) -> Unit = { config, ext ->
-            project.tasks.create(config.jooqTaskName, JooqTask::class.java, config.config, jooqRuntime)
+            val jooqTask = project.tasks.create(
+                config.jooqTaskName, JooqTask::class.java, config.config, jooqRuntime).apply {
+                runConfig = ext.runConfig
+                resultHandler = ext.resultHandler
+            }
             config.sourceSet.let {
                 it.java.srcDir { config.config.generator.target.directory }
+                val jooqAllTask = try {
+                     project.tasks.getByName(JOOQ_ALL_TASK_NAME)
+                } catch (e: UnknownTaskException) {
+                    project.tasks.create(JOOQ_ALL_TASK_NAME, DefaultTask::class.java)
+                }
+                jooqAllTask.dependsOn(jooqTask)
                 if (ext.compileDep) {
-                    project.tasks.getByName(it.compileJavaTaskName).dependsOn(config.jooqTaskName)
+                    project.tasks.getByName(it.compileJavaTaskName).dependsOn(jooqAllTask)
                 }
             }
             project.configurations.forEach {

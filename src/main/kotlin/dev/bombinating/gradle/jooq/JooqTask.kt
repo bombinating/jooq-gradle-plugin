@@ -20,8 +20,11 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecResult
+import org.gradle.process.JavaExecSpec
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
 import java.io.File
@@ -34,6 +37,11 @@ open class JooqTask @Inject constructor(
 ) : DefaultTask() {
 
     private val outputDirName by lazy { config.generator.target.directory }
+
+    @Internal
+    var runConfig: (JavaExecSpec.() -> Unit)? = null
+    @Internal
+    var resultHandler: (ExecResult.() -> Unit)? = null
 
     @get:OutputDirectory
     val outputDirectory: File by lazy {
@@ -49,15 +57,17 @@ open class JooqTask @Inject constructor(
 
     @TaskAction
     fun generate() {
-        project.javaexec { spec ->
+        val result = project.javaexec { spec ->
             val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
             configFile.parentFile.mkdirs()
             spec.main = GenerationTool::class.java.canonicalName
             spec.classpath = jooqClassPath
             spec.args = listOf(configFile.absolutePath)
             spec.workingDir = project.projectDir
+            runConfig?.invoke(spec)
             config.marshall(FileOutputStream(configFile))
         }
+        resultHandler?.invoke(result)
     }
 
 }

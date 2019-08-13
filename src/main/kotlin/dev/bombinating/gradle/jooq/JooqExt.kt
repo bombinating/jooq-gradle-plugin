@@ -16,6 +16,8 @@
 package dev.bombinating.gradle.jooq
 
 import org.gradle.api.tasks.SourceSet
+import org.gradle.process.ExecResult
+import org.gradle.process.JavaExecSpec
 import org.jooq.meta.jaxb.Configuration
 
 open class JooqExt(val jooqConfigurer: (JooqConfig, JooqExt) -> Unit, val name: String) {
@@ -23,6 +25,8 @@ open class JooqExt(val jooqConfigurer: (JooqConfig, JooqExt) -> Unit, val name: 
     var version: String = DEFAULT_JOOQ_VERSION
     var edition: JooqEdition = DEFAULT_JOOQ_EDITION
     var compileDep: Boolean = false
+    var runConfig: (JavaExecSpec.() -> Unit)? = null
+    var resultHandler: (ExecResult.() -> Unit)? = null
 
     private val configs: MutableMap<String, JooqConfig> = mutableMapOf()
 

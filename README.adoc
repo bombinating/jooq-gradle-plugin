@@ -26,7 +26,8 @@ dependencies {
 }
 ----
 
-In the jOOQ extension block, the version and edition of jOOQ can be specified.
+In the jOOQ extension block, the version and edition of jOOQ can be specified, along with whether a dependency should be created between the compilation task and the jOOQ generation tasks.
+
 The defaults are shown below.
 
 [source,build.gradle.kts]
@@ -36,7 +37,36 @@ import import dev.bombinating.gradle.jooq.JooqEdition.OpenSource
 jooq {
     version = "3.11.11"
     edition = OpenSource
+    compileDep = false
 }
+----
+
+In addition, there are two more properties that can be specified on the extension, `javaExecSpec` and `execResultHandler`, that set the default Java execution options for running the jOOQ code generation tool and that specify a handler for the result of running the jOOQ code generation tool.
+
+[source,build.gradle.kts]
+----
+import import dev.bombinating.gradle.jooq.JooqEdition.OpenSource
+...
+jooq {
+    version = "3.11.11"
+    edition = OpenSource
+    compileDep = false
+    runConfig = {
+        setIgnoreExitValue(true)
+        jvmArgs("-Xmx512M")
+        setStandardOutput(System.out)
+        setErrorOutput(System.out)
+    }
+    resultHandler = {
+        if (it.exitValue != 0) {
+            throw RuntimeException("jOOQ source code generation failed:\n\n$out")
+        }
+    }
+}
+
+    resultHandler = {
+        println("all done")
+    }
 ----
 
 Generation configurations are also configured in the `jooq` block by providing a name for the config, along with the source set and the configuration itself, based on the https://www.jooq.org/xsd/jooq-codegen-3.11.0.xsd[jOOQ codegen XSD]

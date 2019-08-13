@@ -31,6 +31,7 @@ internal const val JOOQ_RUNTIME_DESC = "The classpath for the jOOQ generator"
 internal const val JOOQ_EXT_NAME = "jooq"
 internal const val JOOQ_TASK_GROUP = JOOQ_EXT_NAME
 internal const val JOOQ_TASK_DESC = "jOOQ code generator"
+internal const val JOOQ_ALL_TASK_NAME = "generateJooq"
 internal val JOOQ_CODE_GEN_DEPS = listOf(
     "org.jooq:jooq-codegen:$DEFAULT_JOOQ_VERSION",
     "javax.xml.bind:jaxb-api:2.3.1",
