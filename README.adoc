@@ -2,22 +2,22 @@
 
 == Overview
 
-A https://gradle.org[Gradle] plugin for generating https://www.jooq.org/doc/3.11/manual/code-generation/codegen-configuration/[Java sources for jOOQ 3.11+] that works with the https://docs.gradle.org/current/userguide/kotlin_dsl.html[Gradle Kotlin DSL]
+A https://gradle.org[Gradle] plugin for generating https://www.jooq.org/doc/3.11/manual/code-generation/codegen-configuration/[Java sources] for https://www.jooq.org[jOOQ] 3.11+ that works with the https://docs.gradle.org/current/userguide/kotlin_dsl.html[Gradle Kotlin DSL]
 
-This is a Kotlin port of https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin].
+This is a Kotlin port of the Groovy-based https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin]. This Kotlin version was developed because it was decided that the Groovy plugin https://github.com/etiennestuder/gradle-jooq-plugin/pull/91[would not add Kotlin DSL support].
 
 == Using the plugin
 
-The plugin needs to be included in the `build.gradle.kts` file in order to be used.
+The plugin id needs to be added to the `plugins` block in the `build.gradle.kts` file in order to be used.
 
 [source,build.gradle.kts]
 ----
 plugins {
-    id("dev.bombinating.jooq") version "1.0-SNAPSHOT"
+    id("dev.bombinating.jooq") version "0.0.4"
 }
 ----
 
-The JDBC driver for introspecting the database is provided in the `dependencies` block using the `jooqRuntime` scope.
+The JDBC driver for introspecting the database must be provided in the `dependencies` block using the `jooqRuntime` scope.
 
 [source,build.gradle.kts]
 ----
@@ -37,7 +37,7 @@ import import dev.bombinating.gradle.jooq.JooqEdition.OpenSource
 jooq {
     version = "3.11.11"
     edition = OpenSource
-    compileDep = false
+    compileDep = true
 }
 ----
 
@@ -63,10 +63,6 @@ jooq {
         }
     }
 }
-
-    resultHandler = {
-        println("all done")
-    }
 ----
 
 Generation configurations are also configured in the `jooq` block by providing a name for the config, along with the source set and the configuration itself, based on the https://www.jooq.org/xsd/jooq-codegen-3.11.0.xsd[jOOQ codegen XSD]
@@ -108,6 +104,8 @@ jooq {
 ----
 
 The name of the task to execute to generate the Java code is `generate<Name>Jooq`. In the example above, the name of the task will be `generateOracleJooq`.
+
+In addition to the individual jOOQ tasks, there is a `jooqGenerate` task that all of the individual jOOQ tasks depend on.
 
 An advantage to using a Kotlin-based plugin is that the generation config is typed and the IDE can provide code completion aid.
 
