@@ -2,7 +2,7 @@
 
 == Overview
 
-A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jOOQ] (3.11+) https://www.jooq.org/doc/3.11/manual/code-generation/codegen-configuration/[code generation tool] that supports the https://docs.gradle.org/current/userguide/kotlin_dsl.html[Gradle Kotlin DSL].
+A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jOOQ] https://www.jooq.org/doc/3.11/manual/code-generation/codegen-configuration/[code generation tool] that supports the https://docs.gradle.org/current/userguide/kotlin_dsl.html[Gradle Kotlin DSL]. For working with jOOQ <= 3.10, use version 1.x of the plugin. For working with jOOQ >= 3.11, use version 2.x of the plugin.
 
 This is a Kotlin port of the Groovy-based https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin]. This plugin was developed because it was decided that the Groovy plugin https://github.com/etiennestuder/gradle-jooq-plugin/pull/91[would not add Kotlin DSL support].
 
@@ -13,7 +13,7 @@ The plugin id needs to be added to the `plugins` block in the `build.gradle.kts`
 [source,build.gradle.kts]
 ----
 plugins {
-    id("dev.bombinating.jooq-codegen") version "0.0.4"
+    id("dev.bombinating.jooq-codegen") version "2.0.0-SNAPSHOT"
 }
 ----
 
