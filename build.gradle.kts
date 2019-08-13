@@ -40,7 +40,7 @@ tasks.withType<KotlinCompile> {
 gradlePlugin {
     plugins {
         create("jooqPlugin") {
-            id = "dev.bombinating.jooq"
+            id = "dev.bombinating.jooq-codegen"
             implementationClass = "dev.bombinating.gradle.jooq.JooqPlugin"
         }
     }

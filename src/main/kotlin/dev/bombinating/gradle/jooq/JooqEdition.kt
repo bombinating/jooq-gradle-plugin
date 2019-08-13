@@ -15,6 +15,11 @@
  */
 package dev.bombinating.gradle.jooq
 
+/**
+ * jOOQ edition info.
+ *
+ * @property groupId Maven group id associated with the jOOQ edition
+ */
 enum class JooqEdition(val groupId: String) {
     OpenSource("org.jooq"),
     Professional("org.jooq.pro"),

@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/*
+ * Internal configuration values and functionality for the plugin.
+ */
+
 package dev.bombinating.gradle.jooq
 
 import org.jooq.Constants.XSD_CODEGEN

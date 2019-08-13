@@ -21,6 +21,16 @@ import org.gradle.api.Project
 import org.gradle.api.UnknownTaskException
 import org.gradle.api.plugins.JavaBasePlugin
 
+/**
+ * Entry point into the jOOQ code generation functionality.
+ *
+ * - ensures that the Java plugin is applied to the project (for compiling the generated code)
+ * - creates a `jooqRuntime` configuration so the classpath for the jOOQ code generation tool can be specified
+ * - adds the dependencies needed to run the jOOQ code generation tool to the `jooqRuntime` configuration
+ * - creates a `jooq` extension that can be used for specifying jooq code generation configurations
+ * - the jOOQ code generation configurations are turned into Gradle tasks with the name generate<ConfigName>Jooq
+ * - in addition, there is an additional task, generateJooq, that all of the individual jOOQ code gen tasks depend on
+ */
 class JooqPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
@@ -56,7 +66,7 @@ class JooqPlugin : Plugin<Project> {
                 }
             }
         }
-        project.extensions.create(JOOQ_EXT_NAME, JooqExt::class.java, configurer, JOOQ_EXT_NAME)
+        project.extensions.create(JOOQ_EXT_NAME, JooqExt::class.java, JOOQ_EXT_NAME, configurer)
     }
 
 }

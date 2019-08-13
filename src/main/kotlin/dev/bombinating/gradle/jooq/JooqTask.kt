@@ -31,6 +31,15 @@ import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 
+/**
+ * Gradle task for executing jOOQ code generation.
+ *
+ * @property config jOOQ code generation [Configuration]
+ * @property jooqClassPath list of jars to add to the classpath when running the jOOQ code generation
+ * @property runConfig configuration of how Java should be invoked when the jOOQ code generation tool is executed
+ * @property resultHandler lambda to execute when the jOOQ code generation tool is finished
+ * @property outputDirectory directory the jOOQ code generation XML configuration file is generated into
+ */
 open class JooqTask @Inject constructor(
     @get:Input val config: Configuration,
     @get:InputFiles @get:Classpath val jooqClassPath: FileCollection

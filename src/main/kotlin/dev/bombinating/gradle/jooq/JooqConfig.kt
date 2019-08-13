@@ -19,6 +19,14 @@ import org.gradle.api.Named
 import org.gradle.api.tasks.SourceSet
 import org.jooq.meta.jaxb.Configuration
 
+/**
+ * jOOQ code generation configuration information for the [JooqTask]
+ *
+ * @property name name of the configuration
+ * @property sourceSet source set the code generation is associated with
+ * @property config jOOQ code generation [Configuration] associated with the task
+ * @property jooqTaskName name of the task
+ */
 class JooqConfig(private val name: String, val sourceSet: SourceSet, val config: Configuration) : Named {
     override fun getName(): String = name
     val jooqTaskName: String
