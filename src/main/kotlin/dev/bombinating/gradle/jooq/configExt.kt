@@ -15,7 +15,7 @@
  */
 @file:Suppress("TooManyFunctions")
 
-/*
+/**
  * Extension methods creating for building jOOQ codegen [Configuration].
  */
 
@@ -134,7 +134,6 @@ fun MatchersTableType.pojoClass(action: MatcherRule.() -> Unit) {
 fun Generator.generate(action: Generate.() -> Unit) {
     generate = ((generate ?: Generate()).apply(action))
 }
-
 
 /**
  * Extension method for customizing the `forcedTypes` config in a [Database] config
