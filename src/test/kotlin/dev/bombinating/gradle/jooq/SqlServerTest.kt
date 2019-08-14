@@ -3,6 +3,7 @@ package dev.bombinating.gradle.jooq
 import org.gradle.testkit.runner.GradleRunner
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import org.testcontainers.containers.MSSQLServerContainer
@@ -12,6 +13,7 @@ import java.io.File
 import java.nio.file.Path
 import java.sql.DriverManager
 
+@Disabled("Requires docker container to run")
 @Testcontainers
 class SqlServerTest {
 
