@@ -1,4 +1,15 @@
+
+import com.jfrog.bintray.gradle.BintrayExtension
+import groovy.lang.GroovyObject
+import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
+
+fun Project.prop(s: String) = findProperty(s) as String?
+val pubName = "jooqPlugin"
+val kdocLoc = "$buildDir/kdoc"
+val bintrayUser = prop("bintrayUser")
+val bintrayKey = prop("bintrayKey")
 
 plugins {
     kotlin("jvm") version "1.3.41"
@@ -6,6 +17,9 @@ plugins {
     `maven-publish`
     id("net.researchgate.release") version "2.8.1"
     id("io.gitlab.arturbosch.detekt") version "1.0.0-RC16"
+    id("org.jetbrains.dokka") version "0.9.18"
+    id("com.jfrog.bintray") version "1.8.4"
+    id("com.jfrog.artifactory") version "4.9.8"
 }
 
 group = "dev.bombinating"
@@ -51,4 +65,68 @@ tasks.withType<Test> {
     testLogging {
         events("passed", "skipped", "failed")
     }
+}
+
+val sourcesJar by tasks.creating(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets["main"].allSource)
+}
+
+val dokka by tasks.getting(DokkaTask::class) {
+    outputFormat = "html"
+    outputDirectory = kdocLoc
+    jdkVersion = 8
+}
+
+val dokkaJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = "Assembles Kotlin docs with Dokka"
+    archiveClassifier.set("javadoc")
+    from(dokka)
+}
+
+publishing {
+    publications {
+        register(pubName, MavenPublication::class) {
+            from(components.getByName("java"))
+            artifact(sourcesJar)
+            artifact(dokkaJar)
+        }
+    }
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+    publish = true
+    setPublications(pubName)
+    pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
+        repo = "maven"
+        name = "jooq-gradle-plugin"
+        setLicenses("Apache-2.0")
+        vcsUrl = "https://github.com/bombinating/jooq-gradle-plugin.git"
+        githubRepo = "bombinating/jooq-gradle-plugin"
+        githubReleaseNotesFile = "README.adoc"
+        version(delegateClosureOf<BintrayExtension.VersionConfig> {
+            name = "$version"
+            vcsTag = "$version"
+        })
+    })
+}
+
+artifactory {
+    setContextUrl("https://oss.jfrog.org/artifactory")
+    publish(delegateClosureOf<PublisherConfig> {
+        repository(delegateClosureOf<GroovyObject> {
+            setProperty("repoKey", "oss-snapshot-local")
+            setProperty("username", bintrayUser)
+            setProperty("password", bintrayKey)
+            setProperty("maven", true)
+        })
+        defaults(delegateClosureOf<GroovyObject> {
+            invokeMethod("publications", pubName)
+            setProperty("publishArtifacts", true)
+            setProperty("publishPom", true)
+        })
+    })
 }
