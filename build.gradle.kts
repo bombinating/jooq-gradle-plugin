@@ -10,6 +10,7 @@ val pubName = "jooqPlugin"
 val kdocLoc = "$buildDir/kdoc"
 val bintrayUser = prop("bintrayUser")
 val bintrayKey = prop("bintrayKey")
+val gitUrl = "https://github.com/bombinating/jooq-gradle-plugin.git"
 
 plugins {
     kotlin("jvm") version "1.3.41"
@@ -20,6 +21,7 @@ plugins {
     id("org.jetbrains.dokka") version "0.9.18"
     id("com.jfrog.bintray") version "1.8.4"
     id("com.jfrog.artifactory") version "4.9.8"
+    id("com.gradle.plugin-publish") version "0.10.1"
 }
 
 group = "dev.bombinating"
@@ -57,6 +59,7 @@ tasks.withType<KotlinCompile> {
 gradlePlugin {
     plugins {
         create("jooqPlugin") {
+            displayName = "jOOQ code gen plugin"
             id = "dev.bombinating.jooq-codegen"
             implementationClass = "dev.bombinating.gradle.jooq.JooqPlugin"
         }
@@ -88,6 +91,13 @@ val dokkaJar by tasks.creating(Jar::class) {
     from(dokka)
 }
 
+pluginBundle {
+    description = "jOOQ code generation plugin that works with kts"
+    vcsUrl = gitUrl
+    website = "https://github.com/bombinating/jooq-gradle-plugin"
+    tags = listOf("jOOQ", "database", "kts")
+}
+
 publishing {
     publications {
         register(pubName, MavenPublication::class) {
@@ -107,7 +117,7 @@ bintray {
         repo = "maven"
         name = "jooq-gradle-plugin"
         setLicenses("Apache-2.0")
-        vcsUrl = "https://github.com/bombinating/jooq-gradle-plugin.git"
+        vcsUrl = gitUrl
         githubRepo = "bombinating/jooq-gradle-plugin"
         githubReleaseNotesFile = "README.adoc"
         version(delegateClosureOf<BintrayExtension.VersionConfig> {
