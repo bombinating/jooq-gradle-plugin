@@ -50,6 +50,7 @@ dependencies {
     testImplementation(group = "com.sun.istack", name = "istack-commons-runtime", version = "3.0.8")
     testImplementation(group = "io.github.microutils", name = "kotlin-logging", version = "1.7.3")
     testImplementation(group = "org.apache.commons", name = "commons-lang3", version = "3.9")
+    testImplementation(group = "com.h2database", name = "h2", version = "1.4.199")
 }
 
 tasks.withType<KotlinCompile> {

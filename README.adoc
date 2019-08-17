@@ -15,7 +15,7 @@ The plugin id needs to be added to the `plugins` block in the `build.gradle.kts`
 [source,build.gradle.kts]
 ----
 plugins {
-    id("dev.bombinating.jooq-codegen") version "2.0.0-SNAPSHOT"
+    id("dev.bombinating.jooq-codegen") version "2.0.0"
 }
 ----
 
