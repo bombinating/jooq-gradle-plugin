@@ -66,6 +66,7 @@ open class JooqTask @Inject constructor(
 
     @TaskAction
     fun generate() {
+        logger.info("jooqRuntime classpath: ${jooqClassPath.files}")
         val result = project.javaexec { spec ->
             val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
             configFile.parentFile.mkdirs()

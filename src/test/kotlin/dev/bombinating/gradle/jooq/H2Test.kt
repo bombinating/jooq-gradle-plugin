@@ -53,6 +53,7 @@ class H2Test {
             genDir = GEN_DIR,
             depBlock = """
                 compile(group = "org.jooq", name = "jooq", version = "$JOOQ_VERSION")
+                compile("javax.annotation:javax.annotation-api:1.3.2")
                 jooqRuntime("com.h2database:h2:1.4.199")""".trimIndent()
         ) {
             """
