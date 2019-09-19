@@ -5,27 +5,52 @@ import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
 
-val jooqVersion = "3.11.11"
+/*
+ * Main plugin versions
+ */
+val jooqVersion: String by project
+val kotlinVersion: String by project
+
+/*
+ * Java 9+ dependency versions
+ */
+val jaxbApiVersion: String by project
+val activationVersion: String by project
+val jaxbCoreVersion: String by project
+val jaxbImplVersion: String by project
+
+/*
+ * Test dependency versions
+ */
+val junitVersion: String by project
+val testContainersVersion: String by project
+val h2Version: String by project
+val postgresqlJdbcVersion: String by project
+val sqlServerJdbcVersion: String by project
+val microutilsVersion: String by project
+val commonsLang3Version: String by project
+
+/*
+ * Distribution info
+ */
+val bintrayUser: String? by project
+val bintrayKey: String? by project
+
 val pubName = "jooqPlugin"
 val kdocLoc = "$buildDir/kdoc"
-val bintrayUser = prop("bintrayUser")
-val bintrayKey = prop("bintrayKey")
 val gitUrl = "https://github.com/bombinating/jooq-gradle-plugin.git"
-fun Project.prop(s: String) = findProperty(s) as String?
 
 plugins {
-    kotlin("jvm") version "1.3.41"
+    kotlin("jvm")
     `java-gradle-plugin`
     `maven-publish`
-    id("net.researchgate.release") version "2.8.1"
-    id("io.gitlab.arturbosch.detekt") version "1.0.0-RC16"
-    id("org.jetbrains.dokka") version "0.9.18"
-    id("com.jfrog.bintray") version "1.8.4"
-    id("com.jfrog.artifactory") version "4.9.8"
-    id("com.gradle.plugin-publish") version "0.10.1"
+    id("net.researchgate.release")
+    id("io.gitlab.arturbosch.detekt")
+    id("org.jetbrains.dokka")
+    id("com.jfrog.bintray")
+    id("com.jfrog.artifactory")
+    id("com.gradle.plugin-publish")
 }
-
-group = "dev.bombinating"
 
 repositories {
     mavenCentral()
@@ -38,38 +63,38 @@ dependencies {
     /*
      * Java 9+ dependencies
      */
-    api(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
-    api(group = "javax.activation", name = "activation", version = "1.1.1")
-    api(group = "com.sun.xml.bind", name = "jaxb-core", version = "2.3.0.1")
-    api(group = "com.sun.xml.bind", name = "jaxb-impl", version = "2.3.0.1")
+    api(group = "javax.activation", name = "activation", version = activationVersion)
+    api(group = "javax.xml.bind", name = "jaxb-api", version = jaxbApiVersion)
+    api(group = "com.sun.xml.bind", name = "jaxb-core", version = jaxbCoreVersion)
+    api(group = "com.sun.xml.bind", name = "jaxb-impl", version = jaxbImplVersion)
 
     testImplementation(gradleTestKit())
     /*
      * JUnit
      */
-    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version = "1.3.41")
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = "5.5.1")
-    testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "5.5.1")
-    testImplementation(group = "org.testcontainers", name = "junit-jupiter", version = "1.11.3")
+    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version = kotlinVersion)
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = junitVersion)
+    testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
+    testImplementation(group = "org.testcontainers", name = "junit-jupiter", version = testContainersVersion)
     /*
      * PostgreSQL
      */
-    testImplementation(group = "org.testcontainers", name = "postgresql", version = "1.11.3")
-    testImplementation(group = "org.postgresql", name = "postgresql", version = "42.2.6")
+    testImplementation(group = "org.testcontainers", name = "postgresql", version = testContainersVersion)
+    testImplementation(group = "org.postgresql", name = "postgresql", version = postgresqlJdbcVersion)
     /*
      * SQL Server
      */
-    testImplementation(group = "org.testcontainers", name = "mssqlserver", version = "1.11.3")
-    testImplementation(group = "com.microsoft.sqlserver", name = "mssql-jdbc", version = "7.4.1.jre8")
+    testImplementation(group = "org.testcontainers", name = "mssqlserver", version = testContainersVersion)
+    testImplementation(group = "com.microsoft.sqlserver", name = "mssql-jdbc", version = sqlServerJdbcVersion)
     /*
      * H2
      */
-    testImplementation(group = "com.h2database", name = "h2", version = "1.4.199")
+    testImplementation(group = "com.h2database", name = "h2", version = h2Version)
     /*
      * Test utils
      */
-    testImplementation(group = "io.github.microutils", name = "kotlin-logging", version = "1.7.3")
-    testImplementation(group = "org.apache.commons", name = "commons-lang3", version = "3.9")
+    testImplementation(group = "io.github.microutils", name = "kotlin-logging", version = microutilsVersion)
+    testImplementation(group = "org.apache.commons", name = "commons-lang3", version = commonsLang3Version)
 }
 
 tasks.withType<KotlinCompile> {
