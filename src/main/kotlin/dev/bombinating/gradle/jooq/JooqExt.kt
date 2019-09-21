@@ -70,7 +70,7 @@ open class JooqExt(private val name: String, private val jooqConfigurer: (JooqCo
      * @param sourceSet source set to associate the code generation with
      * @param configurer lambda for customizing the jOOQ code generation [Configuration]
      */
-    operator fun String.invoke(sourceSet: SourceSet, configurer: Configuration.() -> Unit): JooqConfig =
+    operator fun String.invoke(sourceSet: SourceSet? = null, configurer: Configuration.() -> Unit): JooqConfig =
         configs[this] ?: createConfig(name = this, sourceSet = sourceSet).also {
             if (it.sourceSet != sourceSet) {
                 throw IllegalArgumentException("Configuration $this cannot be associated with multiple source sets: $sourceSet and ${it.sourceSet}")
@@ -80,7 +80,7 @@ open class JooqExt(private val name: String, private val jooqConfigurer: (JooqCo
             jooqConfigurer(it, this@JooqExt)
         }
 
-    private fun createConfig(name: String, sourceSet: SourceSet): JooqConfig =
+    private fun createConfig(name: String, sourceSet: SourceSet?): JooqConfig =
         JooqConfig(name = name, sourceSet = sourceSet, config = Configuration()).also {
             configs[name] = it
         }

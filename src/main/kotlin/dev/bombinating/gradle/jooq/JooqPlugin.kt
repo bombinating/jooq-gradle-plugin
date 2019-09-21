@@ -45,7 +45,7 @@ class JooqPlugin : Plugin<Project> {
                 runConfig = ext.runConfig
                 resultHandler = ext.resultHandler
             }
-            config.sourceSet.let {
+            config.sourceSet?.let {
                 it.java.srcDir { config.config.generator.target.directory }
                 val jooqAllTask = try {
                      project.tasks.getByName(JOOQ_ALL_TASK_NAME)

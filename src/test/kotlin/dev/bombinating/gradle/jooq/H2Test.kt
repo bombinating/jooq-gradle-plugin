@@ -1,7 +1,10 @@
 package dev.bombinating.gradle.jooq
 
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -92,6 +95,102 @@ class H2Test {
             ).exists()
         )
         assertTrue(result.task(":generate${confName.capitalize()}Jooq") != null)
+        assertEquals(TaskOutcome.SUCCESS, result.task(":generate${confName.capitalize()}Jooq")!!.outcome)
+    }
+
+    @Test
+    fun testNoSourceSetBuild() {
+        val confName = "h2"
+        workspaceDir.createSettings()
+        workspaceDir.createBuild(
+            pluginVersion = "2.0.1-SNAPSHOT",
+            genDir = GEN_DIR,
+            depBlock = """
+                compile(group = "org.jooq", name = "jooq", version = "$JOOQ_VERSION")
+                compile("javax.annotation:javax.annotation-api:1.3.2")
+                jooqRuntime("com.h2database:h2:1.4.199")""".trimIndent()
+        ) {
+            """
+            "$confName" {
+                jdbc {
+                    driver = "org.h2.Driver"
+                    url = "$URL"
+                    user = "$USER"
+                    password = "$PASSWORD"
+                }
+                generator {
+                    database {
+                        name = "org.jooq.meta.h2.H2Database"
+                        includes = ".*"
+                    }
+                    target {
+                        directory = genDir
+                        packageName = "$PACKAGE_NAME"
+                    }
+                }
+                logging = Logging.TRACE
+            }
+            """.trimIndent()
+        }
+
+        val result = GradleRunner.create()
+            .withPluginClasspath()
+            .withArguments("build")
+            .withProjectDir(workspaceDir.toFile())
+            .forwardOutput()
+            .build()
+        assertNull(result.task(":generate${confName.capitalize()}Jooq"))
+    }
+
+    @Test
+    fun testNoSourceSetGenerateJooq() {
+        val confName = "h2"
+        workspaceDir.createSettings()
+        workspaceDir.createBuild(
+            pluginVersion = "2.0.1-SNAPSHOT",
+            genDir = GEN_DIR,
+            depBlock = """
+                compile(group = "org.jooq", name = "jooq", version = "$JOOQ_VERSION")
+                compile("javax.annotation:javax.annotation-api:1.3.2")
+                jooqRuntime("com.h2database:h2:1.4.199")""".trimIndent()
+        ) {
+            """
+            "$confName" {
+                jdbc {
+                    driver = "org.h2.Driver"
+                    url = "$URL"
+                    user = "$USER"
+                    password = "$PASSWORD"
+                }
+                generator {
+                    database {
+                        name = "org.jooq.meta.h2.H2Database"
+                        includes = ".*"
+                    }
+                    target {
+                        directory = genDir
+                        packageName = "$PACKAGE_NAME"
+                    }
+                }
+                logging = Logging.TRACE
+            }
+            """.trimIndent()
+        }
+
+        val result = GradleRunner.create()
+            .withPluginClasspath()
+            .withArguments("generateH2Jooq",  "build")
+            .withProjectDir(workspaceDir.toFile())
+            .forwardOutput()
+            .build()
+        assertTrue(
+            File(
+                workspaceDir.toFile(),
+                "$GEN_DIR/${PACKAGE_NAME.replace(".", "/")}/test/tables/Acme.java"
+            ).exists()
+        )
+        assertTrue(result.task(":generate${confName.capitalize()}Jooq") != null)
+        assertEquals(TaskOutcome.SUCCESS, result.task(":generate${confName.capitalize()}Jooq")!!.outcome)
     }
 
 }
