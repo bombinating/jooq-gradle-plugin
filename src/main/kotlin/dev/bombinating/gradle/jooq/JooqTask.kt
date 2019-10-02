@@ -28,7 +28,8 @@ import org.gradle.process.JavaExecSpec
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
 import java.io.File
-import java.io.FileOutputStream
+import java.net.URI
+import java.net.URLClassLoader
 import javax.inject.Inject
 
 /**
@@ -67,17 +68,15 @@ open class JooqTask @Inject constructor(
     @TaskAction
     fun generate() {
         logger.info("jooqRuntime classpath: ${jooqClassPath.files}")
-        val result = project.javaexec { spec ->
-            val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
-            configFile.parentFile.mkdirs()
-            spec.main = GenerationTool::class.java.canonicalName
-            spec.classpath = jooqClassPath
-            spec.args = listOf(configFile.absolutePath)
-            spec.workingDir = project.projectDir
-            runConfig?.invoke(spec)
-            config.marshall(FileOutputStream(configFile))
+        GenerationTool().apply {
+            setClassLoader(
+                URLClassLoader("jOOQ ${GenerationTool::class} for codegen",
+                    jooqClassPath.files.map(File::toURI).map(URI::toURL).toTypedArray(),
+                    project.buildscript.classLoader
+                )
+            )
+            run(config)
         }
-        resultHandler?.invoke(result)
     }
 
 }
