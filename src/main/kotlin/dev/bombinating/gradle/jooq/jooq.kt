@@ -28,7 +28,7 @@ import javax.xml.XMLConstants
 import javax.xml.bind.JAXBContext
 import javax.xml.validation.SchemaFactory
 
-internal const val DEFAULT_JOOQ_VERSION = "3.11.11"
+internal const val DEFAULT_JOOQ_VERSION = "3.12.1"
 internal val DEFAULT_JOOQ_EDITION = JooqEdition.OpenSource
 internal const val JOOQ_CONFIG_NAME = "config.xml"
 internal const val JOOQ_RUNTIME_NAME = "jooqRuntime"
@@ -53,4 +53,3 @@ internal fun Configuration.marshall(dest: OutputStream) {
     }
     marshaller.marshal(this, dest)
 }
-

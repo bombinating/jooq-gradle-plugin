@@ -143,6 +143,16 @@ pluginBundle {
     tags = listOf("jOOQ", "database", "kts")
 }
 
+publishing {
+    publications {
+        create<MavenPublication>(pubName) {
+            from(components.getByName("java"))
+            artifact(sourcesJar)
+            artifact(dokkaJar)
+        }
+    }
+}
+
 bintray {
     user = bintrayUser
     key = bintrayKey
