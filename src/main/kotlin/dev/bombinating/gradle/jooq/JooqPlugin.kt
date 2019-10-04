@@ -15,11 +15,14 @@
  */
 package dev.bombinating.gradle.jooq
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.UnknownTaskException
 import org.gradle.api.plugins.JavaBasePlugin
+import org.jooq.meta.jaxb.Configuration
+import org.jooq.meta.jaxb.Generator
+import org.jooq.meta.jaxb.Jdbc
+import org.jooq.meta.jaxb.Logging
+import kotlin.properties.Delegates
 
 /**
  * Entry point into the jOOQ code generation functionality.
@@ -39,34 +42,28 @@ class JooqPlugin : Plugin<Project> {
             description = JOOQ_RUNTIME_DESC
         }
         JOOQ_CODE_GEN_DEPS.forEach { project.dependencies.add(jooqRuntime.name, it) }
-        val configurer: (JooqConfig, JooqExt) -> Unit = { config, ext ->
-            val jooqTask = project.tasks.create(
-                config.jooqTaskName, JooqTask::class.java, config.config, jooqRuntime).apply {
-                runConfig = ext.runConfig
-                resultHandler = ext.resultHandler
-            }
-            config.sourceSet?.let {
-                it.java.srcDir { config.config.generator.target.directory }
-                val jooqAllTask = try {
-                     project.tasks.getByName(JOOQ_ALL_TASK_NAME)
-                } catch (e: UnknownTaskException) {
-                    project.tasks.create(JOOQ_ALL_TASK_NAME, DefaultTask::class.java)
-                }
-                jooqAllTask.dependsOn(jooqTask)
-                if (ext.compileDep) {
-                    project.tasks.getByName(it.compileJavaTaskName).dependsOn(jooqAllTask)
-                }
-            }
-            project.configurations.forEach {
-                it.resolutionStrategy.eachDependency { details ->
-                    val requested = details.requested
-                    if (JOOQ_GROUP_IDS.contains(requested.group)) {
-                        details.useTarget("${ext.edition.groupId}:${requested.name}:${ext.version}")
-                    }
-                }
-            }
-        }
-        project.extensions.create(JOOQ_EXT_NAME, JooqExt::class.java, JOOQ_EXT_NAME, configurer)
+        val x: Configuration.() -> Unit = {}
+        project.extensions.create(JOOQ_EXT_NAME, ConfigurationWrapper::class.java)
+        project.tasks.create(
+            "jooq",
+            JooqTask::class.java,
+            (project.extensions.findByName(JOOQ_EXT_NAME) as ConfigurationWrapper).config,
+            jooqRuntime
+        )
+        // config.jooqTaskName, JooqTask::class.java, config.config, jooqRuntime)
     }
 
+}
+
+open class ConfigurationWrapper {
+    val config: Configuration = Configuration()
+    var jdbc: Jdbc? by Delegates.observable(config.jdbc) { _, _, new ->
+        config.jdbc = new
+    }
+    var generator: Generator? by Delegates.observable(config.generator) { _, _, new ->
+        config.generator = new
+    }
+    var logging: Logging? by Delegates.observable(config.logging) { _, _, new ->
+        config.logging = new
+    }
 }

@@ -30,13 +30,12 @@ import javax.xml.validation.SchemaFactory
 
 internal const val DEFAULT_JOOQ_VERSION = "3.12.1"
 internal val DEFAULT_JOOQ_EDITION = JooqEdition.OpenSource
-internal const val JOOQ_CONFIG_NAME = "config.xml"
 internal const val JOOQ_RUNTIME_NAME = "jooqRuntime"
 internal const val JOOQ_RUNTIME_DESC = "The classpath for the jOOQ generator"
+internal const val JOOQ_TASK_GROUP = "jooq"
 internal const val JOOQ_EXT_NAME = "jooq"
-internal const val JOOQ_TASK_GROUP = JOOQ_EXT_NAME
+internal const val JOOQ_SETUP_EXT_NAME = "jooqSetup"
 internal const val JOOQ_TASK_DESC = "jOOQ code generator"
-internal const val JOOQ_ALL_TASK_NAME = "generateJooq"
 internal val JOOQ_CODE_GEN_DEPS = listOf(
     "org.jooq:jooq-codegen:$DEFAULT_JOOQ_VERSION",
     "javax.xml.bind:jaxb-api:2.3.1",

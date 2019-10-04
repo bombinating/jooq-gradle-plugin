@@ -46,6 +46,8 @@ open class JooqTask @Inject constructor(
     @get:InputFiles @get:Classpath val jooqClassPath: FileCollection
 ) : DefaultTask() {
 
+    //private val config: Configuration by lazy { configLambda() }
+
     private val outputDirName by lazy { config.generator.target.directory }
 
     @Internal
@@ -67,6 +69,7 @@ open class JooqTask @Inject constructor(
 
     @TaskAction
     fun generate() {
+        // FIXME: look up the classpath in the jooqSetup extension
         logger.info("jooqRuntime classpath: ${jooqClassPath.files}")
         GenerationTool().apply {
             setClassLoader(

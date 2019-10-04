@@ -2,6 +2,23 @@
 
 == Overview
 
+FIXME: add an extension called jooqConfig. this would allow you to override.
+FIXME: jooq extension just allows for one jooq config
+FIXME: additional jooq configs would have to be defined as tasks
+FIXME: generate one gradle plugin per version per dist type
+FIXME: the task can lookup the jooqConfig -- if not found, the use defaults
+
+jooq {
+    jdbc {
+    }
+}
+
+tasks.create<JooqTask> {
+    jdbc {
+    }
+}
+
+
 image:https://circleci.com/gh/bombinating/jooq-gradle-plugin/tree/master.svg?style=svg["CircleCI", link="https://circleci.com/gh/bombinating/jooq-gradle-plugin/tree/master"] image:https://sonarcloud.io/api/project_badges/measure?project=bombinating_jooq-gradle-plugin&metric=alert_status["SonarCloud", link="https://sonarcloud.io/dashboard?id=bombinating_jooq-gradle-plugin"]
 
 A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jOOQ] https://www.jooq.org/doc/3.11/manual/code-generation/codegen-configuration/[code generation tool] that supports the https://docs.gradle.org/current/userguide/kotlin_dsl.html[Gradle Kotlin DSL]. For working with jOOQ <= 3.10, use version 1.x of the plugin. For working with jOOQ >= 3.11, use version 2.x of the plugin.

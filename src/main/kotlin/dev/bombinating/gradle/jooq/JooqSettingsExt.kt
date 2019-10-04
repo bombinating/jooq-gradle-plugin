@@ -15,12 +15,10 @@
  */
 package dev.bombinating.gradle.jooq
 
-import org.jooq.meta.jaxb.Configuration
-
 /**
  * jOOQ code generation Gradle plugin extension.
  *
- * @property name name of the Gradle extension
+ * @property name name of the Gradle extension (jooqSettings)
  * @property jooqConfigurer lambda for configuring individual jOOQ tasks after they are created
  * @property version jOOQ library version to use
  * @property edition jOOQ library edition to use
@@ -31,23 +29,13 @@ import org.jooq.meta.jaxb.Configuration
  * Usage in build.gradle.kts:
  *
  * ```
- * jooq {
+ * jooqSettings {
  *      version = "3.11.11"
  *      edition = JooqEdition.OpenSource
- *      compileDep = true
- *      runConfig = {
- *          isIgnoreExitValue = true
- *           jvmArgs("-Xmx512M")
- *           standardOutput = System.out
- *           errorOutput = System.out
- *      }
- *      resultHandler = {
- *           ...
- *      }
- *      "main"(sourceSets["main"]) {
- *          ...
- *      }
  * }
  * ```
  */
-open class JooqExt(val config: Configuration.() -> Unit)
+open class JooqSettingsExt(private val name: String) {
+    var version: String = DEFAULT_JOOQ_VERSION
+    var edition: JooqEdition = DEFAULT_JOOQ_EDITION
+}

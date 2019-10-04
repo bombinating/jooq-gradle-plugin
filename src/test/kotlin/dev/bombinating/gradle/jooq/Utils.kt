@@ -17,7 +17,7 @@ private fun createSettingsContent() = """
     }
     """.trimIndent()
 
-fun Path.createBuild(genDir: String, depBlock: String, pluginVersion: String = "0.0.4-SNAPSHOT", jooqBlock: (String) -> String) = File(toFile(), "build.gradle.kts").also {
+fun Path.createBuild(genDir: String, depBlock: String, pluginVersion: String = "2.0.2-SNAPSHOT", jooqBlock: (String) -> String) = File(toFile(), "build.gradle.kts").also {
     it.writeText(createBuildContent(genDir = genDir, depBlock = depBlock, pluginVersion = pluginVersion, jooqBlock = jooqBlock))
 }
 
@@ -45,7 +45,7 @@ compile(group = "org.jooq", name = "jooq", version = "3.11.11")
             logging = Logging.TRACE
         }
  */
-fun createBuildContent(genDir: String, depBlock: String, pluginVersion: String = "0.0.4-SNAPSHOT", jooqBlock: (String) -> String) = """
+fun createBuildContent(genDir: String, depBlock: String, pluginVersion: String = "2.0.2-SNAPSHOT", jooqBlock: (String) -> String) = """
     import dev.bombinating.gradle.jooq.*
     import org.jooq.meta.jaxb.Logging
     

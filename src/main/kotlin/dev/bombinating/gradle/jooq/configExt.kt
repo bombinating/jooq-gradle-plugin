@@ -45,6 +45,10 @@ fun Configuration.jdbc(action: Jdbc.() -> Unit) {
     jdbc = (jdbc ?: Jdbc()).apply(action)
 }
 
+fun ConfigurationWrapper.jdbc(action: Jdbc.() -> Unit) {
+    jdbc = (jdbc ?: Jdbc()).apply(action)
+}
+
 /**
  * Extension method for customizing the [Generator] config in a jOOQ code generation [Configuration]
  *
@@ -52,6 +56,10 @@ fun Configuration.jdbc(action: Jdbc.() -> Unit) {
  * @param action lambda for customizing the [Generator] config
  */
 fun Configuration.generator(action: Generator.() -> Unit) {
+    generator = (generator ?: Generator()).apply(action)
+}
+
+fun ConfigurationWrapper.generator(action: Generator.() -> Unit) {
     generator = (generator ?: Generator()).apply(action)
 }
 
