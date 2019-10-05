@@ -20,13 +20,13 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.process.ExecResult
-import org.gradle.process.JavaExecSpec
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
+import org.jooq.meta.jaxb.Generator
+import org.jooq.meta.jaxb.Jdbc
+import org.jooq.meta.jaxb.Logging
 import java.io.File
 import java.net.URI
 import java.net.URLClassLoader
@@ -41,19 +41,43 @@ import javax.inject.Inject
  * @property resultHandler lambda to execute when the jOOQ code generation tool is finished
  * @property outputDirectory directory the jOOQ code generation XML configuration file is generated into
  */
-open class JooqTask @Inject constructor(
-    @get:Input val config: Configuration,
-    @get:InputFiles @get:Classpath val jooqClassPath: FileCollection
-) : DefaultTask() {
 
-    //private val config: Configuration by lazy { configLambda() }
+// FIXME: modify this so there are no parameters in the constructor
+// instead, just set the parameters explicitily
+
+open class JooqTask @Inject constructor(
+    //@get:Input val configuration: Configuration = Configuration(),
+    //jooqConfig: JooqConfig = JooqConfigImpl(configuration),
+    //jooqClassPath: FileCollection? = null
+) : DefaultTask(), JooqConfig { //, JooqConfig by jooqConfig {
+
+    override var jdbc: Jdbc?
+        get() = config.jdbc
+        set(value) {
+            config.jdbc = value
+        }
+
+    override var generator: Generator?
+        get() = config.generator
+        set(value) {
+            config.generator = value
+        }
+
+    override var logging: Logging?
+        get() = config.logging
+        set(value) {
+            config.logging = value
+        }
+
+    @get:Input override var config: Configuration = Configuration()
+
+    //constructor() : this(configuration = Configuration())
 
     private val outputDirName by lazy { config.generator.target.directory }
 
-    @Internal
-    var runConfig: (JavaExecSpec.() -> Unit)? = null
-    @Internal
-    var resultHandler: (ExecResult.() -> Unit)? = null
+    @get:InputFiles
+    @get:Classpath
+    var jooqClassPath: FileCollection = /*jooqClassPath ?:*/ project.configurations.getByName(JOOQ_RUNTIME_NAME)
 
     @get:OutputDirectory
     val outputDirectory: File by lazy {

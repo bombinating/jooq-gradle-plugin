@@ -34,6 +34,7 @@ internal const val JOOQ_RUNTIME_NAME = "jooqRuntime"
 internal const val JOOQ_RUNTIME_DESC = "The classpath for the jOOQ generator"
 internal const val JOOQ_TASK_GROUP = "jooq"
 internal const val JOOQ_EXT_NAME = "jooq"
+internal const val JOOQ_TASK_NAME = "jooq"
 internal const val JOOQ_SETUP_EXT_NAME = "jooqSetup"
 internal const val JOOQ_TASK_DESC = "jOOQ code generator"
 internal val JOOQ_CODE_GEN_DEPS = listOf(

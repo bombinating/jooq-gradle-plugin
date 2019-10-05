@@ -45,7 +45,11 @@ fun Configuration.jdbc(action: Jdbc.() -> Unit) {
     jdbc = (jdbc ?: Jdbc()).apply(action)
 }
 
-fun ConfigurationWrapper.jdbc(action: Jdbc.() -> Unit) {
+fun JooqTaskConfig.jdbc(action: Jdbc.() -> Unit) {
+    jdbc = (jdbc ?: Jdbc()).apply(action)
+}
+
+fun JooqConfig.jdbc(action: Jdbc.() -> Unit) {
     jdbc = (jdbc ?: Jdbc()).apply(action)
 }
 
@@ -59,7 +63,11 @@ fun Configuration.generator(action: Generator.() -> Unit) {
     generator = (generator ?: Generator()).apply(action)
 }
 
-fun ConfigurationWrapper.generator(action: Generator.() -> Unit) {
+fun JooqTaskConfig.generator(action: Generator.() -> Unit) {
+    generator = (generator ?: Generator()).apply(action)
+}
+
+fun JooqConfig.generator(action: Generator.() -> Unit) {
     generator = (generator ?: Generator()).apply(action)
 }
 

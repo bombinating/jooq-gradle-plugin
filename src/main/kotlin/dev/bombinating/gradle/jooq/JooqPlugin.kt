@@ -18,11 +18,6 @@ package dev.bombinating.gradle.jooq
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
-import org.jooq.meta.jaxb.Configuration
-import org.jooq.meta.jaxb.Generator
-import org.jooq.meta.jaxb.Jdbc
-import org.jooq.meta.jaxb.Logging
-import kotlin.properties.Delegates
 
 /**
  * Entry point into the jOOQ code generation functionality.
@@ -42,28 +37,17 @@ class JooqPlugin : Plugin<Project> {
             description = JOOQ_RUNTIME_DESC
         }
         JOOQ_CODE_GEN_DEPS.forEach { project.dependencies.add(jooqRuntime.name, it) }
-        val x: Configuration.() -> Unit = {}
-        project.extensions.create(JOOQ_EXT_NAME, ConfigurationWrapper::class.java)
-        project.tasks.create(
-            "jooq",
-            JooqTask::class.java,
-            (project.extensions.findByName(JOOQ_EXT_NAME) as ConfigurationWrapper).config,
-            jooqRuntime
+        project.extensions.create(JOOQ_EXT_NAME, JooqExtConfig::class.java)
+        val x = project.extensions.findByName(JOOQ_EXT_NAME) as JooqConfig
+        val task = project.tasks.register(
+            JOOQ_TASK_NAME,
+            JooqTask::class.java //,
+//            x.config,
+//            x,
+//            jooqRuntime
         )
-        // config.jooqTaskName, JooqTask::class.java, config.config, jooqRuntime)
+        task.get().config = x.config
+        task.get().jooqClassPath = jooqRuntime
     }
 
-}
-
-open class ConfigurationWrapper {
-    val config: Configuration = Configuration()
-    var jdbc: Jdbc? by Delegates.observable(config.jdbc) { _, _, new ->
-        config.jdbc = new
-    }
-    var generator: Generator? by Delegates.observable(config.generator) { _, _, new ->
-        config.generator = new
-    }
-    var logging: Logging? by Delegates.observable(config.logging) { _, _, new ->
-        config.logging = new
-    }
 }

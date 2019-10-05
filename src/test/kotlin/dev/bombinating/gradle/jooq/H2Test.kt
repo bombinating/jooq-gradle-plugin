@@ -48,6 +48,65 @@ class H2Test {
     @TempDir
     lateinit var workspaceDir: Path
 
+//    @Test
+//    fun taskTest() {
+//        val x = """
+//            import dev.bombinating.gradle.jooq.*
+//        import org.jooq.meta.jaxb.Logging
+//
+//        val genDir = "$projectDir/generated/src/main/java"
+//
+//        plugins {
+//            java
+//            id("dev.bombinating.jooq-codegen") version "2.0.2-SNAPSHOT"
+//        }
+//
+//        sourceSets["main"].java {
+//            srcDir(genDir)
+//        }
+//
+//        group = "com.acme"
+//        version = "1.0-SNAPSHOT"
+//
+//        repositories {
+//            mavenLocal()
+//            mavenCentral()
+//        }
+//
+//        dependencies {
+//            compile(group = "org.jooq", name = "jooq", version = "3.12.1")
+//    compile("javax.annotation:javax.annotation-api:1.3.2")
+//    jooqRuntime("com.h2database:h2:1.4.199")
+//        }
+//
+//        configure<JavaPluginConvention> {
+//            sourceCompatibility = JavaVersion.VERSION_1_8
+//        }
+//
+//        tasks.create<JooqTask> {
+//
+//                    jdbc {
+//                        driver = "org.h2.Driver"
+//                        url = "jdbc:h2:~/test_db;AUTO_SERVER=true"
+//                        user = "sa"
+//                        password = ""
+//                    }
+//                    generator {
+//                        database {
+//                            name = "org.jooq.meta.h2.H2Database"
+//                            includes = ".*"
+//                        }
+//                        target {
+//                            directory = genDir
+//                            packageName = "com.acme.domain.generated"
+//                        }
+//                    }
+//                    logging = Logging.TRACE
+//
+//        }
+//        """.trimIndent()
+//    }
+
     @Test
     fun baseTestNew() {
         val confName = "h2"
