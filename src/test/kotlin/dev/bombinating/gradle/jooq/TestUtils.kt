@@ -62,12 +62,14 @@ fun TestConfig.basicExtensionTest(
     workspaceDir: Path,
     deps: String,
     taskName: String,
-    projectName: String = defaultProjectName
+    projectName: String = defaultProjectName,
+    edition: JooqEdition? = null
 ) {
     workspaceDir.createSettingsFile(projectName = projectName)
     workspaceDir.createBuildFile(config = this, depBlock = deps) {
         """
             |jooq {
+            |   ${edition?.let { "edition = ${JooqEdition::class.java.simpleName}.$edition" } ?: ""}
             |   ${basicJooqConfig()}
             |}
         """.trimMargin("|")
@@ -79,11 +81,13 @@ fun TestConfig.basicTaskTest(
     workspaceDir: Path,
     deps: String,
     taskName: String,
-    projectName: String = defaultProjectName
+    projectName: String = defaultProjectName,
+    edition: JooqEdition? = null
 ) {
     workspaceDir.createSettingsFile(projectName = projectName)
     workspaceDir.createBuildFile(config = this, depBlock = deps) {
         """
+            |${edition?.let { "jooq { edition = ${JooqEdition::class.java.simpleName}.$edition }" } ?: "" }
             |tasks.register<JooqTask>("$taskName") {
             |   ${basicJooqConfig()}
             |}

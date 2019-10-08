@@ -9,6 +9,7 @@ const val defaultProjectName = "acme-domain"
 
 const val h2JdbcDriverDependency = """group = "com.h2database", name = "h2", version = "1.4.199""""
 const val pgJdbcDriverDependency = """group = "org.postgresql", name = "postgresql", version = "42.2.6""""
+const val sqlServerJdbcDriverDependency = """group = "com.microsoft.sqlserver", name = "mssql-jdbc", version = "7.4.1.jre8""""
 
 const val jooqOsGroup = "org.jooq"
 const val jooqVersion12 = "3.12.1"
