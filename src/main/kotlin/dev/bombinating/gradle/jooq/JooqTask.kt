@@ -37,19 +37,9 @@ import javax.inject.Inject
  *
  * @property config jOOQ code generation [Configuration]
  * @property jooqClassPath list of jars to add to the classpath when running the jOOQ code generation
- * @property runConfig configuration of how Java should be invoked when the jOOQ code generation tool is executed
- * @property resultHandler lambda to execute when the jOOQ code generation tool is finished
  * @property outputDirectory directory the jOOQ code generation XML configuration file is generated into
  */
-
-// FIXME: modify this so there are no parameters in the constructor
-// instead, just set the parameters explicitily
-
-open class JooqGenerateTask @Inject constructor(
-    //@get:Input val configuration: Configuration = Configuration(),
-    //jooqConfig: JooqConfig = JooqConfigImpl(configuration),
-    //jooqClassPath: FileCollection? = null
-) : DefaultTask(), JooqConfig { //, JooqConfig by jooqConfig {
+open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
 
     @get:Input
     override var jdbc: Jdbc?
@@ -72,15 +62,14 @@ open class JooqGenerateTask @Inject constructor(
             config.logging = value
         }
 
-    @get:Input override var config: Configuration = Configuration()
-
-    //constructor() : this(configuration = Configuration())
+    @get:Input
+    override var config: Configuration = Configuration()
 
     private val outputDirName by lazy { config.generator.target.directory }
 
     @get:InputFiles
     @get:Classpath
-    var jooqClassPath: FileCollection = /*jooqClassPath ?:*/ project.configurations.getByName(JOOQ_RUNTIME_NAME)
+    var jooqClassPath: FileCollection = project.configurations.getByName(JOOQ_RUNTIME_NAME)
 
     @get:OutputDirectory
     val outputDirectory: File by lazy {
@@ -96,7 +85,6 @@ open class JooqGenerateTask @Inject constructor(
 
     @TaskAction
     fun generate() {
-        // FIXME: look up the classpath in the jooqSetup extension
         logger.info("jooqRuntime classpath: ${jooqClassPath.files}")
         GenerationTool().apply {
             setClassLoader(

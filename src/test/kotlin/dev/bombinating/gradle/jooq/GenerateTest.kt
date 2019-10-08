@@ -104,7 +104,7 @@ class GenerateTest {
         workspaceDir.createSettingsFile(projectName = defaultProjectName)
         workspaceDir.createBuildFile(config = config, depBlock = deps) {
             """
-            |tasks.register<JooqGenerateTask>("$taskName") {
+            |tasks.register<JooqTask>("$taskName") {
             |   jdbc {
             |       driver = "$driver"
             |       url = "$url"

@@ -35,7 +35,6 @@ internal const val JOOQ_RUNTIME_DESC = "The classpath for the jOOQ generator"
 internal const val JOOQ_TASK_GROUP = "jooq"
 internal const val JOOQ_EXT_NAME = "jooq"
 internal const val JOOQ_TASK_NAME = "jooq"
-internal const val JOOQ_SETUP_EXT_NAME = "jooqSetup"
 internal const val JOOQ_TASK_DESC = "jOOQ code generator"
 internal val JOOQ_CODE_GEN_DEPS = listOf(
     "org.jooq:jooq-codegen:$DEFAULT_JOOQ_VERSION",
@@ -45,11 +44,3 @@ internal val JOOQ_CODE_GEN_DEPS = listOf(
     "com.sun.xml.bind:jaxb-impl:2.3.0.1"
 )
 internal val JOOQ_GROUP_IDS = JooqEdition.values().map { it.groupId }.toSet()
-
-internal fun Configuration.marshall(dest: OutputStream) {
-    val factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-    val marshaller = JAXBContext.newInstance(Configuration::class.java).createMarshaller().apply {
-        schema = factory.newSchema(GenerationTool::class.java.getResource("/xsd/$XSD_CODEGEN"))
-    }
-    marshaller.marshal(this, dest)
-}

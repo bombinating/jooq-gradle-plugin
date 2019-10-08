@@ -47,7 +47,7 @@ package dev.bombinating.gradle.jooq
  * }
  * ```
  */
-open class JooqExtConfig(private val jooqConfig: JooqConfig = JooqConfigImpl()) : JooqConfig by jooqConfig  {
+open class JooqExtension(private val jooqConfig: JooqConfig = JooqConfigImpl()) : JooqConfig by jooqConfig  {
     var edition: JooqEdition = DEFAULT_JOOQ_EDITION
     var version: String = DEFAULT_JOOQ_VERSION
 }

@@ -23,7 +23,7 @@ package dev.bombinating.gradle.jooq
 enum class JooqEdition(val groupId: String) {
     OpenSource("org.jooq"),
     Professional("org.jooq.pro"),
-    ProfessionalJava6("org.jooq.pro-java-6"),
     ProfessionalJava8("org.jooq.pro-java-8"),
+    ProfessionalJava6("org.jooq.pro-java-6"),
     Trial("org.jooq.trial")
 }

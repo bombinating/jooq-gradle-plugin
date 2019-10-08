@@ -19,9 +19,8 @@ import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Jdbc
 import org.jooq.meta.jaxb.Logging
-import java.io.Serializable
 
-interface JooqConfig : Serializable {
+interface JooqConfig {
     var jdbc: Jdbc?
     var generator: Generator?
     var logging: Logging?

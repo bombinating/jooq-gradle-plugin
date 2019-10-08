@@ -25,10 +25,9 @@ import org.gradle.api.plugins.JavaBasePlugin
  * - ensures that the Java plugin is applied to the project (for compiling the generated code)
  * - creates a `jooqRuntime` configuration so the classpath for the jOOQ code generation tool can be specified
  * - adds the dependencies needed to run the jOOQ code generation tool to the `jooqRuntime` configuration
- * - creates a `jooq` extension that can be used for specifying jooq code generation configurations
- * - the jOOQ code generation configurations are turned into Gradle tasks with the name generate<ConfigName>Jooq
- * - in addition, there is an additional task, generateJooq, that all of the individual jOOQ code gen tasks depend on
+ * - creates a `jooq` extension that can be used for specifying jooq code generation configurations and one generation
  */
+// FIXME: also change the classpath of any jooq dependencies so they match the plugin verison
 class JooqPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
@@ -37,14 +36,11 @@ class JooqPlugin : Plugin<Project> {
             description = JOOQ_RUNTIME_DESC
         }
         JOOQ_CODE_GEN_DEPS.forEach { project.dependencies.add(jooqRuntime.name, it) }
-        project.extensions.create(JOOQ_EXT_NAME, JooqExtConfig::class.java)
+        project.extensions.create(JOOQ_EXT_NAME, JooqExtension::class.java)
         val x = project.extensions.findByName(JOOQ_EXT_NAME) as JooqConfig
         val task = project.tasks.register(
             JOOQ_TASK_NAME,
-            JooqGenerateTask::class.java //,
-//            x.config,
-//            x,
-//            jooqRuntime
+            JooqTask::class.java
         )
         task.get().config = x.config
         task.get().jooqClassPath = jooqRuntime
