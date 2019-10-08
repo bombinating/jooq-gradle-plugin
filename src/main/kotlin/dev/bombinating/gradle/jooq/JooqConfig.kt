@@ -20,6 +20,14 @@ import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Jdbc
 import org.jooq.meta.jaxb.Logging
 
+/**
+ * jOOQ configuration for the plugin.
+ *
+ * @property jdbc jOOQ JDBC info
+ * @property generator jOOQ generator info
+ * @property logging jOOQ logging info
+ * @property config jOOQ [Configuration] created from the other properties
+ */
 interface JooqConfig {
     var jdbc: Jdbc?
     var generator: Generator?

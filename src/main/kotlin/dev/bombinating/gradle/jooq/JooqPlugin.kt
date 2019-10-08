@@ -20,12 +20,13 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 
 /**
- * Entry point into the jOOQ code generation functionality.
+ * Gradle entry point into the jOOQ code generation functionality.
  *
  * - ensures that the Java plugin is applied to the project (for compiling the generated code)
  * - creates a `jooqRuntime` configuration so the classpath for the jOOQ code generation tool can be specified
  * - adds the dependencies needed to run the jOOQ code generation tool to the `jooqRuntime` configuration
  * - creates a `jooq` extension that can be used for specifying jooq code generation configurations and one generation
+ * - changes any jOOQ dependencies to match the group and version specified
  */
 class JooqPlugin : Plugin<Project> {
 

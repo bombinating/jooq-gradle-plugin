@@ -16,7 +16,7 @@
 package dev.bombinating.gradle.jooq
 
 /**
- * jOOQ Gradle extension configuration, which extends the Gradle task configuration, [JooqTaskConfig].
+ * jOOQ Gradle extension configuration, which implements [JooqConfig].
  *
  * @property version version of the jOOQ library to use; if not specified, defaults to the latest version
  * @property edition edition of the jOOQ library to use; if not specified, defaults to the open source edition
