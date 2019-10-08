@@ -21,7 +21,6 @@
 
 package dev.bombinating.gradle.jooq
 
-import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Database
 import org.jooq.meta.jaxb.ForcedType
 import org.jooq.meta.jaxb.Generate
@@ -33,40 +32,22 @@ import org.jooq.meta.jaxb.MatchersTableType
 import org.jooq.meta.jaxb.Strategy
 import org.jooq.meta.jaxb.Target
 
-internal fun config(action: Configuration.() -> Unit): Configuration = Configuration().apply { action(this) }
-
 /**
- * Extension method for customizing the [Jdbc] config in a jOOQ code generation [Configuration]
+ * Extension method for customizing the [Jdbc] config in a jOOQ code generation [JooqConfig]
  *
- * @receiver Parent jOOQ code generation [Configuration] the [Jdbc] config is associated with
+ * @receiver Parent jOOQ code generation [JooqConfig] the [Jdbc] config is associated with
  * @param action lambda for customizing the [Jdbc] config
  */
-fun Configuration.jdbc(action: Jdbc.() -> Unit) {
-    jdbc = (jdbc ?: Jdbc()).apply(action)
-}
-
-fun JooqTaskConfig.jdbc(action: Jdbc.() -> Unit) {
-    jdbc = (jdbc ?: Jdbc()).apply(action)
-}
-
 fun JooqConfig.jdbc(action: Jdbc.() -> Unit) {
     jdbc = (jdbc ?: Jdbc()).apply(action)
 }
 
 /**
- * Extension method for customizing the [Generator] config in a jOOQ code generation [Configuration]
+ * Extension method for customizing the [Generator] config in a jOOQ code generation [JooqConfig]
  *
- * @receiver Parent jOOQ code generation [Configuration] the [Generator] config is associated with
+ * @receiver Parent jOOQ code generation [JooqConfig] the [Generator] config is associated with
  * @param action lambda for customizing the [Generator] config
  */
-fun Configuration.generator(action: Generator.() -> Unit) {
-    generator = (generator ?: Generator()).apply(action)
-}
-
-fun JooqTaskConfig.generator(action: Generator.() -> Unit) {
-    generator = (generator ?: Generator()).apply(action)
-}
-
 fun JooqConfig.generator(action: Generator.() -> Unit) {
     generator = (generator ?: Generator()).apply(action)
 }

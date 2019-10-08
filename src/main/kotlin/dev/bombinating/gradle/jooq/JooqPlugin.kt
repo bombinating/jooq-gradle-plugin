@@ -41,7 +41,7 @@ class JooqPlugin : Plugin<Project> {
         val x = project.extensions.findByName(JOOQ_EXT_NAME) as JooqConfig
         val task = project.tasks.register(
             JOOQ_TASK_NAME,
-            JooqTask::class.java //,
+            JooqGenerateTask::class.java //,
 //            x.config,
 //            x,
 //            jooqRuntime

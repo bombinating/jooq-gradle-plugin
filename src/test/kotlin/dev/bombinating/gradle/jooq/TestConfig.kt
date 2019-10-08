@@ -1,6 +1,6 @@
 package dev.bombinating.gradle.jooq
 
-data class TestConfigInfo(
+data class TestConfig(
     val driver: String,
     val url: String,
     val username: String,
@@ -9,6 +9,5 @@ data class TestConfigInfo(
     val genDir: String,
     val javaVersion: String,
     val jooqVersion: String,
-    val jooqPluginVersion: String,
     val packageName: String
 )

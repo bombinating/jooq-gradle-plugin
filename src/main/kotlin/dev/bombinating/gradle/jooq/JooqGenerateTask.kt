@@ -45,24 +45,27 @@ import javax.inject.Inject
 // FIXME: modify this so there are no parameters in the constructor
 // instead, just set the parameters explicitily
 
-open class JooqTask @Inject constructor(
+open class JooqGenerateTask @Inject constructor(
     //@get:Input val configuration: Configuration = Configuration(),
     //jooqConfig: JooqConfig = JooqConfigImpl(configuration),
     //jooqClassPath: FileCollection? = null
 ) : DefaultTask(), JooqConfig { //, JooqConfig by jooqConfig {
 
+    @get:Input
     override var jdbc: Jdbc?
         get() = config.jdbc
         set(value) {
             config.jdbc = value
         }
 
+    @get:Input
     override var generator: Generator?
         get() = config.generator
         set(value) {
             config.generator = value
         }
 
+    @get:Input
     override var logging: Logging?
         get() = config.logging
         set(value) {

@@ -1,7 +1,10 @@
 package dev.bombinating.gradle.jooq
 
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
-import org.jooq.meta.jaxb.*
+import org.jooq.meta.jaxb.Configuration
+import org.jooq.meta.jaxb.Database
+import org.jooq.meta.jaxb.Generator
+import org.jooq.meta.jaxb.Jdbc
 import org.jooq.meta.jaxb.Target
 import org.junit.jupiter.api.Test
 import kotlin.random.Random.Default.nextBoolean
@@ -19,12 +22,12 @@ internal val Generator.xTarget
 
 internal interface ConfigInfo<in T> {
     val objSetter: Configuration.(T) -> Unit
-    val dslSetter: Configuration.(T) -> Unit
+    val dslSetter: JooqConfig.(T) -> Unit
 }
 
 internal data class ConfigInfoGen<T>(val configs: List<ConfigInfo<T>>, val generator: () -> T)
 
-internal enum class StringConfigInfo(override val objSetter: Configuration.(String) -> Unit, override val dslSetter: Configuration.(String) -> Unit) : ConfigInfo<String> {
+internal enum class StringConfigInfo(override val objSetter: Configuration.(String) -> Unit, override val dslSetter: JooqConfig.(String) -> Unit) : ConfigInfo<String> {
     JdbcDriver({ xJdbc.driver = it }, { jdbc { driver = it } }),
     JdbcUsername({ xJdbc.username = it }, { jdbc { username = it } }),
     JdbcPassword({ xJdbc.password = it }, { jdbc { password = it } }),
@@ -42,7 +45,7 @@ internal enum class StringConfigInfo(override val objSetter: Configuration.(Stri
     //Property({ withJdbc(jdbc ?: Jdbc()).jdbc.withP = it }, { jdbc { schema = it } }), // FIXME: how to test property
 }
 
-internal enum class BooleanConfigInfo(override val objSetter: Configuration.(Boolean) -> Unit, override val dslSetter: Configuration.(Boolean) -> Unit) : ConfigInfo<Boolean> {
+internal enum class BooleanConfigInfo(override val objSetter: Configuration.(Boolean) -> Unit, override val dslSetter: JooqConfig.(Boolean) -> Unit) : ConfigInfo<Boolean> {
     DbIncludeRoutines({ xGenerator.xDatabase.isIncludeRoutines = it }, { generator { database { isIncludeRoutines = it } } }),
     DbDateAsTimestamp({ xGenerator.xDatabase.isDateAsTimestamp = it }, { generator { database { isDateAsTimestamp = it } } }),
     DbForceIntegerTypesOnZeroScaleDecimals({ xGenerator.xDatabase.isForceIntegerTypesOnZeroScaleDecimals = it }, { generator { database { isForceIntegerTypesOnZeroScaleDecimals = it } } }),
@@ -60,7 +63,7 @@ internal enum class BooleanConfigInfo(override val objSetter: Configuration.(Boo
     TargetIsClean({ xGenerator.xTarget.isClean = it }, { generator { target { isClean = it } } }),
 }
 
-internal enum class IntConfigInfo(override val objSetter: Configuration.(Int) -> Unit, override val dslSetter: Configuration.(Int) -> Unit) : ConfigInfo<Int> {
+internal enum class IntConfigInfo(override val objSetter: Configuration.(Int) -> Unit, override val dslSetter: JooqConfig.(Int) -> Unit) : ConfigInfo<Int> {
     LogSlowerQueriesAfterSecs({ xGenerator.xDatabase.logSlowQueriesAfterSeconds = it }, { generator { database { logSlowQueriesAfterSeconds = it } } })
 }
 
@@ -78,12 +81,12 @@ class ConfigTest {
         ConfigTypes.values().forEach { type ->
             type.type.configs.forEach {
                 val objConfig = Configuration()
-                val dslConfig = Configuration()
+                val dslConfig = JooqConfigImpl()
                 val randomValue = type.type.generator.invoke()
                 //logger.info {"${(it as Enum<*>).name} - value: $randomValue"}
-                (it.dslSetter as Configuration.(Any?)-> Unit).invoke(dslConfig, randomValue)
+                (it.dslSetter as JooqConfig.(Any?)-> Unit).invoke(dslConfig, randomValue)
                 (it.objSetter as Configuration.(Any?)-> Unit).invoke(objConfig, randomValue)
-                assertEquals(objConfig, dslConfig)
+                assertEquals(objConfig, dslConfig.config)
             }
 
         }
@@ -93,16 +96,17 @@ class ConfigTest {
     @Test
     fun `all properties`() {
         val objConfig = Configuration()
-        val dslConfig = Configuration()
+        val dslConfig = JooqConfigImpl()
         ConfigTypes.values().forEach { type ->
             type.type.configs.forEach {
                 val randomValue = type.type.generator.invoke()
                 //logger.info {"${(it as Enum<*>).name} - value: $randomValue"}
-                (it.dslSetter as Configuration.(Any?)-> Unit).invoke(dslConfig, randomValue)
+                (it.dslSetter as JooqConfig.(Any?)-> Unit).invoke(dslConfig, randomValue)
                 (it.objSetter as Configuration.(Any?)-> Unit).invoke(objConfig, randomValue)
             }
+
         }
-        assertEquals(objConfig, dslConfig)
+        assertEquals(objConfig, dslConfig.config)
     }
 
 }

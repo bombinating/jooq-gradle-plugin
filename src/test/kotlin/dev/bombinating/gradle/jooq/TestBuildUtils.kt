@@ -4,9 +4,9 @@ import java.io.File
 import java.nio.file.Path
 
 fun Path.createBuildFile(
-    config: TestConfigInfo,
+    config: TestConfig,
     depBlock: String,
-    body: TestConfigInfo.() -> String
+    body: TestConfig.() -> String
 ) = File(toFile(), "build.gradle.kts").also {
     it.writeText(
         createBuildContent(
@@ -18,9 +18,9 @@ fun Path.createBuildFile(
 }
 
 private fun createBuildContent(
-    config: TestConfigInfo,
+    config: TestConfig,
     depBlock: String,
-    body: TestConfigInfo.() -> String
+    body: TestConfig.() -> String
 ) = """
     |import dev.bombinating.gradle.jooq.*
     |import org.jooq.meta.jaxb.Logging
@@ -29,7 +29,7 @@ private fun createBuildContent(
     |
     |plugins {
     |    java
-    |    id("dev.bombinating.jooq-codegen") version "${config.jooqPluginVersion}"
+    |    id("dev.bombinating.jooq-codegen")
     |}
     |
     |sourceSets["main"].java {

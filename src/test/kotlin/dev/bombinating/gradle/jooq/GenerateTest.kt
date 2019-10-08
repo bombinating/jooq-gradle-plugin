@@ -1,13 +1,15 @@
 package dev.bombinating.gradle.jooq
 
-import org.apache.log4j.LogManager
+import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import java.io.File
 import java.nio.file.Path
 import java.sql.DriverManager
 
@@ -20,7 +22,13 @@ class GenerateTest {
         fun setup() {
             DriverManager.getConnection(h2Url, h2Username, h2Password).use { conn ->
                 conn.createStatement().use { stmt ->
+                    /*
+                     * Create the schema.
+                     */
                     stmt.execute("create schema if not exists $defaultSchemaName")
+                    /*
+                     * Create the table in the schema.
+                     */
                     stmt.execute("create table if not exists $defaultSchemaName.$defaultTableName(id int)")
                 }
             }
@@ -31,19 +39,15 @@ class GenerateTest {
         fun cleanup() {
             DriverManager.getConnection(h2Url, h2Username, h2Password).use { conn ->
                 conn.createStatement().use { stmt ->
+                    /*
+                     * Stop the database.
+                     */
                     stmt.execute("SHUTDOWN")
                 }
             }
         }
 
-    }
-
-    @TempDir
-    lateinit var workspaceDir: Path
-
-    @Test
-    fun extTest() {
-        val config = TestConfigInfo(
+        private val config = TestConfig(
             driver = h2Driver,
             url = h2Url,
             username = h2Username,
@@ -52,17 +56,23 @@ class GenerateTest {
             genDir = defaultGenDir,
             javaVersion = "JavaVersion.VERSION_1_8",
             jooqVersion = jooqVersion12,
-            jooqPluginVersion = "xxx",
             packageName = defaultPackageName
         )
-        val settings = workspaceDir.createSettingsFile(projectName = defaultProjectName)
-        val build = workspaceDir.createBuildFile(
-            config = config,
-            depBlock = dependenciesBlock(
-                jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion12),
-                jdbcDriverDependency = h2JdbcDriverDependency
-            )
-        ) {
+
+        private val deps = dependenciesBlock(
+            jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion12),
+            jdbcDriverDependency = h2JdbcDriverDependency
+        )
+
+    }
+
+    @TempDir
+    lateinit var workspaceDir: Path
+
+    @Test
+    fun extTest() {
+        workspaceDir.createSettingsFile(projectName = defaultProjectName)
+        workspaceDir.createBuildFile(config = config, depBlock = deps) {
             """
             |jooq {
             |   jdbc {
@@ -85,29 +95,60 @@ class GenerateTest {
             |}
             """.trimMargin("|")
         }
+        runGradleAndValidate(workspaceDir = workspaceDir, config = config, taskName = defaultJooqTaskName)
+    }
 
-        println(
-            """settings.gradle.kts:
-                |
-                |${settings.readText()}
-                |
-                |build.gradle.kts:
-                |
-                |${build.readText()}
-                |
+    @Test
+    fun taskTest() {
+        val taskName = "jooqTask"
+        workspaceDir.createSettingsFile(projectName = defaultProjectName)
+        workspaceDir.createBuildFile(config = config, depBlock = deps) {
+            """
+            |tasks.register<JooqGenerateTask>("$taskName") {
+            |   jdbc {
+            |       driver = "$driver"
+            |       url = "$url"
+            |       user = "$username"
+            |       password = "$password"
+            |   }
+            |   generator {
+            |       database {
+            |           name = "org.jooq.meta.h2.H2Database"
+            |           includes = ".*"
+            |       }
+            |       target {
+            |           directory = genDir
+            |           packageName = "$packageName"
+            |       }
+            |   }
+            |   logging = Logging.TRACE
+            |}
             """.trimMargin("|")
-        )
+        }
+        runGradleAndValidate(workspaceDir = workspaceDir, config = config, taskName = taskName)
+    }
 
-        val result = GradleRunner.create()
+    private fun validateGradleOutput(config: TestConfig, result: BuildResult, taskName: String) {
+        assertTrue(workspaceDir.toFile("${config.genDir}/${config.packageName.packageToPath()}").exists())
+        assertTrue(result.task(":$taskName") != null)
+        assertEquals(TaskOutcome.SUCCESS, result.task(":$taskName")?.outcome)
+    }
+
+    private fun runGradle(workspaceDir: Path, vararg args: String): BuildResult {
+        val settings = File(workspaceDir.toFile(), "settings.gradle.kts")
+        val build = File(workspaceDir.toFile(), "build.gradle.kts")
+        printGradleInfo(settings, build)
+        return GradleRunner.create()
             .withPluginClasspath()
-            .withArguments(defaultJooqTaskName, "--info")
+            .withArguments(*args)
             .withProjectDir(workspaceDir.toFile())
             .forwardOutput()
             .build()
+    }
 
-        Assertions.assertTrue(workspaceDir.toFile("${config.genDir}/${config.packageName.packageToPath()}").exists())
-        Assertions.assertTrue(result.task(":$defaultJooqTaskName") != null)
-        Assertions.assertEquals(TaskOutcome.SUCCESS, result.task(":$defaultJooqTaskName")?.outcome)
+    private fun runGradleAndValidate(workspaceDir: Path, config: TestConfig, taskName: String) {
+        val result = runGradle(workspaceDir, "clean", taskName, "build", "--info")
+        validateGradleOutput(config = config, result = result, taskName = taskName)
     }
 
 }

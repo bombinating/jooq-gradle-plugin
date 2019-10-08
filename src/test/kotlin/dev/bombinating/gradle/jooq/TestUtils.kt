@@ -14,3 +14,15 @@ fun dependenciesBlock(jooqDependency: String, jdbcDriverDependency: String) = ""
 fun String.packageToPath() = replace(".", "/")
 
 fun Path.toFile(child: String) = File(toFile(), child)
+
+fun printGradleInfo(settings: File, build: File) {
+    println("""settings.gradle.kts:
+                |
+                |${settings.readText()}
+                |
+                |build.gradle.kts:
+                |
+                |${build.readText()}
+                |
+            """.trimMargin("|"))
+}
