@@ -27,7 +27,6 @@ import org.gradle.api.plugins.JavaBasePlugin
  * - adds the dependencies needed to run the jOOQ code generation tool to the `jooqRuntime` configuration
  * - creates a `jooq` extension that can be used for specifying jooq code generation configurations and one generation
  */
-// FIXME: also change the classpath of any jooq dependencies so they match the plugin verison
 class JooqPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
@@ -37,13 +36,26 @@ class JooqPlugin : Plugin<Project> {
         }
         JOOQ_CODE_GEN_DEPS.forEach { project.dependencies.add(jooqRuntime.name, it) }
         project.extensions.create(JOOQ_EXT_NAME, JooqExtension::class.java)
-        val x = project.extensions.findByName(JOOQ_EXT_NAME) as JooqConfig
+        val jooqConfig = project.extensions.findByName(JOOQ_EXT_NAME) as JooqExtension
         val task = project.tasks.register(
             JOOQ_TASK_NAME,
             JooqTask::class.java
         )
-        task.get().config = x.config
+        task.get().config = jooqConfig.config
         task.get().jooqClassPath = jooqRuntime
+
+        project.configurations.forEach { config ->
+            config.resolutionStrategy.eachDependency { dep ->
+                val requested = dep.requested
+                if (JOOQ_GROUP_IDS.contains(requested.group) && (requested.group != jooqConfig.edition.groupId)) {
+                    /*
+                     * Change the jOOQ dependency group to match the jOOQ edition group.
+                     */
+                    dep.useTarget("${jooqConfig.edition.groupId}:${requested.name}:${jooqConfig.version}")
+                }
+            }
+        }
+
     }
 
 }
