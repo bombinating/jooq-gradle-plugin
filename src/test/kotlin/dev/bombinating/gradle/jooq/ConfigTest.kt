@@ -42,7 +42,6 @@ internal enum class StringConfigInfo(override val objSetter: Configuration.(Stri
     TargetDirectory({ xGenerator.xTarget.directory = it }, { generator { target { directory = it } } }),
     TargetEncoding({ xGenerator.xTarget.encoding = it }, { generator { target { encoding = it } } }),
     TargetPackageName({ xGenerator.xTarget.packageName = it }, { generator { target { packageName = it } } })
-    //Property({ withJdbc(jdbc ?: Jdbc()).jdbc.withP = it }, { jdbc { schema = it } }), // FIXME: how to test property
 }
 
 internal enum class BooleanConfigInfo(override val objSetter: Configuration.(Boolean) -> Unit, override val dslSetter: JooqConfig.(Boolean) -> Unit) : ConfigInfo<Boolean> {
@@ -83,7 +82,6 @@ class ConfigTest {
                 val objConfig = Configuration()
                 val dslConfig = JooqConfigImpl()
                 val randomValue = type.type.generator.invoke()
-                //logger.info {"${(it as Enum<*>).name} - value: $randomValue"}
                 (it.dslSetter as JooqConfig.(Any?)-> Unit).invoke(dslConfig, randomValue)
                 (it.objSetter as Configuration.(Any?)-> Unit).invoke(objConfig, randomValue)
                 assertEquals(objConfig, dslConfig.config)
@@ -100,7 +98,6 @@ class ConfigTest {
         ConfigTypes.values().forEach { type ->
             type.type.configs.forEach {
                 val randomValue = type.type.generator.invoke()
-                //logger.info {"${(it as Enum<*>).name} - value: $randomValue"}
                 (it.dslSetter as JooqConfig.(Any?)-> Unit).invoke(dslConfig, randomValue)
                 (it.objSetter as Configuration.(Any?)-> Unit).invoke(objConfig, randomValue)
             }
