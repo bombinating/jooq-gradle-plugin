@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import java.io.File
 import java.nio.file.Path
-import kotlin.concurrent.timerTask
 
 fun jooqOsDependency(group: String, version: String) =
     """compile(group = "$group", name = "jooq", version = "$version")"""
@@ -99,10 +98,11 @@ fun TestConfig.basicJooqConfig() = """
             |       url = "$url"
             |       user = "$username"
             |       password = "$password"
+            |       //schema = "$schema"
             |}
             |generator {
             |   database {
-            |       includes = ".*"
+            |       includes = "${includes ?: ".*"}"
             |   }
             |   target {
             |       directory = genDir

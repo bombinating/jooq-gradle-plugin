@@ -9,5 +9,6 @@ data class TestConfig(
     val genDir: String,
     val javaVersion: String,
     val jooqVersion: String,
-    val packageName: String
+    val packageName: String,
+    val includes: String? = null
 )

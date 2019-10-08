@@ -70,32 +70,7 @@ class H2Test {
 
     @Test
     fun taskTest() {
-        val taskName = "jooqTask"
-        workspaceDir.createSettingsFile(projectName = defaultProjectName)
-        workspaceDir.createBuildFile(config = config, depBlock = deps) {
-            """
-            |tasks.register<JooqTask>("$taskName") {
-            |   jdbc {
-            |       driver = "$driver"
-            |       url = "$url"
-            |       user = "$username"
-            |       password = "$password"
-            |   }
-            |   generator {
-            |       database {
-            |           name = "org.jooq.meta.h2.H2Database"
-            |           includes = ".*"
-            |       }
-            |       target {
-            |           directory = genDir
-            |           packageName = "$packageName"
-            |       }
-            |   }
-            |   logging = Logging.TRACE
-            |}
-            """.trimMargin("|")
-        }
-        runGradleAndValidate(workspaceDir = workspaceDir, config = config, taskName = taskName)
+        config.basicTaskTest(workspaceDir = workspaceDir, deps = deps, taskName = "jooqTask")
     }
 
 }

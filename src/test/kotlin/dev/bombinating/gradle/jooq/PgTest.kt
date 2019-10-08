@@ -1,19 +1,14 @@
 package dev.bombinating.gradle.jooq
 
-import org.gradle.testkit.runner.GradleRunner
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.io.File
 import java.nio.file.Path
 import java.sql.DriverManager
 
-@Disabled("Requires docker container to run")
 @Testcontainers
 class PgTest {
 
@@ -27,62 +22,43 @@ class PgTest {
         fun setup() {
             DriverManager.getConnection(db.jdbcUrl, db.username, db.password).use { conn ->
                 conn.createStatement().use { stmt ->
-                    stmt.execute("create table acme(id int)")
+                    stmt.execute("create schema $defaultSchemaName")
+                    stmt.execute("create table $defaultSchemaName.$defaultTableName(id int)")
                 }
             }
         }
+
+        private val deps = dependenciesBlock(
+            jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion12),
+            jdbcDriverDependency = pgJdbcDriverDependency
+        )
 
     }
 
     @TempDir
     lateinit var workspaceDir: Path
 
-    @Test
-    fun baseTest() {
-        assertTrue(db.isRunning)
-        val confName = "pg"
-        workspaceDir.createSettings()
-        workspaceDir.createBuild(
-            genDir = GEN_DIR,
-            depBlock = """
-                compile(group = "org.jooq", name = "jooq", version = "$JOOQ_VERSION")
-                jooqRuntime("org.postgresql:postgresql:42.2.6")""".trimIndent()
-        ) {
-            """
-            "pg"(sourceSets["main"]) {
-                jdbc {
-                    url = "${db.jdbcUrl}"
-                    user = "${db.username}"
-                    password = "${db.password}"
-                    schema = "public"
-                }
-                generator {
-                    database {
-                        includes = ".*"
-                    }
-                    target {
-                        directory = genDir
-                        packageName = "$PACKAGE_NAME"
-                    }
-                }
-                logging = Logging.TRACE
-            }
-            """.trimIndent()
-        }
+    private val config = TestConfig(
+        driver = db.driverClassName,
+        url = db.jdbcUrl,
+        username = db.username,
+        password = db.password,
+        schema = defaultSchemaName,
+        genDir = defaultGenDir,
+        javaVersion = "JavaVersion.VERSION_1_8",
+        jooqVersion = jooqVersion12,
+        packageName = defaultPackageName,
+        includes = "test.*"
+    )
 
-        val result = GradleRunner.create()
-            .withPluginClasspath()
-            .withArguments("build")
-            .withProjectDir(workspaceDir.toFile())
-            .forwardOutput()
-            .build()
-        assertTrue(
-            File(
-                workspaceDir.toFile(),
-                "$GEN_DIR/${PACKAGE_NAME.replace(".", "/")}/tables/Acme.java"
-            ).exists()
-        )
-        assertTrue(result.task(":generate${confName.capitalize()}Jooq") != null)
+    @Test
+    fun baseExtTest() {
+        config.basicExtensionTest(workspaceDir = workspaceDir, deps = deps, taskName = defaultJooqTaskName)
+    }
+
+    @Test
+    fun baseTaskTest() {
+        config.basicTaskTest(workspaceDir = workspaceDir, deps = deps, taskName = "jooqTask")
     }
 
 }
