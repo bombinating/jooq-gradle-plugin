@@ -1,11 +1,7 @@
 package dev.bombinating.gradle.jooq
 
-import mu.KotlinLogging
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
-import org.jooq.meta.jaxb.Configuration
-import org.jooq.meta.jaxb.Database
-import org.jooq.meta.jaxb.Generator
-import org.jooq.meta.jaxb.Jdbc
+import org.jooq.meta.jaxb.*
 import org.jooq.meta.jaxb.Target
 import org.junit.jupiter.api.Test
 import kotlin.random.Random.Default.nextBoolean
@@ -74,8 +70,6 @@ internal enum class ConfigTypes(val type: ConfigInfoGen<*>) {
     INT(ConfigInfoGen(IntConfigInfo.values().toList()) { nextInt() })
 }
 
-private val logger = KotlinLogging.logger {}
-
 class ConfigTest {
 
     @Suppress("UNCHECKED_CAST")
@@ -86,7 +80,7 @@ class ConfigTest {
                 val objConfig = Configuration()
                 val dslConfig = Configuration()
                 val randomValue = type.type.generator.invoke()
-                logger.info {"${(it as Enum<*>).name} - value: $randomValue"}
+                //logger.info {"${(it as Enum<*>).name} - value: $randomValue"}
                 (it.dslSetter as Configuration.(Any?)-> Unit).invoke(dslConfig, randomValue)
                 (it.objSetter as Configuration.(Any?)-> Unit).invoke(objConfig, randomValue)
                 assertEquals(objConfig, dslConfig)
@@ -103,7 +97,7 @@ class ConfigTest {
         ConfigTypes.values().forEach { type ->
             type.type.configs.forEach {
                 val randomValue = type.type.generator.invoke()
-                logger.info {"${(it as Enum<*>).name} - value: $randomValue"}
+                //logger.info {"${(it as Enum<*>).name} - value: $randomValue"}
                 (it.dslSetter as Configuration.(Any?)-> Unit).invoke(dslConfig, randomValue)
                 (it.objSetter as Configuration.(Any?)-> Unit).invoke(objConfig, randomValue)
             }

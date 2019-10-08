@@ -93,7 +93,6 @@ dependencies {
     /*
      * Test utils
      */
-    testImplementation(group = "io.github.microutils", name = "kotlin-logging", version = microutilsVersion)
     testImplementation(group = "org.apache.commons", name = "commons-lang3", version = commonsLang3Version)
 }
 
