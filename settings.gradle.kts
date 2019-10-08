@@ -2,6 +2,7 @@ val kotlinVersion: String by settings
 
 val artifactoryPluginVersion: String by settings
 val bintrayPluginVersion: String by settings
+val buildScanVersion: String by settings
 val dokkaPluginVersion: String by settings
 val releasePluginVersion: String by settings
 val detektPluginVersion: String by settings
@@ -16,6 +17,7 @@ pluginManagement {
         id("org.jetbrains.dokka") version dokkaPluginVersion
         id("com.gradle.plugin-publish") version publishPluginVersion
         id("net.researchgate.release") version releasePluginVersion
+        id("com.gradle.build-scan") version buildScanVersion
     }
 }
 
