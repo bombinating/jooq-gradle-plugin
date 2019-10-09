@@ -16,4 +16,8 @@ jobs:
       with:
         java-version: ${{ matrix.java }}
     - name: Build with Gradle
-      run: sh ./gradlew build
+      env:
+        JOOQ_REPO_URL: ${{ JOOQ_REPO_URL }}
+        JOOQ_REPO_USERNAME: ${{ JOOQ_REPO_USERNAME }}
+        JOOQ_REPO_PASSWORD: ${{ JOOQ_REPO_PASSWORD }}
+      run: sh ./gradlew build -DJOOQ_PRO_TESTS=true

@@ -46,10 +46,6 @@ fun printGradleInfo(settings: File, build: File, props: File) {
                 |
                 |${build.readText()}
                 |
-                |gradle.properties:
-                |
-                |${props.readText()} 
-                |
             """.trimMargin("|")
     )
 }
