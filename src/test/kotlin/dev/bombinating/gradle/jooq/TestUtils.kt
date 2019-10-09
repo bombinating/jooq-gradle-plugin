@@ -36,7 +36,7 @@ fun String.packageToPath() = replace(".", "/")
 
 fun Path.toFile(child: String) = File(toFile(), child)
 
-fun printGradleInfo(settings: File, build: File, props: File) {
+fun printGradleInfo(settings: File, build: File) {
     println(
         """settings.gradle.kts:
                 |
@@ -59,8 +59,7 @@ fun validateGradleOutput(workspaceDir: Path, config: TestConfig, result: BuildRe
 fun runGradle(workspaceDir: Path, vararg args: String): BuildResult {
     val settings = File(workspaceDir.toFile(), "settings.gradle.kts")
     val build = File(workspaceDir.toFile(), "build.gradle.kts")
-    val props = File(workspaceDir.toFile(), "gradle.properties")
-    printGradleInfo(settings, build, props)
+    printGradleInfo(settings, build)
     return GradleRunner.create()
         .withPluginClasspath()
         .withArguments(*args)

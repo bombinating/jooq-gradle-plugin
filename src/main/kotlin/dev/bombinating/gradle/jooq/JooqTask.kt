@@ -91,7 +91,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         logger.info("jooqRuntime classpath: ${jooqClassPath.files}")
         GenerationTool().apply {
             setClassLoader(
-                URLClassLoader("jOOQ ${GenerationTool::class} for codegen",
+                URLClassLoader(
                     jooqClassPath.files.map(File::toURI).map(URI::toURL).toTypedArray(),
                     project.buildscript.classLoader
                 )
