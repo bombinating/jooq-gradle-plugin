@@ -36,7 +36,7 @@ fun String.packageToPath() = replace(".", "/")
 
 fun Path.toFile(child: String) = File(toFile(), child)
 
-fun printGradleInfo(settings: File, build: File) {
+fun printGradleInfo(settings: File, build: File, props: File) {
     println(
         """settings.gradle.kts:
                 |
@@ -45,6 +45,10 @@ fun printGradleInfo(settings: File, build: File) {
                 |build.gradle.kts:
                 |
                 |${build.readText()}
+                |
+                |gradle.properties:
+                |
+                |${props.readText()} 
                 |
             """.trimMargin("|")
     )
@@ -59,7 +63,8 @@ fun validateGradleOutput(workspaceDir: Path, config: TestConfig, result: BuildRe
 fun runGradle(workspaceDir: Path, vararg args: String): BuildResult {
     val settings = File(workspaceDir.toFile(), "settings.gradle.kts")
     val build = File(workspaceDir.toFile(), "build.gradle.kts")
-    printGradleInfo(settings, build)
+    val props = File(workspaceDir.toFile(), "gradle.properties")
+    printGradleInfo(settings, build, props)
     return GradleRunner.create()
         .withPluginClasspath()
         .withArguments(*args)
@@ -78,11 +83,11 @@ fun TestConfig.basicExtensionTest(
     deps: String,
     taskName: String,
     projectName: String = defaultProjectName,
-    edition: JooqEdition? = null,
-    jooqRepo: String? = null
+    edition: JooqEdition? = null
 ) {
+    workspaceDir.createPropFile()
     workspaceDir.createSettingsFile(projectName = projectName)
-    workspaceDir.createBuildFile(config = this, depBlock = deps, jooqRepo = jooqRepo) {
+    workspaceDir.createBuildFile(config = this, depBlock = deps) {
         """
             |jooq {
             |   ${edition?.let { "edition = ${JooqEdition::class.java.simpleName}.$edition" } ?: ""}
@@ -100,6 +105,7 @@ fun TestConfig.basicTaskTest(
     projectName: String = defaultProjectName,
     edition: JooqEdition? = null
 ) {
+    workspaceDir.createPropFile()
     workspaceDir.createSettingsFile(projectName = projectName)
     workspaceDir.createBuildFile(config = this, depBlock = deps) {
         """
@@ -131,20 +137,3 @@ fun TestConfig.basicJooqConfig() = """
             |}
             |logging = Logging.TRACE
 """.trimIndent()
-
-fun createJooqRepo() {
-    val jooqRepoUrl = System.getenv(envVarJooqRepoUrl)
-    val jooqRepoUsername = System.getenv(envVarJooqRepoUsername)
-    val jooqRepoPassword = System.getenv(envVarJooqRepoPassword)
-    if (jooqRepoUrl != null && jooqRepoPassword != null && jooqRepoUsername != null) {
-        val s = """
-            |maven {
-            |    url = uri($jooqRepoUrl)
-            |    credentials {
-            |        username = "$jooqRepoUsername"
-            |        password = "$jooqRepoPassword"
-            |    }
-            |}
-        """.trimMargin("|")
-    }
-}

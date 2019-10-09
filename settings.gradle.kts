@@ -35,6 +35,3 @@ pluginManagement {
         id("com.gradle.build-scan") version buildScanVersion
     }
 }
-
-rootProject.name = "jooq-gradle-plugin"
-

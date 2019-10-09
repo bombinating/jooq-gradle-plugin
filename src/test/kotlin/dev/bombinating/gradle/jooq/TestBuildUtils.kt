@@ -21,15 +21,13 @@ import java.nio.file.Path
 fun Path.createBuildFile(
     config: TestConfig,
     depBlock: String,
-    jooqRepo: String? = null,
     body: TestConfig.() -> String
 ) = File(toFile(), "build.gradle.kts").also {
     it.writeText(
         createBuildContent(
             config = config,
             depBlock = depBlock,
-            body = body,
-            jooqRepo = jooqRepo
+            body = body
         )
     )
 }
@@ -37,7 +35,6 @@ fun Path.createBuildFile(
 private fun createBuildContent(
     config: TestConfig,
     depBlock: String,
-    jooqRepo: String?,
     body: TestConfig.() -> String
 ) = """
     |import dev.bombinating.gradle.jooq.*
@@ -59,8 +56,7 @@ private fun createBuildContent(
     |
     |repositories {
     |    mavenLocal()
-    |    mavenCentral()
-    |    ${jooqRepo ?: ""}
+    |    mavenCentral()${createJooqRepo()?.let { "\n|\t$it" } ?: ""} 
     |}
     |
     |dependencies {
@@ -73,3 +69,22 @@ private fun createBuildContent(
     |
     |${body(config)}
     """.trimMargin("|")
+
+fun createJooqRepo(): String? {
+    val jooqRepoUrl = System.getenv(envVarJooqRepoUrl)
+    val jooqRepoUsername = System.getenv(envVarJooqRepoUsername)
+    val jooqRepoPassword = System.getenv(envVarJooqRepoPassword)
+    return if (jooqRepoUrl != null && jooqRepoPassword != null && jooqRepoUsername != null) {
+        """
+            |maven {
+            |   url = uri(System.getenv("$envVarJooqRepoUrl"))
+            |   credentials {
+            |       username = System.getenv("$envVarJooqRepoUsername") 
+            |       password = System.getenv("$envVarJooqRepoPassword")
+            |   }
+            |}
+        """.trimMargin("|")
+    } else {
+        null
+    }
+}
