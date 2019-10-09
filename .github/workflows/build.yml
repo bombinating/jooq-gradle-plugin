@@ -20,4 +20,4 @@ jobs:
         JOOQ_REPO_URL: ${{ secrets.JOOQ_REPO_URL }}
         JOOQ_REPO_USERNAME: ${{ secrets.JOOQ_REPO_USERNAME }}
         JOOQ_REPO_PASSWORD: ${{ secrets.JOOQ_REPO_PASSWORD }}
-      run: sh ./gradlew build -DJOOQ_PRO_TESTS=true
+      run: sh ./gradlew build -DJOOQ_PRO_TESTS=true --info
