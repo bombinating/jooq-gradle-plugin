@@ -21,13 +21,15 @@ import java.nio.file.Path
 fun Path.createBuildFile(
     config: TestConfig,
     depBlock: String,
+    jooqRepo: String? = null,
     body: TestConfig.() -> String
 ) = File(toFile(), "build.gradle.kts").also {
     it.writeText(
         createBuildContent(
             config = config,
             depBlock = depBlock,
-            body = body
+            body = body,
+            jooqRepo = jooqRepo
         )
     )
 }
@@ -35,6 +37,7 @@ fun Path.createBuildFile(
 private fun createBuildContent(
     config: TestConfig,
     depBlock: String,
+    jooqRepo: String?,
     body: TestConfig.() -> String
 ) = """
     |import dev.bombinating.gradle.jooq.*
@@ -57,6 +60,7 @@ private fun createBuildContent(
     |repositories {
     |    mavenLocal()
     |    mavenCentral()
+    |    ${jooqRepo ?: ""}
     |}
     |
     |dependencies {

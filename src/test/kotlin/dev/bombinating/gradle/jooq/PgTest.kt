@@ -53,6 +53,7 @@ class PgTest {
     @TempDir
     lateinit var workspaceDir: Path
 
+    // FIXME: if we make this a @JvmStatic I think it will work in the companion object
     private val config = TestConfig(
         driver = db.driverClassName,
         url = db.jdbcUrl,

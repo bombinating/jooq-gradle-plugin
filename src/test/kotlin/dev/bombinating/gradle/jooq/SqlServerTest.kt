@@ -17,6 +17,7 @@ package dev.bombinating.gradle.jooq
 
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.junit.jupiter.api.io.TempDir
 import org.testcontainers.containers.MSSQLServerContainer
 import org.testcontainers.junit.jupiter.Container
@@ -24,6 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.nio.file.Path
 import java.sql.DriverManager
 
+@EnabledIfEnvironmentVariable(named = envVarProTests, matches = proTestsEnabledValue)
 @Testcontainers
 class SqlServerTest {
 

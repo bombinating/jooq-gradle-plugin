@@ -78,10 +78,11 @@ fun TestConfig.basicExtensionTest(
     deps: String,
     taskName: String,
     projectName: String = defaultProjectName,
-    edition: JooqEdition? = null
+    edition: JooqEdition? = null,
+    jooqRepo: String? = null
 ) {
     workspaceDir.createSettingsFile(projectName = projectName)
-    workspaceDir.createBuildFile(config = this, depBlock = deps) {
+    workspaceDir.createBuildFile(config = this, depBlock = deps, jooqRepo = jooqRepo) {
         """
             |jooq {
             |   ${edition?.let { "edition = ${JooqEdition::class.java.simpleName}.$edition" } ?: ""}
@@ -130,3 +131,20 @@ fun TestConfig.basicJooqConfig() = """
             |}
             |logging = Logging.TRACE
 """.trimIndent()
+
+fun createJooqRepo() {
+    val jooqRepoUrl = System.getenv(envVarJooqRepoUrl)
+    val jooqRepoUsername = System.getenv(envVarJooqRepoUsername)
+    val jooqRepoPassword = System.getenv(envVarJooqRepoPassword)
+    if (jooqRepoUrl != null && jooqRepoPassword != null && jooqRepoUsername != null) {
+        val s = """
+            |maven {
+            |    url = uri($jooqRepoUrl)
+            |    credentials {
+            |        username = "$jooqRepoUsername"
+            |        password = "$jooqRepoPassword"
+            |    }
+            |}
+        """.trimMargin("|")
+    }
+}
