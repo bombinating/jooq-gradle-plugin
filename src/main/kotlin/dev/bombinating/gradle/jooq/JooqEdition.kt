@@ -21,8 +21,20 @@ package dev.bombinating.gradle.jooq
  * @property groupId Maven group id associated with the jOOQ edition
  */
 enum class JooqEdition(val groupId: String) {
+    /**
+     * Open source edition.
+     */
     OpenSource("org.jooq"),
+    /**
+     * Java 9+ Pro edition.
+     */
     Pro("org.jooq.pro"),
+    /**
+     * Java 8+ Pro edition.
+     */
     ProJava8("org.jooq.pro-java-8"),
+    /**
+     * Java 6+ Pro edition.
+     */
     ProJava6("org.jooq.pro-java-6")
 }

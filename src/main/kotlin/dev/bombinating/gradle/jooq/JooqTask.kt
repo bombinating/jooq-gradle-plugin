@@ -35,7 +35,7 @@ import javax.inject.Inject
 /**
  * Gradle task for executing jOOQ code generation.
  *
- * @property config jOOQ code generation [Configuration]
+ * @property config jOOQ code generation Configuration
  * @property jooqClassPath list of jars to add to the classpath when running the jOOQ code generation
  * @property outputDirectory directory the jOOQ code generation XML configuration file is generated into
  */
@@ -83,6 +83,9 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         group = JOOQ_TASK_GROUP
     }
 
+    /**
+     * Invokes the jOOQ code generator based on the configuration from Gradle.
+     */
     @TaskAction
     fun generate() {
         logger.info("jooqRuntime classpath: ${jooqClassPath.files}")

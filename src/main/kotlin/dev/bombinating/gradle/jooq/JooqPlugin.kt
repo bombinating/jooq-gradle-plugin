@@ -30,6 +30,11 @@ import org.gradle.api.plugins.JavaBasePlugin
  */
 class JooqPlugin : Plugin<Project> {
 
+    /**
+     * Entry point into the jOOQ generation functionality.
+     *
+     * @param project Gradle Project the jOOQ plugin is applied to
+     */
     override fun apply(project: Project) {
         project.plugins.apply(JavaBasePlugin::class.java)
         val jooqRuntime = project.configurations.create(JOOQ_RUNTIME_NAME).apply {

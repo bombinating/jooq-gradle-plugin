@@ -26,7 +26,7 @@ import org.jooq.meta.jaxb.Logging
  * @property jdbc jOOQ JDBC info
  * @property generator jOOQ generator info
  * @property logging jOOQ logging info
- * @property config jOOQ [Configuration] created from the other properties
+ * @property config jOOQ `Configuration` created from the other properties
  */
 interface JooqConfig {
     var jdbc: Jdbc?
@@ -36,16 +36,19 @@ interface JooqConfig {
 }
 
 internal class JooqConfigImpl(override val config: Configuration = Configuration()) : JooqConfig {
+
     override var jdbc: Jdbc?
         get() = config.jdbc
         set(value) {
             config.jdbc = value
         }
+
     override var generator: Generator?
         get() = config.generator
         set(value) {
             config.generator = value
         }
+
     override var logging: Logging?
         get() = config.logging
         set(value) {
