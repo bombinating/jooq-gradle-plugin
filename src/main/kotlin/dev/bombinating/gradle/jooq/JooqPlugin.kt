@@ -53,10 +53,12 @@ class JooqPlugin : Plugin<Project> {
         project.configurations.forEach { config ->
             config.resolutionStrategy.eachDependency { dep ->
                 val requested = dep.requested
-                if (JOOQ_GROUP_IDS.contains(requested.group) && (requested.group != jooqConfig.edition.groupId)) {
+                if (JOOQ_GROUP_IDS.contains(requested.group) && (requested.version != jooqConfig.version)) {
                     /*
                      * Change the jOOQ dependency group to match the jOOQ edition group.
                      */
+                    println("changing the version of dependency '${requested.group}:${requested.name}' " +
+                            "from version '${requested.version}' to ${jooqConfig.version}")
                     dep.useTarget("${jooqConfig.edition.groupId}:${requested.name}:${jooqConfig.version}")
                 }
             }
