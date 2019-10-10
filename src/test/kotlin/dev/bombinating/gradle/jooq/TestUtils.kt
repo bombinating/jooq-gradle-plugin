@@ -69,7 +69,7 @@ fun runGradle(workspaceDir: Path, vararg args: String): BuildResult {
 }
 
 fun runGradleAndValidate(workspaceDir: Path, config: TestConfig, taskName: String) {
-    val result = runGradle(workspaceDir, "clean", taskName, "build", "--info")
+    val result = runGradle(workspaceDir, "clean", taskName, "build", "--info", "--stacktrace")
     validateGradleOutput(workspaceDir = workspaceDir, config = config, result = result, taskName = taskName)
 }
 
@@ -85,6 +85,7 @@ fun TestConfig.basicExtensionTest(
     workspaceDir.createBuildFile(config = this, depBlock = deps) {
         """
             |jooq {
+            |   version = "3.11.11"
             |   ${edition?.let { "edition = ${JooqEdition::class.java.simpleName}.$edition" } ?: ""}
             |   ${basicJooqConfig()}
             |}

@@ -42,24 +42,24 @@ class JooqPlugin : Plugin<Project> {
         }
         JOOQ_CODE_GEN_DEPS.forEach { project.dependencies.add(jooqRuntime.name, it) }
         project.extensions.create(JOOQ_EXT_NAME, JooqExtension::class.java)
-        val jooqConfig = project.extensions.findByName(JOOQ_EXT_NAME) as JooqExtension
+        val jooqExt = project.jooqExt
         val task = project.tasks.register(
             JOOQ_TASK_NAME,
             JooqTask::class.java
         )
-        task.get().config = jooqConfig.config
+        task.get().config = jooqExt.config
         task.get().jooqClassPath = jooqRuntime
 
         project.configurations.forEach { config ->
             config.resolutionStrategy.eachDependency { dep ->
                 val requested = dep.requested
-                if (JOOQ_GROUP_IDS.contains(requested.group) && (requested.version != jooqConfig.version)) {
+                if (JOOQ_GROUP_IDS.contains(requested.group) && (requested.version != jooqExt.version)) {
                     /*
                      * Change the jOOQ dependency group to match the jOOQ edition group.
                      */
                     println("changing the version of dependency '${requested.group}:${requested.name}' " +
-                            "from version '${requested.version}' to ${jooqConfig.version}")
-                    dep.useTarget("${jooqConfig.edition.groupId}:${requested.name}:${jooqConfig.version}")
+                            "from version '${requested.version}' to ${jooqExt.version}")
+                    dep.useTarget("${jooqExt.edition.groupId}:${requested.name}:${jooqExt.version}")
                 }
             }
         }

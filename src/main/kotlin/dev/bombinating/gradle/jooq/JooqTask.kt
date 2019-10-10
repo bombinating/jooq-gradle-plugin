@@ -28,8 +28,7 @@ import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Jdbc
 import org.jooq.meta.jaxb.Logging
 import java.io.File
-import java.net.URI
-import java.net.URLClassLoader
+import java.io.FileOutputStream
 import javax.inject.Inject
 
 /**
@@ -69,7 +68,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
 
     @get:InputFiles
     @get:Classpath
-    var jooqClassPath: FileCollection = project.configurations.getByName(JOOQ_RUNTIME_NAME)
+    var jooqClassPath: FileCollection = project.jooqRuntime
 
     @get:OutputDirectory
     val outputDirectory: File by lazy {
@@ -89,14 +88,14 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
     @TaskAction
     fun generate() {
         logger.info("jooqRuntime classpath: ${jooqClassPath.files}")
-        GenerationTool().apply {
-            setClassLoader(
-                URLClassLoader(
-                    jooqClassPath.files.map(File::toURI).map(URI::toURL).toTypedArray(),
-                    project.buildscript.classLoader
-                )
-            )
-            run(config)
+        val result = project.javaexec { spec ->
+            val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
+            configFile.parentFile.mkdirs()
+            spec.main = GenerationTool::class.java.canonicalName
+            spec.classpath = jooqClassPath
+            spec.args = listOf(configFile.absolutePath)
+            spec.workingDir = project.projectDir
+            config.marshall(FileOutputStream(configFile))
         }
     }
 

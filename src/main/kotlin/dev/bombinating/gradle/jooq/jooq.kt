@@ -20,6 +20,7 @@
 
 package dev.bombinating.gradle.jooq
 
+import org.gradle.api.Project
 import org.jooq.Constants.XSD_CODEGEN
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
@@ -31,6 +32,7 @@ import javax.xml.validation.SchemaFactory
 internal const val DEFAULT_JOOQ_VERSION = "3.12.1"
 internal val DEFAULT_JOOQ_EDITION = JooqEdition.OpenSource
 internal const val JOOQ_RUNTIME_NAME = "jooqRuntime"
+internal const val JOOQ_CONFIG_NAME = "config.xml"
 internal const val JOOQ_RUNTIME_DESC = "The classpath for the jOOQ generator"
 internal const val JOOQ_TASK_GROUP = "jooq"
 internal const val JOOQ_EXT_NAME = "jooq"
@@ -43,4 +45,19 @@ internal val JOOQ_CODE_GEN_DEPS = listOf(
     "com.sun.xml.bind:jaxb-core:2.3.0.1",
     "com.sun.xml.bind:jaxb-impl:2.3.0.1"
 )
+
 internal val JOOQ_GROUP_IDS = JooqEdition.values().map { it.groupId }.toSet()
+
+internal fun Configuration.marshall(dest: OutputStream) {
+    val factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+    val marshaller = JAXBContext.newInstance(Configuration::class.java).createMarshaller().apply {
+        schema = factory.newSchema(GenerationTool::class.java.getResource("/xsd/$XSD_CODEGEN"))
+    }
+    marshaller.marshal(this, dest)
+}
+
+internal val Project.jooqRuntime: org.gradle.api.artifacts.Configuration
+    get() = configurations.getByName(JOOQ_RUNTIME_NAME)
+
+internal val Project.jooqExt: JooqExtension
+    get() = this.extensions.getByName(JOOQ_EXT_NAME) as JooqExtension
