@@ -15,6 +15,9 @@
  */
 package dev.bombinating.gradle.jooq
 
+import org.gradle.process.ExecResult
+import org.gradle.process.JavaExecSpec
+
 /**
  * jOOQ Gradle extension configuration, which implements [JooqConfig].
  *
@@ -50,4 +53,6 @@ package dev.bombinating.gradle.jooq
 open class JooqExtension(private val jooqConfig: JooqConfig = JooqConfigImpl()) : JooqConfig by jooqConfig  {
     var edition: JooqEdition = DEFAULT_JOOQ_EDITION
     var version: String = DEFAULT_JOOQ_VERSION
+    var runConfig: (JavaExecSpec.() -> Unit)? = null
+    var resultHandler: (ExecResult.() -> Unit)? = null
 }

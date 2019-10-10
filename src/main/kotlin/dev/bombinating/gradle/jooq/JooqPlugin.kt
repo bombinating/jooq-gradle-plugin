@@ -37,19 +37,30 @@ class JooqPlugin : Plugin<Project> {
      */
     override fun apply(project: Project) {
         project.plugins.apply(JavaBasePlugin::class.java)
+        /*
+         * Create the jooqRuntime configuration and set up its dependencies
+         */
         val jooqRuntime = project.configurations.create(JOOQ_RUNTIME_NAME).apply {
             description = JOOQ_RUNTIME_DESC
         }
         JOOQ_CODE_GEN_DEPS.forEach { project.dependencies.add(jooqRuntime.name, it) }
+        /*
+         * Create the jooq extension
+         */
         project.extensions.create(JOOQ_EXT_NAME, JooqExtension::class.java)
+        /*
+         * Create the jooq task
+         */
         val jooqExt = project.jooqExt
-        val task = project.tasks.register(
-            JOOQ_TASK_NAME,
-            JooqTask::class.java
-        )
-        task.get().config = jooqExt.config
-        task.get().jooqClassPath = jooqRuntime
-
+        project.tasks.register(JOOQ_TASK_NAME, JooqTask::class.java).get().apply {
+            config = jooqExt.config
+            jooqClassPath = jooqRuntime
+            runConfig = jooqExt.runConfig
+            resultHandler = jooqExt.resultHandler
+        }
+        /*
+         * Modify jOOQ dependencies to match the version specified by the plugin extension.
+         */
         project.configurations.forEach { config ->
             config.resolutionStrategy.eachDependency { dep ->
                 val requested = dep.requested

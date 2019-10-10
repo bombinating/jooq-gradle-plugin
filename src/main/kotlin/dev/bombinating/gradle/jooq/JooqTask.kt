@@ -22,6 +22,8 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import org.gradle.process.ExecResult
+import org.gradle.process.JavaExecSpec
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Generator
@@ -39,6 +41,12 @@ import javax.inject.Inject
  * @property outputDirectory directory the jOOQ code generation XML configuration file is generated into
  */
 open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
+
+    @get:Input
+    var runConfig: (JavaExecSpec.() -> Unit)? = null
+
+    @get:Input
+    var resultHandler: (ExecResult.() -> Unit)? = null
 
     @get:Input
     override var jdbc: Jdbc?
@@ -95,8 +103,10 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
             spec.classpath = jooqClassPath
             spec.args = listOf(configFile.absolutePath)
             spec.workingDir = project.projectDir
+            runConfig?.invoke(spec)
             config.marshall(FileOutputStream(configFile))
         }
+        resultHandler?.invoke(result)
     }
 
 }
