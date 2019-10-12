@@ -19,6 +19,7 @@ package dev.bombinating.gradle.jooq
  * jOOQ edition info.
  *
  * @property groupId Maven group id associated with the jOOQ edition
+ * @property pro whether the version is non-OS
  */
 enum class JooqEdition(val groupId: String, val pro: Boolean) {
     /**

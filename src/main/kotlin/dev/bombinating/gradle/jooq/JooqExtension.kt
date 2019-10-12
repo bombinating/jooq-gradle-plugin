@@ -23,6 +23,8 @@ import org.gradle.process.JavaExecSpec
  *
  * @property version version of the jOOQ library to use; if not specified, defaults to the latest version
  * @property edition edition of the jOOQ library to use; if not specified, defaults to the open source edition
+ * @property runConfig JVM config for running the jOOQ `GenerationTool`
+ * @property resultHandler Result handler for result for running jOOQ `GenerationTool`
  *
  * Usage in build.gradle.kts:
  *
@@ -53,6 +55,4 @@ import org.gradle.process.JavaExecSpec
 open class JooqExtension(private val jooqConfig: JooqConfig = JooqConfigImpl()) : JooqConfig by jooqConfig  {
     var edition: JooqEdition = DEFAULT_JOOQ_EDITION
     var version: String = DEFAULT_JOOQ_VERSION
-    var runConfig: (JavaExecSpec.() -> Unit)? = null
-    var resultHandler: (ExecResult.() -> Unit)? = null
 }

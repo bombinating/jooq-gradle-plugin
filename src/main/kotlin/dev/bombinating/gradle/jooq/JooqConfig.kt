@@ -15,6 +15,8 @@
  */
 package dev.bombinating.gradle.jooq
 
+import org.gradle.process.ExecResult
+import org.gradle.process.JavaExecSpec
 import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Jdbc
@@ -36,6 +38,8 @@ interface JooqConfig {
     var logging: Logging?
     var onError: OnError?
     val config: Configuration
+    var runConfig: (JavaExecSpec.() -> Unit)?
+    var resultHandler: (ExecResult.() -> Unit)?
 }
 
 internal class JooqConfigImpl(override val config: Configuration = Configuration()) : JooqConfig {
@@ -63,5 +67,9 @@ internal class JooqConfigImpl(override val config: Configuration = Configuration
         set(value) {
             config.onError = value
         }
+
+    override var runConfig: (JavaExecSpec.() -> Unit)? = null
+
+    override var resultHandler: (ExecResult.() -> Unit)? = null
 }
 

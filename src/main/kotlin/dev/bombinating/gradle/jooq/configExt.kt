@@ -21,6 +21,8 @@
 
 package dev.bombinating.gradle.jooq
 
+import org.gradle.process.ExecResult
+import org.gradle.process.JavaExecSpec
 import org.jooq.meta.jaxb.Database
 import org.jooq.meta.jaxb.ForcedType
 import org.jooq.meta.jaxb.Generate
@@ -31,6 +33,26 @@ import org.jooq.meta.jaxb.Matchers
 import org.jooq.meta.jaxb.MatchersTableType
 import org.jooq.meta.jaxb.Strategy
 import org.jooq.meta.jaxb.Target
+
+/**
+ * Extension method for customizing the JVM environment the jOOQ code generation process runs in.
+ *
+ * @receiver Parent jOOQ code generation [JooqConfig] the run configuration is associated with
+ * @param action lambda for customizing the JVM environment the jOOQ code generation process runs in
+ */
+fun JooqConfig.runConfig(action: JavaExecSpec.() -> Unit) {
+    runConfig = action
+}
+
+/**
+ * Extension method for specifying a handler to be invoked after the jOOQ code generation completes.
+ *
+ * @receiver Parent jOOQ code generation [JooqConfig] the result handler is associated with
+ * @param action lambda for specifying a handler to be invoked after the jOOQ code generation completes
+ */
+fun JooqConfig.resultHandler(action: ExecResult.() -> Unit) {
+    resultHandler = action
+}
 
 /**
  * Extension method for customizing the `Jdbc` config in a jOOQ code generation [JooqConfig]
