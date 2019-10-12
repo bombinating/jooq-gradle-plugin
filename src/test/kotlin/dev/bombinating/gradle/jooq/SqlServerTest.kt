@@ -40,8 +40,11 @@ class SqlServerTest {
         fun setup() {
             DriverManager.getConnection(db.jdbcUrl, db.username, db.password).use { conn ->
                 conn.createStatement().use { stmt ->
+                    //stmt.execute("create database [$defaultDbName]")
+                    //stmt.execute("use [$defaultDbName]")
                     stmt.execute("create schema [$defaultSchemaName]")
                     stmt.execute("create table [$defaultSchemaName].[$defaultTableName](id int)")
+                    //stmt.execute("create table [$defaultDbName].[$defaultSchemaName].[$defaultTableName](id int)")
                 }
             }
         }
@@ -56,7 +59,7 @@ class SqlServerTest {
         private val config: TestConfig
             get() = TestConfig(
                 driver = db.driverClassName,
-                url = db.jdbcUrl,
+                url = db.jdbcUrl, //} ;databaseName=$defaultDbName",
                 username = db.username,
                 password = db.password,
                 schema = defaultSchemaName,
@@ -64,11 +67,17 @@ class SqlServerTest {
                 javaVersion = "JavaVersion.VERSION_1_8",
                 version = jooqVersion12,
                 packageName = defaultPackageName,
-                includes = "test.*",
-                edition = JooqEdition.Pro
+                edition = JooqEdition.Pro,
+                dbGenerator = """//inputCatalog = "$defaultDbName"
+                    |inputSchema = "$defaultSchemaName"
+                    |includes = ".*"
+                """.trimMargin(),
+                addSchemaToPackage = false
             )
 
-        class SqlServerConfigProvider : TestConfigProvider(config)
+        class SqlServerConfigProvider : TestConfigProvider(config) {
+            override val versions = listOf(jooqVersion12, null)
+        }
 
     }
 

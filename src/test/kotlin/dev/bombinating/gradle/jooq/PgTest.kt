@@ -62,7 +62,7 @@ class PgTest {
                 javaVersion = "JavaVersion.VERSION_1_8",
                 version = jooqVersion12,
                 packageName = defaultPackageName,
-                includes = "test.*"
+                dbGenerator = """includes = "$defaultSchemaName.*""""
             )
 
         class PgConfigProvider : TestConfigProvider(config)

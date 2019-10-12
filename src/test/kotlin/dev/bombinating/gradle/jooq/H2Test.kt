@@ -67,7 +67,8 @@ class H2Test {
             genDir = defaultGenDir,
             javaVersion = "JavaVersion.VERSION_1_8",
             version = jooqVersion12,
-            packageName = defaultPackageName
+            packageName = defaultPackageName,
+            dbGenerator = """includes = ".*""""
         )
 
         @JvmStatic

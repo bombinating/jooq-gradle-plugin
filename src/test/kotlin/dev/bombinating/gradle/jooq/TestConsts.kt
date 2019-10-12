@@ -39,6 +39,7 @@ const val h2Url = "jdbc:h2:~/test_db;AUTO_SERVER=true"
 const val h2Username = "sa"
 const val h2Password = ""
 
+const val defaultDbName = "acmehr"
 const val defaultSchemaName = "test"
 const val defaultTableName = "Person"
 const val defaultPackageName = "com.acme.domain.generated"

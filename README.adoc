@@ -40,10 +40,10 @@ The code generation properties (`logging`, `jdbc` and `generator`) come from the
 
 |===
 |Property | Description | Example
-
 |`edition`|https://www.jooq.org/download/versions[jOOQ edition to use] (OpenSource, Pro, ProJava8, ProJava6)|`JooqEdition.Pro`
 |`version`|jOOQ version to use|`3.12.1`
 |`logging`|jOOQ code generation config logging setting|`Logging.TRACE`
+|`onError`|jOOQ error configuration|`OnError.LOG`
 |`jdbc`|jOOQ code generation config jdbc settings`
 l|
 jooq {
@@ -62,6 +62,8 @@ l|generator {
     }
     ...
 }
+|`runConfig`|JVM config for running the jOOQ `GenerationTool`| `{ ... }`
+|`resultHandler`|Result handler for result for running jOOQ `GenerationTool`|`{ ... }`
 |===
 
 == Default task
@@ -128,8 +130,8 @@ The `JooqTask` has the same three code generation properties as the jOOQ extensi
 
 |===
 |Property | Description | Example
-
 |`logging`|jOOQ code generation config logging setting|`Logging.TRACE`
+|`onError`|jOOQ error configuration|`OnError.LOG`
 |`jdbc`|jOOQ code generation config jdbc settings`
 l|
 jooq {
@@ -148,6 +150,8 @@ l|generator {
     }
     ...
 }
+|`runConfig`|JVM config for running the jOOQ `GenerationTool`| `{ ... }`
+|`resultHandler`|Result handler for result for running jOOQ `GenerationTool`|`{ ... }`
 |===
 
 For example:

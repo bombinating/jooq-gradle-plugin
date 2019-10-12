@@ -26,7 +26,8 @@ data class TestConfig(
     val packageName: String,
     val edition: JooqEdition? = null,
     val version: String? = null,
-    val includes: String? = null
+    val dbGenerator: String,
+    val addSchemaToPackage: Boolean = true
 ) {
 
     override fun toString(): String =

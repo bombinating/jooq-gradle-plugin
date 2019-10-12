@@ -116,7 +116,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
             spec.workingDir = project.projectDir
             runConfig?.invoke(spec)
             config.marshall(FileOutputStream(configFile))
-            logger.debug("Config XML file:\n${configFile.readText()}")
+            logger.info("Config XML file:\n${configFile.readText()}")
         }
         resultHandler?.invoke(result)
     }

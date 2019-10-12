@@ -51,7 +51,8 @@ fun printGradleInfo(settings: File, build: File) {
 }
 
 fun validateGradleOutput(workspaceDir: Path, config: TestConfig, result: BuildResult, taskName: String) {
-    val javaClass = workspaceDir.toFile("${config.genDir}/${config.packageName.packageToPath()}/${config.schema}/tables/$defaultTableName.java")
+    val javaClass = workspaceDir.toFile("${config.genDir}/${config.packageName.packageToPath()}/" +
+            "${if (config.addSchemaToPackage) "${config.schema}/" else "" }tables/$defaultTableName.java")
     assertTrue(javaClass.exists())
     assertTrue(result.task(":$taskName") != null)
     assertEquals(TaskOutcome.SUCCESS, result.task(":$taskName")?.outcome)
@@ -124,7 +125,7 @@ fun TestConfig.basicJooqConfig() = """
             |}
             |generator {
             |   database {
-            |       includes = "${includes ?: ".*"}"
+            |       $dbGenerator
             |   }
             |   target {
             |       directory = genDir
@@ -132,7 +133,7 @@ fun TestConfig.basicJooqConfig() = """
             |   }
             |}
             |logging = Logging.TRACE
-""".trimIndent()
+""".trimMargin()
 
 private fun createJooqBlockForTask(edition: JooqEdition?, version: String?): String =
     if (edition != null || version != null) {
