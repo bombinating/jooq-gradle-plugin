@@ -16,8 +16,9 @@
 package dev.bombinating.gradle.jooq
 
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ArgumentsSource
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -43,37 +44,43 @@ class PgTest {
             }
         }
 
+        @JvmStatic
         private val deps = dependenciesBlock(
             jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion12),
             jdbcDriverDependency = pgJdbcDriverDependency
         )
+
+        @JvmStatic
+        private val config: TestConfig
+            get() = TestConfig(
+                driver = db.driverClassName,
+                url = db.jdbcUrl,
+                username = db.username,
+                password = db.password,
+                schema = defaultSchemaName,
+                genDir = defaultGenDir,
+                javaVersion = "JavaVersion.VERSION_1_8",
+                version = jooqVersion12,
+                packageName = defaultPackageName,
+                includes = "test.*"
+            )
+
+        class PgConfigProvider : TestConfigProvider(config)
 
     }
 
     @TempDir
     lateinit var workspaceDir: Path
 
-    // FIXME: if we make this a @JvmStatic I think it will work in the companion object
-    private val config = TestConfig(
-        driver = db.driverClassName,
-        url = db.jdbcUrl,
-        username = db.username,
-        password = db.password,
-        schema = defaultSchemaName,
-        genDir = defaultGenDir,
-        javaVersion = "JavaVersion.VERSION_1_8",
-        jooqVersion = jooqVersion12,
-        packageName = defaultPackageName,
-        includes = "test.*"
-    )
-
-    @Test
-    fun baseExtTest() {
+    @ParameterizedTest(name = "{index}: {0}")
+    @ArgumentsSource(PgConfigProvider::class)
+    fun extTest(config: TestConfig) {
         config.basicExtensionTest(workspaceDir = workspaceDir, deps = deps, taskName = defaultJooqTaskName)
     }
 
-    @Test
-    fun baseTaskTest() {
+    @ParameterizedTest(name = "{index}: {0}")
+    @ArgumentsSource(PgConfigProvider::class)
+    fun taskTest(config: TestConfig) {
         config.basicTaskTest(workspaceDir = workspaceDir, deps = deps, taskName = "jooqTask")
     }
 

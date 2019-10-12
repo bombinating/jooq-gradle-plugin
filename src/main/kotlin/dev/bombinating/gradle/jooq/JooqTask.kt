@@ -20,6 +20,7 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecResult
@@ -29,6 +30,7 @@ import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Jdbc
 import org.jooq.meta.jaxb.Logging
+import org.jooq.meta.jaxb.OnError
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -39,13 +41,15 @@ import javax.inject.Inject
  * @property config jOOQ code generation Configuration
  * @property jooqClassPath list of jars to add to the classpath when running the jOOQ code generation
  * @property outputDirectory directory the jOOQ code generation XML configuration file is generated into
+ * @property runConfig configuration for the execution environment for the jOOQ code generation process
+ * @property resultHandler handler for the result of the jOOQ code generation process
  */
 open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
 
-    @get:Input
+    @get:Internal
     var runConfig: (JavaExecSpec.() -> Unit)? = null
 
-    @get:Input
+    @get:Internal
     var resultHandler: (ExecResult.() -> Unit)? = null
 
     @get:Input
@@ -67,6 +71,13 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         get() = config.logging
         set(value) {
             config.logging = value
+        }
+
+    @get:Input
+    override var onError: OnError?
+        get() = config.onError
+        set(value) {
+            config.onError = value
         }
 
     @get:Input
@@ -105,6 +116,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
             spec.workingDir = project.projectDir
             runConfig?.invoke(spec)
             config.marshall(FileOutputStream(configFile))
+            logger.debug("Config XML file:\n${configFile.readText()}")
         }
         resultHandler?.invoke(result)
     }

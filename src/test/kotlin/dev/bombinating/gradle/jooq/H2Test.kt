@@ -17,8 +17,9 @@ package dev.bombinating.gradle.jooq
 
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ArgumentsSource
 import java.nio.file.Path
 import java.sql.DriverManager
 
@@ -56,6 +57,7 @@ class H2Test {
             }
         }
 
+        @JvmStatic
         private val config = TestConfig(
             driver = h2Driver,
             url = h2Url,
@@ -64,28 +66,34 @@ class H2Test {
             schema = defaultSchemaName,
             genDir = defaultGenDir,
             javaVersion = "JavaVersion.VERSION_1_8",
-            jooqVersion = jooqVersion12,
+            version = jooqVersion12,
             packageName = defaultPackageName
         )
 
+        @JvmStatic
         private val deps = dependenciesBlock(
             jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion12),
             jdbcDriverDependency = h2JdbcDriverDependency
         )
+
+        class H2ConfigProvider : TestConfigProvider(config)
 
     }
 
     @TempDir
     lateinit var workspaceDir: Path
 
-    @Test
-    fun extTest() {
+    @ParameterizedTest(name = "{index}: {0}")
+    @ArgumentsSource(H2ConfigProvider::class)
+    fun extTest(config: TestConfig) {
         config.basicExtensionTest(workspaceDir = workspaceDir, deps = deps, taskName = defaultJooqTaskName)
     }
 
-    @Test
-    fun taskTest() {
-        config.basicTaskTest(workspaceDir = workspaceDir, deps = deps, taskName = "jooqTask")
+    @ParameterizedTest(name = "{index}: {0}")
+    @ArgumentsSource(H2ConfigProvider::class)
+    fun taskTest(config: TestConfig) {
+        config.basicTaskTest(workspaceDir = workspaceDir, deps = deps,
+            taskName = "jooqTask")
     }
 
 }

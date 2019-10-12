@@ -28,7 +28,8 @@ const val sqlServerJdbcDriverDependency = """group = "com.microsoft.sqlserver", 
 
 const val jooqOsGroup = "org.jooq"
 const val jooqVersion12 = "3.12.1"
-const val jooqVersion11 = "3.11.11"
+const val jooqVersion11 = "3.11.12"
+const val defaultJooqVersion = jooqVersion12
 
 const val defaultGenDir: String = "generated/src/main/java"
 const val defaultJooqTaskName: String = "jooq"

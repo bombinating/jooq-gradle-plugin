@@ -51,9 +51,11 @@ fun printGradleInfo(settings: File, build: File) {
 }
 
 fun validateGradleOutput(workspaceDir: Path, config: TestConfig, result: BuildResult, taskName: String) {
-    assertTrue(workspaceDir.toFile("${config.genDir}/${config.packageName.packageToPath()}").exists())
+    val javaClass = workspaceDir.toFile("${config.genDir}/${config.packageName.packageToPath()}/${config.schema}/tables/$defaultTableName.java")
+    assertTrue(javaClass.exists())
     assertTrue(result.task(":$taskName") != null)
     assertEquals(TaskOutcome.SUCCESS, result.task(":$taskName")?.outcome)
+    assertTrue(javaClass.readText().contains("jOOQ version:${config.version ?: defaultJooqVersion}"))
 }
 
 fun runGradle(workspaceDir: Path, vararg args: String): BuildResult {
@@ -77,15 +79,14 @@ fun TestConfig.basicExtensionTest(
     workspaceDir: Path,
     deps: String,
     taskName: String,
-    projectName: String = defaultProjectName,
-    edition: JooqEdition? = null
+    projectName: String = defaultProjectName
 ) {
     workspaceDir.createPropFile()
     workspaceDir.createSettingsFile(projectName = projectName)
     workspaceDir.createBuildFile(config = this, depBlock = deps) {
         """
             |jooq {
-            |   version = "3.11.11"
+            |   ${version?.let { """version = "$version"""" } ?: "" }
             |   ${edition?.let { "edition = ${JooqEdition::class.java.simpleName}.$edition" } ?: ""}
             |   ${basicJooqConfig()}
             |}
@@ -98,14 +99,13 @@ fun TestConfig.basicTaskTest(
     workspaceDir: Path,
     deps: String,
     taskName: String,
-    projectName: String = defaultProjectName,
-    edition: JooqEdition? = null
+    projectName: String = defaultProjectName
 ) {
     workspaceDir.createPropFile()
     workspaceDir.createSettingsFile(projectName = projectName)
     workspaceDir.createBuildFile(config = this, depBlock = deps) {
         """
-            |${edition?.let { "jooq { edition = ${JooqEdition::class.java.simpleName}.$edition }" } ?: "" }
+            |${createJooqBlockForTask(edition = edition, version = version)}
             |tasks.register<JooqTask>("$taskName") {
             |   ${basicJooqConfig()}
             |}
@@ -133,3 +133,15 @@ fun TestConfig.basicJooqConfig() = """
             |}
             |logging = Logging.TRACE
 """.trimIndent()
+
+private fun createJooqBlockForTask(edition: JooqEdition?, version: String?): String =
+    if (edition != null || version != null) {
+        """
+            |jooq {
+            |   ${if (version != null) """version = "$version"""" else ""}
+            |   ${if (edition != null) "edition = ${JooqEdition::class.java.simpleName}.$edition" else ""}
+            |}
+        """.trimMargin()
+    } else {
+        ""
+    }

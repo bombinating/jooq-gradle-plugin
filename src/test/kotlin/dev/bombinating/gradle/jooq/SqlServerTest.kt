@@ -16,9 +16,10 @@
 package dev.bombinating.gradle.jooq
 
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ArgumentsSource
 import org.testcontainers.containers.MSSQLServerContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -45,37 +46,45 @@ class SqlServerTest {
             }
         }
 
+        @JvmStatic
         private val deps = dependenciesBlock(
             jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion12),
             jdbcDriverDependency = sqlServerJdbcDriverDependency
         )
+
+        @JvmStatic
+        private val config: TestConfig
+            get() = TestConfig(
+                driver = db.driverClassName,
+                url = db.jdbcUrl,
+                username = db.username,
+                password = db.password,
+                schema = defaultSchemaName,
+                genDir = defaultGenDir,
+                javaVersion = "JavaVersion.VERSION_1_8",
+                version = jooqVersion12,
+                packageName = defaultPackageName,
+                includes = "test.*",
+                edition = JooqEdition.Pro
+            )
+
+        class SqlServerConfigProvider : TestConfigProvider(config)
 
     }
 
     @TempDir
     lateinit var workspaceDir: Path
 
-    private val config = TestConfig(
-        driver = db.driverClassName,
-        url = db.jdbcUrl,
-        username = db.username,
-        password = db.password,
-        schema = defaultSchemaName,
-        genDir = defaultGenDir,
-        javaVersion = "JavaVersion.VERSION_1_8",
-        jooqVersion = jooqVersion12,
-        packageName = defaultPackageName,
-        includes = "test.*"
-    )
-
-    @Test
-    fun extTest() {
-        config.basicExtensionTest(workspaceDir = workspaceDir, deps = deps, taskName = defaultJooqTaskName, edition = JooqEdition.Pro)
+    @ParameterizedTest(name = "{index}: {0}")
+    @ArgumentsSource(SqlServerConfigProvider::class)
+    fun extTest(config: TestConfig) {
+        config.basicExtensionTest(workspaceDir = workspaceDir, deps = deps, taskName = defaultJooqTaskName)
     }
 
-    @Test
-    fun taskTest() {
-        config.basicTaskTest(workspaceDir = workspaceDir, deps = deps, taskName = "jooqTask", edition = JooqEdition.Pro)
+    @ParameterizedTest(name = "{index}: {0}")
+    @ArgumentsSource(SqlServerConfigProvider::class)
+    fun taskTest(config: TestConfig) {
+        config.basicTaskTest(workspaceDir = workspaceDir, deps = deps, taskName = "jooqTask")
     }
 
 }

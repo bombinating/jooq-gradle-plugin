@@ -23,7 +23,16 @@ data class TestConfig(
     val schema: String,
     val genDir: String,
     val javaVersion: String,
-    val jooqVersion: String,
     val packageName: String,
+    val edition: JooqEdition? = null,
+    val version: String? = null,
     val includes: String? = null
-)
+) {
+
+    override fun toString(): String =
+        "edition: ${edition ?: "<not specified>"}, version: ${version ?: "<not specified>" }"
+
+    val name: String
+        get() = "edition: $edition, version: $version"
+
+}

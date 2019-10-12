@@ -19,6 +19,7 @@ import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Jdbc
 import org.jooq.meta.jaxb.Logging
+import org.jooq.meta.jaxb.OnError
 
 /**
  * jOOQ configuration for the plugin.
@@ -26,12 +27,14 @@ import org.jooq.meta.jaxb.Logging
  * @property jdbc jOOQ JDBC info
  * @property generator jOOQ generator info
  * @property logging jOOQ logging info
+ * @property onError jOOQ error handling
  * @property config jOOQ `Configuration` created from the other properties
  */
 interface JooqConfig {
     var jdbc: Jdbc?
     var generator: Generator?
     var logging: Logging?
+    var onError: OnError?
     val config: Configuration
 }
 
@@ -53,6 +56,12 @@ internal class JooqConfigImpl(override val config: Configuration = Configuration
         get() = config.logging
         set(value) {
             config.logging = value
+        }
+
+    override var onError: OnError?
+        get() = config.onError
+        set(value) {
+            config.onError = value
         }
 }
 
