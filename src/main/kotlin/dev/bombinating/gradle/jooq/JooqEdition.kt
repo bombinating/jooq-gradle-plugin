@@ -38,4 +38,9 @@ enum class JooqEdition(val groupId: String, val pro: Boolean) {
      * Java 6+ Pro edition.
      */
     ProJava6("org.jooq.pro-java-6", true)
+    ;
+
+    val oss: Boolean
+        get() = !pro
+
 }

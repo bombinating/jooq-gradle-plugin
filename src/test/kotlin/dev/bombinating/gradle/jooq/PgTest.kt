@@ -16,6 +16,7 @@
 package dev.bombinating.gradle.jooq
 
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
@@ -25,6 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.nio.file.Path
 import java.sql.DriverManager
 
+@EnabledIfEnvironmentVariable(named = envVarContainerTests, matches = envVarContainerTests)
 @Testcontainers
 class PgTest {
 
@@ -74,13 +76,13 @@ class PgTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @ArgumentsSource(PgConfigProvider::class)
-    fun extTest(config: TestConfig) {
+    fun `Extension Test`(config: TestConfig) {
         config.basicExtensionTest(workspaceDir = workspaceDir, deps = deps, taskName = defaultJooqTaskName)
     }
 
     @ParameterizedTest(name = "{index}: {0}")
     @ArgumentsSource(PgConfigProvider::class)
-    fun taskTest(config: TestConfig) {
+    fun `Task Test`(config: TestConfig) {
         config.basicTaskTest(workspaceDir = workspaceDir, deps = deps, taskName = "jooqTask")
     }
 

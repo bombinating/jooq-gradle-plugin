@@ -86,13 +86,13 @@ class H2Test {
 
     @ParameterizedTest(name = "{index}: {0}")
     @ArgumentsSource(H2ConfigProvider::class)
-    fun extTest(config: TestConfig) {
+    fun `Task Test`(config: TestConfig) {
         config.basicExtensionTest(workspaceDir = workspaceDir, deps = deps, taskName = defaultJooqTaskName)
     }
 
     @ParameterizedTest(name = "{index}: {0}")
     @ArgumentsSource(H2ConfigProvider::class)
-    fun taskTest(config: TestConfig) {
+    fun `Extension Test`(config: TestConfig) {
         config.basicTaskTest(workspaceDir = workspaceDir, deps = deps,
             taskName = "jooqTask")
     }

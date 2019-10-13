@@ -1,4 +1,4 @@
-name: Build
+name: build
 
 on: [push]
 
@@ -17,6 +17,7 @@ jobs:
         java-version: ${{ matrix.java }}
     - name: Build with Gradle
       env:
+        JOOQ_CONTAINER_TESTS: true
         JOOQ_PRO_TESTS: true
         JOOQ_REPO_URL: ${{ secrets.JOOQ_REPO_URL }}
         JOOQ_REPO_USERNAME: ${{ secrets.JOOQ_REPO_USERNAME }}

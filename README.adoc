@@ -2,7 +2,9 @@
 
 == Overview
 
-image:https://circleci.com/gh/bombinating/jooq-gradle-plugin/tree/master.svg?style=svg["CircleCI", link="https://circleci.com/gh/bombinating/jooq-gradle-plugin/tree/master"] image:https://sonarcloud.io/api/project_badges/measure?project=bombinating_jooq-gradle-plugin&metric=alert_status["SonarCloud", link="https://sonarcloud.io/dashboard?id=bombinating_jooq-gradle-plugin"]
+image:https://github.com/bominating/jooq-gradle-plugin/workflows/build/badge.svg["Actions Status", link="https://github.com/bombinating/jooq-gradle-plugin/actions"]
+
+image:https://sonarcloud.io/api/project_badges/measure?project=bombinating_jooq-gradle-plugin&metric=alert_status["SonarCloud", link="https://sonarcloud.io/dashboard?id=bombinating_jooq-gradle-plugin"]
 
 A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jOOQ] https://www.jooq.org/doc/3.11/manual/code-generation/codegen-configuration/[code generation tool] that supports the https://docs.gradle.org/current/userguide/kotlin_dsl.html[Gradle Kotlin DSL].
 
@@ -176,6 +178,59 @@ This task can be invoked like any other Gradle task:
 [source,bash]
 ----
 $ ./gradlew jooqAccounting
+----
+
+== Internals
+
+=== Overview
+
+The plugin works by generating a jOOQ XML configuration file and then invoking the `GeneratorTool` class on it.
+
+=== Tests
+
+There are four types of tests for the plugin:
+
+* testing that the extension methods create the correct `Configuration` object
+* testing that the plugin works with the https://www.h2database.com/html/main.html[H2] database
+* testing that the plugin works with https://www.postgresql.org/[PostgreSQL]
+* testing that the plugin works with https://www.microsoft.com/en-us/sql-server/default.aspx[SQL Server]
+
+For the PostgreSQL and SQL Server databases, the tests use the https://www.testcontainers.org[Test Containers] library to run the databases in a Docker container.
+
+By default, the tests requiring Docker are disabled. To enable them, set the `JOOQ_CONTAINER_TESTS` environment variable to  true.
+
+By default, only the Open Source version of jOOQ is tested. In order to also test the Pro version, set the `JOOQ_PRO_TEST` environment to true. In addition, the `JOOQ_REPO_URL`, `JOOQ_REPO_USERNAME` and `JOOQ_REPO_PASSWORD` environment variables also need to be specified in order for the tests to find the jOOQ Pro artifacts.
+
+In order to run the SQL Server tests (since they require both a Docker container and the Pro version of jOOQ), the `JOOQ_CONTAINER_TESTS` and `JOOQ_PRO_TEST` environment variables must be set to `true` and the `JOOQ_REPO_URL`, `JOOQ_REPO_USERNAME` and `JOOQ_REPO_PASSWORD` must also be specified.
+
+=== Releasing
+
+To push to a local Maven repository:
+
+[source,bash]
+----
+$ ./gradlew clean build publishToMavenLocal
+----
+
+To push a *snapshot* to https://oss.jfrog.org/artifactory/[Artifactory]:
+
+[source,bash]
+----
+$ ./gradlew clean build artifactoryPublish -PbintrayUser=... -PbintrayKey=...
+----
+
+To push a *release* to https://dl.bintray.com/bombinating/maven/[bintray]:
+
+[source,bash]
+----
+$ ./gradlew clean build bintrayUpload -PbintrayUser=... -PbintrayKey=...
+----
+
+To push a release to the Gradle plugin repository:
+
+[source,bash]
+----
+$ ./gradlew clean build publishPlugins -Pgradle.publish.key=... -Pgradle.publish.secret=...
 ----
 
 == License

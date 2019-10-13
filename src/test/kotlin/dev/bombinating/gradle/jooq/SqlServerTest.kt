@@ -16,6 +16,8 @@
 package dev.bombinating.gradle.jooq
 
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty
+import org.junit.jupiter.api.condition.EnabledIf
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
@@ -26,6 +28,9 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.nio.file.Path
 import java.sql.DriverManager
 
+// FIXME: replace @EnabledIf with @EnabledIfEnvironmentVariable when the latter is made repeatable
+// (https://github.com/junit-team/junit5/issues/1793)
+@EnabledIf("""java.lang.System.getenv("$envVarContainerTests") == "$containerEnabledValue"""")
 @EnabledIfEnvironmentVariable(named = envVarProTests, matches = proTestsEnabledValue)
 @Testcontainers
 class SqlServerTest {
@@ -86,13 +91,13 @@ class SqlServerTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @ArgumentsSource(SqlServerConfigProvider::class)
-    fun extTest(config: TestConfig) {
+    fun `Extension Test`(config: TestConfig) {
         config.basicExtensionTest(workspaceDir = workspaceDir, deps = deps, taskName = defaultJooqTaskName)
     }
 
     @ParameterizedTest(name = "{index}: {0}")
     @ArgumentsSource(SqlServerConfigProvider::class)
-    fun taskTest(config: TestConfig) {
+    fun `Task Test`(config: TestConfig) {
         config.basicTaskTest(workspaceDir = workspaceDir, deps = deps, taskName = "jooqTask")
     }
 

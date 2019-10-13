@@ -44,6 +44,8 @@ const val defaultSchemaName = "test"
 const val defaultTableName = "Person"
 const val defaultPackageName = "com.acme.domain.generated"
 
+const val envVarContainerTests = "JOOQ_CONTAINER_TESTS"
+const val containerEnabledValue = "true"
 const val envVarProTests = "JOOQ_PRO_TESTS"
 const val proTestsEnabledValue = "true"
 const val envVarJooqRepoUrl = "JOOQ_REPO_URL"
