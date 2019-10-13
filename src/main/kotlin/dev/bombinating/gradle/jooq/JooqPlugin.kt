@@ -43,11 +43,17 @@ class JooqPlugin : Plugin<Project> {
         val jooqRuntime = project.configurations.create(JOOQ_RUNTIME_NAME).apply {
             description = JOOQ_RUNTIME_DESC
         }
-        JOOQ_CODE_GEN_DEPS.forEach { project.dependencies.add(jooqRuntime.name, it) }
+
         /*
          * Create the jooq extension
          */
         project.extensions.create(JOOQ_EXT_NAME, JooqExtension::class.java)
+
+        /*
+         * Set up the classpath for the code generation.
+         */
+        project.jooqExt.codeGenDeps.forEach { project.dependencies.add(jooqRuntime.name, it) }
+
         /*
          * Create the jooq task
          */
@@ -64,13 +70,13 @@ class JooqPlugin : Plugin<Project> {
         project.configurations.forEach { config ->
             config.resolutionStrategy.eachDependency { dep ->
                 val requested = dep.requested
-                if (JOOQ_GROUP_IDS.contains(requested.group) && (requested.version != jooqExt.version)) {
+                if (JOOQ_GROUP_IDS.contains(requested.group) && requested.name.startsWith("jooq")) {
                     /*
-                     * Change the jOOQ dependency group to match the jOOQ edition group.
+                     * Change the jOOQ group and version to match the jOOQ extension.
                      */
-                    println("changing the version of dependency '${requested.group}:${requested.name}' " +
-                            "from version '${requested.version}' to ${jooqExt.version}")
-                    dep.useTarget("${jooqExt.edition.groupId}:${requested.name}:${jooqExt.version}")
+                    val newDep = "${jooqExt.edition.groupId}:${requested.name}:${jooqExt.version}"
+                    println("Changing dependency from '$requested' to $newDep")
+                    dep.useTarget(newDep)
                 }
             }
         }

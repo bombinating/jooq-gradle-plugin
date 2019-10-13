@@ -55,4 +55,9 @@ import org.gradle.process.JavaExecSpec
 open class JooqExtension(private val jooqConfig: JooqConfig = JooqConfigImpl()) : JooqConfig by jooqConfig  {
     var edition: JooqEdition = DEFAULT_JOOQ_EDITION
     var version: String = DEFAULT_JOOQ_VERSION
+
+    override fun toString(): String {
+        return """version: $version, edition: $edition, config: $jooqConfig"""
+    }
+
 }

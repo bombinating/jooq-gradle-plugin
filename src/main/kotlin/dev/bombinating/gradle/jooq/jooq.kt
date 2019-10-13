@@ -38,13 +38,15 @@ internal const val JOOQ_TASK_GROUP = "jooq"
 internal const val JOOQ_EXT_NAME = "jooq"
 internal const val JOOQ_TASK_NAME = "jooq"
 internal const val JOOQ_TASK_DESC = "jOOQ code generator"
-internal val JOOQ_CODE_GEN_DEPS = listOf(
-    "org.jooq:jooq-codegen:$DEFAULT_JOOQ_VERSION",
-    "javax.xml.bind:jaxb-api:2.3.1",
-    "javax.activation:activation:1.1.1",
-    "com.sun.xml.bind:jaxb-core:2.3.0.1",
-    "com.sun.xml.bind:jaxb-impl:2.3.0.1"
-)
+
+internal val JooqExtension.codeGenDeps: List<String>
+    get() = listOf(
+        "${edition.groupId}:jooq-codegen:${version}",
+        "javax.xml.bind:jaxb-api:2.3.1",
+        "javax.activation:activation:1.1.1",
+        "com.sun.xml.bind:jaxb-core:2.3.0.1",
+        "com.sun.xml.bind:jaxb-impl:2.3.0.1"
+    )
 
 internal val JOOQ_GROUP_IDS = JooqEdition.values().map { it.groupId }.toSet()
 

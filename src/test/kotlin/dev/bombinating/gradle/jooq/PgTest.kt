@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.nio.file.Path
 import java.sql.DriverManager
 
-@EnabledIfEnvironmentVariable(named = envVarContainerTests, matches = envVarContainerTests)
+@EnabledIfEnvironmentVariable(named = envVarContainerTests, matches = containerEnabledValue)
 @Testcontainers
 class PgTest {
 
