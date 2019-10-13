@@ -13,8 +13,8 @@ abstract class TestConfigProvider(private val config: TestConfig) : ArgumentsPro
 
     private val applicableEditions: List<JooqEdition?>
         get() = editions.filter { edition ->
-            (edition?.oss ?: true) ||
-                    ((config.edition?.pro ?: false) && (proTestsEnabledValue == System.getenv(envVarProTests)))
+            ((config.edition.isPro && edition.isPro) || config.edition.isOss)
+                    && (edition.isOss || proTestsEnabled)
         }
 
     override fun provideArguments(context: ExtensionContext): Stream<out Arguments> =

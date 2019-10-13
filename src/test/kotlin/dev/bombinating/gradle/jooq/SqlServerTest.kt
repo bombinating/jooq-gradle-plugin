@@ -16,7 +16,6 @@
 package dev.bombinating.gradle.jooq
 
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.condition.DisabledIfSystemProperty
 import org.junit.jupiter.api.condition.EnabledIf
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
 import org.junit.jupiter.api.io.TempDir

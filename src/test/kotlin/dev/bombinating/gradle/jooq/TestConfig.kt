@@ -15,6 +15,12 @@
  */
 package dev.bombinating.gradle.jooq
 
+val JooqEdition?.isPro: Boolean
+    get() = this?.pro ?: false
+
+val JooqEdition?.isOss: Boolean
+    get() = !isPro
+
 data class TestConfig(
     val driver: String,
     val url: String,
@@ -32,8 +38,5 @@ data class TestConfig(
 
     override fun toString(): String =
         "edition: ${edition ?: "<not specified>"}, version: ${version ?: "<not specified>" }"
-
-    val name: String
-        get() = "edition: $edition, version: $version"
 
 }

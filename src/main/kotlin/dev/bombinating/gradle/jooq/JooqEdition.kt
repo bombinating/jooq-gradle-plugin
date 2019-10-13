@@ -40,7 +40,4 @@ enum class JooqEdition(val groupId: String, val pro: Boolean) {
     ProJava6("org.jooq.pro-java-6", true)
     ;
 
-    val oss: Boolean
-        get() = !pro
-
 }
