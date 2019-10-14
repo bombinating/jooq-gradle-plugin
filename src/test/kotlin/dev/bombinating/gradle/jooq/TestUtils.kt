@@ -131,7 +131,7 @@ fun TestConfig.basicJooqConfig() = """
             |       packageName = "$packageName"
             |   }
             |}
-            |logging = Logging.TRACE
+            |logging = Logging.INFO
 """.trimMargin()
 
 private fun createJooqBlockForTask(edition: JooqEdition?, version: String?): String =

@@ -74,7 +74,7 @@ class SqlServerTest {
                 version = jooqVersion12,
                 packageName = defaultPackageName,
                 edition = JooqEdition.Pro,
-                dbGenerator = """//inputCatalog = "$defaultDbName"
+                dbGenerator = """inputCatalog = "master"
                     |inputSchema = "$defaultSchemaName"
                     |includes = ".*"
                 """.trimMargin(),
