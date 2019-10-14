@@ -21,32 +21,65 @@ import org.apache.commons.lang3.JavaVersion.JAVA_1_8
 import org.apache.commons.lang3.JavaVersion.JAVA_9
 import org.apache.commons.lang3.SystemUtils
 
+internal data class JooqVersion(val major: Int, val minor: Int) {
+
+    operator fun compareTo(otherVersion: JooqVersion): Int = when {
+        major == otherVersion.major && minor == otherVersion.minor -> 0
+        (major > otherVersion.major) || (major == otherVersion.major && minor >= otherVersion.minor) -> 1
+        else -> -1
+    }
+
+}
+
+private val JOOQ_3_12 = JooqVersion(3, 12)
+private val JOOQ_3_1 = JooqVersion(3, 1)
+
 /**
  * jOOQ edition info.
  *
  * @property groupId Maven group id associated with the jOOQ edition
  * @property pro whether the version is non-OS
  */
-enum class JooqEdition(val groupId: String, val pro: Boolean, private val minJavaVersion: JavaVersion) {
+enum class JooqEdition(
+    val groupId: String,
+    val pro: Boolean,
+    private val minJavaVersion: (JooqVersion) -> JavaVersion,
+    private val firstJooqVersion: JooqVersion
+) {
     /**
      * Open source edition.
      */
-    OpenSource("org.jooq", false, JAVA_1_8),
+    OpenSource("org.jooq", false, { JAVA_1_8 }, JOOQ_3_1),
     /**
      * Java 9+ Pro edition.
      */
-    Pro("org.jooq.pro", true, JAVA_9),
+    Pro("org.jooq.pro", true, { if (it < JOOQ_3_12)JAVA_1_8 else JAVA_9 }, JOOQ_3_1),
     /**
      * Java 8+ Pro edition.
      */
-    ProJava8("org.jooq.pro-java-8", true, JAVA_1_8),
+    ProJava8("org.jooq.pro-java-8", true, { JAVA_1_8 }, JOOQ_3_12),
     /**
      * Java 6+ Pro edition.
      */
-    ProJava6("org.jooq.pro-java-6", true, JAVA_1_6)
+    ProJava6("org.jooq.pro-java-6", true, { JAVA_1_6 }, JOOQ_3_1),
+    /**
+     * Java 6+ Pro edition.
+     */
+    Trial("org.jooq.trial", true, { JAVA_1_8 }, JOOQ_3_1)
     ;
 
-    val javaRuntimeSupported: Boolean
-        get() = SystemUtils.isJavaVersionAtLeast(minJavaVersion)
+    fun javaRuntimeSupported(jooqVersion: String): Boolean {
+        val version = parseJooqVersion(jooqVersion)
+        val minJavaVersion = minJavaVersion(version)
+        return SystemUtils.isJavaVersionAtLeast(minJavaVersion)
+    }
+
+    fun jooqVersionSupported(jooqVersion: String): Boolean = parseJooqVersion(jooqVersion) >= firstJooqVersion
+
+    private fun parseJooqVersion(jooqVersion: String): JooqVersion {
+        val split = jooqVersion.split(".")
+        return JooqVersion(major = split[0].toInt(), minor = split[1].toInt())
+    }
 
 }
+

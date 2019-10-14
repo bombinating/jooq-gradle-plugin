@@ -15,13 +15,14 @@ abstract class TestConfigProvider(private val config: TestConfig) : ArgumentsPro
         get() = editions.filter { edition ->
             ((config.edition.isPro && edition.isPro) || config.edition.isOss)
                     && (edition.isOss || proTestsEnabled)
-                    && (edition.isJavaRuntimeSupported)
         }
 
     override fun provideArguments(context: ExtensionContext): Stream<out Arguments> =
         applicableEditions.flatMap { edition ->
-            versions.map { version ->
-                config.copy(edition = edition, version = version)
+            versions.mapNotNull { version ->
+                if (edition.isJavaRuntimeSupported(version) && edition.isJooqVersionSupported(version)) {
+                    config.copy(edition = edition, version = version)
+                } else null
             }
         }.map { Arguments.of(it) }.asSequence().asStream()
 

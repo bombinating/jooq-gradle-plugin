@@ -15,9 +15,6 @@
  */
 package dev.bombinating.gradle.jooq
 
-import org.gradle.process.ExecResult
-import org.gradle.process.JavaExecSpec
-
 /**
  * jOOQ Gradle extension configuration, which implements [JooqConfig].
  *

@@ -21,8 +21,13 @@ val JooqEdition?.isPro: Boolean
 val JooqEdition?.isOss: Boolean
     get() = !isPro
 
-val JooqEdition?.isJavaRuntimeSupported: Boolean
-    get() = this?.javaRuntimeSupported ?: DEFAULT_JOOQ_EDITION.javaRuntimeSupported
+fun JooqEdition?.isJavaRuntimeSupported(jooqVersion: String?): Boolean =
+    this?.javaRuntimeSupported(jooqVersion ?: defaultJooqVersion)
+        ?: DEFAULT_JOOQ_EDITION.javaRuntimeSupported(jooqVersion ?: defaultJooqVersion)
+
+fun JooqEdition?.isJooqVersionSupported(jooqVersion: String?): Boolean =
+    this?.jooqVersionSupported(jooqVersion ?: defaultJooqVersion)
+        ?: DEFAULT_JOOQ_EDITION.jooqVersionSupported(jooqVersion ?: defaultJooqVersion)
 
 data class TestConfig(
     val driver: String,
@@ -40,6 +45,6 @@ data class TestConfig(
 ) {
 
     override fun toString(): String =
-        "edition: ${edition ?: "<not specified>"}, version: ${version ?: "<not specified>" }"
+        "edition: ${edition ?: "<not specified>"}, version: ${version ?: "<not specified>"}"
 
 }
