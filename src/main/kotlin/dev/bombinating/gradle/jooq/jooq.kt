@@ -45,7 +45,9 @@ internal val JooqExtension.codeGenDeps: List<String>
         "javax.xml.bind:jaxb-api:2.3.1",
         "javax.activation:activation:1.1.1",
         "com.sun.xml.bind:jaxb-core:2.3.0.1",
-        "com.sun.xml.bind:jaxb-impl:2.3.0.1"
+        "com.sun.xml.bind:jaxb-impl:2.3.0.1",
+        "org.slf4j:slf4j-api:1.7.28",
+        "ch.qos.logback:logback-classic:1.2.3"
     )
 
 internal val JOOQ_GROUP_IDS = JooqEdition.values().map { it.groupId }.toSet()

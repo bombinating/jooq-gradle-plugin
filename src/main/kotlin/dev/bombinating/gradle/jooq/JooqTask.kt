@@ -17,6 +17,7 @@ package dev.bombinating.gradle.jooq
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.FileCollection
+import org.gradle.api.internal.file.collections.ImmutableFileCollection
 import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
@@ -108,19 +109,50 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
     fun generate() {
         logger.info("jooqRuntime classpath: ${jooqClassPath.files}")
         val result = project.javaexec { spec ->
-            val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
-            configFile.parentFile.mkdirs()
+            val configFile = createJooqConfigFile()
+            val logFile = createLoggingConfigFile()
             spec.main = GenerationTool::class.java.canonicalName
-            spec.classpath = jooqClassPath
+            spec.classpath = jooqClassPath.plus(ImmutableFileCollection.of(logFile.parentFile))
             spec.args = listOf(configFile.absolutePath)
             spec.workingDir = project.projectDir
-            spec.standardOutput = System.out
-            spec.errorOutput = System.out
             runConfig?.invoke(spec)
-            config.marshall(FileOutputStream(configFile))
-            logger.info("Config XML file:\n${configFile.readText()}")
         }
         resultHandler?.invoke(result)
     }
+
+    private fun createJooqConfigFile(): File {
+        val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
+        config.marshall(FileOutputStream(configFile))
+        logger.info("Config XML file (${configFile.name}):\n${configFile.readText()}")
+        return configFile
+    }
+
+    private fun createLoggingConfigFile(): File {
+        val logFile = File(temporaryDir, "logback.xml")
+        logFile.writeText(logbackConfig)
+        logger.info("Logback XML file (${logFile.name}):\n${logFile.readText()}")
+        return logFile
+    }
+
+    private val logbackConfig: String
+        get() = """
+        |<configuration>
+        |   <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+        |   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        |       <encoder>
+        |           <pattern>%.-1level %-25.30logger{20} - %msg%n</pattern>
+        |       </encoder>
+        |   </appender>
+        |   <root level="${logging.logbackLevel}">
+        |       <appender-ref ref="CONSOLE"/>
+        |   </root>
+        |</configuration>""".trimMargin()
+
+    private val Logging?.logbackLevel: String
+        get() = when(this) {
+            null -> "info"
+            Logging.FATAL -> "error"
+            else -> name.toLowerCase()
+        }
 
 }

@@ -72,11 +72,14 @@ class JooqPlugin : Plugin<Project> {
                 val requested = dep.requested
                 if (JOOQ_GROUP_IDS.contains(requested.group) && requested.name.startsWith("jooq")) {
                     /*
-                     * Change the jOOQ group and version to match the jOOQ extension.
+                     * Change the jOOQ group and version to match the jOOQ extension as necessary.
                      */
+                    val oldDep = "${requested.group}:${requested.name}:${requested.version}"
                     val newDep = "${jooqExt.edition.groupId}:${requested.name}:${jooqExt.version}"
-                    println("Changing dependency from '$requested' to $newDep")
-                    dep.useTarget(newDep)
+                    if (oldDep != newDep) {
+                        project.logger.info("Changing ${config.name} dependency from '$requested' to '$newDep'")
+                        dep.useTarget(newDep)
+                    }
                 }
             }
         }
