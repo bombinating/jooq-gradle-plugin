@@ -8,6 +8,8 @@ A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jO
 
 This project started as a Kotlin port of the Groovy-based https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin] and was initially developed because it was decided that the Groovy plugin https://github.com/etiennestuder/gradle-jooq-plugin/pull/91[would not add Kotlin DSL support].
 
+Test with jOOQ versions 3.11 and 3.12.
+
 == Using the plugin
 
 The plugin id needs to be added to the `plugins` block in the `build.gradle.kts` file in order to be used.
@@ -321,7 +323,7 @@ val oracleSchema: String by project
 
 plugins {
     java
-    id("dev.bombinating.jooq-codegen") version "3.12.1-SNAPSHOT"
+    id("dev.bombinating.jooq-codegen") version "3.12.1"
 }
 
 sourceSets["main"].java {
