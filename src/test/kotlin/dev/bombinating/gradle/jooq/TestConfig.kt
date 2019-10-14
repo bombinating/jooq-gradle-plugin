@@ -16,10 +16,13 @@
 package dev.bombinating.gradle.jooq
 
 val JooqEdition?.isPro: Boolean
-    get() = this?.pro ?: false
+    get() = this?.pro ?: DEFAULT_JOOQ_EDITION.pro
 
 val JooqEdition?.isOss: Boolean
     get() = !isPro
+
+val JooqEdition?.isJavaRuntimeSupported: Boolean
+    get() = this?.javaRuntimeSupported ?: DEFAULT_JOOQ_EDITION.javaRuntimeSupported
 
 data class TestConfig(
     val driver: String,

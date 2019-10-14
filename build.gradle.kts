@@ -81,7 +81,14 @@ dependencies {
     api(group = "javax.xml.bind", name = "jaxb-api", version = jaxbApiVersion)
     api(group = "com.sun.xml.bind", name = "jaxb-core", version = jaxbCoreVersion)
     api(group = "com.sun.xml.bind", name = "jaxb-impl", version = jaxbImplVersion)
+    /*
+     * Utils
+     */
+    api(group = "org.apache.commons", name = "commons-lang3", version = commonsLang3Version)
 
+    /*
+     * Test
+     */
     testImplementation(gradleTestKit())
     /*
      * JUnit
@@ -104,10 +111,6 @@ dependencies {
      * H2
      */
     testImplementation(group = "com.h2database", name = "h2", version = h2Version)
-    /*
-     * Test utils
-     */
-    testImplementation(group = "org.apache.commons", name = "commons-lang3", version = commonsLang3Version)
 }
 
 tasks.withType<KotlinCompile> {

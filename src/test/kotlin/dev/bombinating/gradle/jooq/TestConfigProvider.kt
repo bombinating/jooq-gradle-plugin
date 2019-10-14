@@ -15,6 +15,7 @@ abstract class TestConfigProvider(private val config: TestConfig) : ArgumentsPro
         get() = editions.filter { edition ->
             ((config.edition.isPro && edition.isPro) || config.edition.isOss)
                     && (edition.isOss || proTestsEnabled)
+                    && (edition.isJavaRuntimeSupported)
         }
 
     override fun provideArguments(context: ExtensionContext): Stream<out Arguments> =

@@ -15,29 +15,38 @@
  */
 package dev.bombinating.gradle.jooq
 
+import org.apache.commons.lang3.JavaVersion
+import org.apache.commons.lang3.JavaVersion.JAVA_1_6
+import org.apache.commons.lang3.JavaVersion.JAVA_1_8
+import org.apache.commons.lang3.JavaVersion.JAVA_9
+import org.apache.commons.lang3.SystemUtils
+
 /**
  * jOOQ edition info.
  *
  * @property groupId Maven group id associated with the jOOQ edition
  * @property pro whether the version is non-OS
  */
-enum class JooqEdition(val groupId: String, val pro: Boolean) {
+enum class JooqEdition(val groupId: String, val pro: Boolean, private val minJavaVersion: JavaVersion) {
     /**
      * Open source edition.
      */
-    OpenSource("org.jooq", false),
+    OpenSource("org.jooq", false, JAVA_1_8),
     /**
      * Java 9+ Pro edition.
      */
-    Pro("org.jooq.pro", true),
+    Pro("org.jooq.pro", true, JAVA_9),
     /**
      * Java 8+ Pro edition.
      */
-    ProJava8("org.jooq.pro-java-8", true),
+    ProJava8("org.jooq.pro-java-8", true, JAVA_1_8),
     /**
      * Java 6+ Pro edition.
      */
-    ProJava6("org.jooq.pro-java-6", true)
+    ProJava6("org.jooq.pro-java-6", true, JAVA_1_6)
     ;
+
+    val javaRuntimeSupported: Boolean
+        get() = SystemUtils.isJavaVersionAtLeast(minJavaVersion)
 
 }

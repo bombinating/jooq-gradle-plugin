@@ -23,3 +23,8 @@ jobs:
         JOOQ_REPO_USERNAME: ${{ secrets.JOOQ_REPO_USERNAME }}
         JOOQ_REPO_PASSWORD: ${{ secrets.JOOQ_REPO_PASSWORD }}
       run: sh ./gradlew build
+    - name: Save Build Artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: build
+        path: build
