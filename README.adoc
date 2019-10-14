@@ -8,35 +8,7 @@ image:https://sonarcloud.io/api/project_badges/measure?project=bombinating_jooq-
 
 A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jOOQ] https://www.jooq.org/doc/3.11/manual/code-generation/codegen-configuration/[code generation tool] that supports the https://docs.gradle.org/current/userguide/kotlin_dsl.html[Gradle Kotlin DSL].
 
-This started as a Kotlin port of the Groovy-based https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin] and was initially developed because it was decided that the Groovy plugin https://github.com/etiennestuder/gradle-jooq-plugin/pull/91[would not add Kotlin DSL support].
-
-Differences from the original include:
-
-* In this plugin, the `jooq` extension defines a single task jOOQ code generation task called `jooq`. Other jOOQ code generation tasks are explicitly defined using the Gradle task mechanism rather than being implicitly created in the `jooq` extension block.
-
-[source,build.gradle.kts]
-----
-...
-tasks.register<JooqTask>("...") {
-    jdbc {
-        ...
-    }
-    generator {
-        ...
-    }
-    ...
-}
-...
-----
-
-* This plugin does not create a task dependency between the jOOQ code generation and the Java compilation task.  Instead, if desired, the dependency can be set up explicitly in Gradle.
-
-[source,build.gradle.kts]
-----
-...
-tasks.getByName("compileJava").dependsOn(tasks.getByName("jooq"))
-...
-----
+This project started as a Kotlin port of the Groovy-based https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin] and was initially developed because it was decided that the Groovy plugin https://github.com/etiennestuder/gradle-jooq-plugin/pull/91[would not add Kotlin DSL support].
 
 == Using the plugin
 
@@ -51,7 +23,7 @@ plugins {
 
 == Setting the code generation classpath
 
-The JDBC driver for introspecting the database must be provided in the `dependencies` block using the `jooqRuntime` scope, which is created by the plugin.
+The JDBC driver for introspecting the database must be provided in the `dependencies` block using the `jooqRuntime` scope, which is created by the plugin. For example:
 
 [source,build.gradle.kts]
 ----
@@ -109,56 +81,11 @@ $ ./gradlew jooq
 
 There are no dependencies on this task and this task does not have any dependencies on other tasks. Therefore, after running the `jooq` task, it is necessary to run the `build` task. It is also necessary to add the directory into which the code is being generated into the source set.
 
-Here's an example build.gradle.kts file. The database URL, schema, username and password are passed in via the command-line or in an external gradle.properties file.
-
-[source,bash]
-----
-$ ./gradlew jooq build -PdbUrl=... -PdbUsername=... -PdbPassword=... -PdbSchema=...
-----
-
-[source,build.gradle.kts]
-----
-import dev.bombinating.gradle.jooq.*
-...
-val dbUrl: String? by project
-val dbUsername: String? by project
-val dbPassword: String? by project
-val dbSchema: String? by project
-val genDir: String = "$projectDir/generated/src/main/java"
-...
-sourceSets["main"].java {
-    srcDir(genDir)
-}
-...
-jooq {
-    edition = JooqEdition.Professional
-    jdbc {
-        driver = "oracle.jdbc.driver.OracleDriver"
-        url = dbUrl
-        user = dbUsername
-        password = dbPassword
-    }
-    generator {
-        database {
-            name = "org.jooq.meta.oracle.OracleDatabase"
-            includes = ".*"
-            excludes = "^BIN\\$.*|flyway_schema_history"
-            inputSchema = dbSchema
-        }
-        target {
-            directory = genDir
-            packageName = "com.acme.domain.generated"
-        }
-    }
-    logging = Logging.INFO
-}
-----
-
 == Creating tasks
 
 To define additional jOOQ code generation configurations, register/create tasks of type `JooqTask`.
 
-The `JooqTask` has the same three code generation properties as the jOOQ extension. The jOOQ `edition` and `version` properties are not available in the task.
+The `JooqTask` has the same six code generation-related properties as the jOOQ extension. The jOOQ `edition` and `version` properties are not available in the task.
 
 |===
 |Property | Description | Example
@@ -221,11 +148,39 @@ To provide a different Logback configuration, add the directory containing the `
 jooqRuntime(files("..."))
 ----
 
+== Differences from the original plugin
+
+* In this plugin, the `jooq` extension defines a _single_ jOOQ code generation task called `jooq`. Other jOOQ code generation tasks are _explicitly_ defined using the Gradle task mechanism rather than being implicitly created in the `jooq` extension block. For example:
+
+[source,build.gradle.kts]
+----
+...
+tasks.register<JooqTask>("...") {
+    jdbc {
+        ...
+    }
+    generator {
+        ...
+    }
+    ...
+}
+...
+----
+
+* This plugin does not create a task dependency between the jOOQ code generation and the Java compilation task.  Instead, if desired, the dependency can be set up explicitly in Gradle.
+
+[source,build.gradle.kts]
+----
+...
+tasks.getByName("compileJava").dependsOn(tasks.getByName("jooq"))
+...
+----
+
 == Internals
 
 === Overview
 
-The plugin works by generating a jOOQ XML configuration file and then invoking the `GeneratorTool` class on it.
+The plugin works by generating a jOOQ XML configuration file and then invoking the `GenerationTool` class on it.
 
 === Tests
 
@@ -238,9 +193,9 @@ There are four types of tests for the plugin:
 
 For the PostgreSQL and SQL Server databases, the tests use the https://www.testcontainers.org[Test Containers] library to run the databases in a Docker container.
 
-By default, the tests requiring Docker are disabled. To enable them, set the `JOOQ_CONTAINER_TESTS` environment variable to  true.
+By default, the tests requiring Docker are disabled. To enable them, set the `JOOQ_CONTAINER_TESTS` environment variable to `true`.
 
-By default, only the Open Source version of jOOQ is tested. In order to also test the Pro version, set the `JOOQ_PRO_TEST` environment to true. In addition, the `JOOQ_REPO_URL`, `JOOQ_REPO_USERNAME` and `JOOQ_REPO_PASSWORD` environment variables also need to be specified in order for the tests to find the jOOQ Pro artifacts.
+By default, only the Open Source version of jOOQ is tested. In order to also test the Pro version, set the `JOOQ_PRO_TEST` environment to `true` (this will test both the Pro and Pro Java 8 versions). In addition, the `JOOQ_REPO_URL`, `JOOQ_REPO_USERNAME` and `JOOQ_REPO_PASSWORD` environment variables also need to be specified in order for the tests to find the jOOQ Pro artifacts.
 
 In order to run the SQL Server tests (since they require both a Docker container and the Pro version of jOOQ), the `JOOQ_CONTAINER_TESTS` and `JOOQ_PRO_TEST` environment variables must be set to `true` and the `JOOQ_REPO_URL`, `JOOQ_REPO_USERNAME` and `JOOQ_REPO_PASSWORD` must also be specified.
 
@@ -277,3 +232,178 @@ $ ./gradlew clean build publishPlugins -Pgradle.publish.key=... -Pgradle.publish
 == License
 
 http://www.apache.org/licenses/LICENSE-2.0.html[Apache License, Version 2.0.]
+
+== Appendix A: Minimal Example
+
+In this example, a variable, `genDir`, is defined for the directory the code will be generated into, and this directory is added to the "main" `sourceSets` and also used in the `target` jOOQ configuration.
+
+The database connection info comes from a properties file or from Gradle `-P` commandline arguments.
+
+[source,build.gradle.kts]
+----
+import dev.bombinating.gradle.jooq.*
+
+val genDir = "$projectDir/generated/src/main/java"
+val jooqUrl: String by project
+val jooqUsername: String by project
+val jooqPassword: String by project
+
+plugins {
+    java
+    id("dev.bombinating.jooq-codegen") version "3.12.1"
+}
+
+sourceSets["main"].java {
+    srcDir(genDir)
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile(group = "org.jooq", name = "jooq", version = "3.12.1")
+    jooqRuntime(group = "org.postgresql", name = "postgresql", version = "42.2.8")
+}
+
+jooq {
+    jdbc {
+        url = jooqUrl
+        username = jooqUsername
+        password = jooqPassword
+    }
+    generator {
+        database {
+            inputSchema = "public"
+        }
+        target {
+            directory = genDir
+            packageName = "com.acme.domain.db"
+        }
+    }
+}
+----
+
+The jOOQ code generation, and subsequent build, can be invoked as:
+
+[source,bash]
+----
+$ ./gradlew clean jooq build
+----
+
+== Appendix B: Fuller Example
+
+The first half of this example is the same as above, except:
+
+* the jOOQ edition is specified (`ProJava8`)
+* the jOOQ version is specified (`3.12.1`)
+* the JVM config for running the code generation tool is specified (`-Xmx2g`)
+* a result handler prints the exit value of the code generation tool
+* the code generation logging is specified (`DEBUG`)
+
+In addition, an explicit jOOQ task called `accounting` is defined. This is associated with an Oracle database; like the configuration defined in the `jooq` extension, the connection info is specified using the Gradle `by project` construction and read from a properties file or from the commandline. The example also shows a more sophisticated jOOQ configuration.
+
+Finally, the Java compilation is set to depend on the jOOQ code generation for both the `jooq` and `accounting` tasks.
+
+[source,build.gradle.kts]
+----
+import dev.bombinating.gradle.jooq.*
+import org.jooq.meta.jaxb.Logging
+
+val genDir = "$projectDir/generated/src/main/java"
+val jooqUrl: String by project
+val jooqUsername: String by project
+val jooqPassword: String by project
+
+val oracleUrl: String by project
+val oracleUsername: String by project
+val oraclePassword: String by project
+val oracleSchema: String by project
+
+plugins {
+    java
+    id("dev.bombinating.jooq-codegen") version "3.12.1-SNAPSHOT"
+}
+
+sourceSets["main"].java {
+    srcDir(genDir)
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile(group = "org.jooq", name = "jooq", version = "3.12.1")
+    jooqRuntime(group = "org.postgresql", name = "postgresql", version = "42.2.8")
+    jooqRuntime(group = "com.oracle.ojdbc", name = "ojdbc8", version = "19.3.0.0")
+}
+
+jooq {
+    edition = JooqEdition.ProJava8
+    version = "3.12.1"
+    runConfig { jvmArgs = listOf("-Xmx2g") }
+    resultHandler { println("The exit value of the code generation was: $exitValue") }
+    logging = Logging.DEBUG
+    jdbc {
+        url = jooqUrl
+        username = jooqUsername
+        password = jooqPassword
+    }
+    generator {
+        database {
+            inputSchema = "public"
+        }
+        target {
+            directory = genDir
+            packageName = "com.acme.domain.db.pg"
+        }
+    }
+}
+
+val accounting = tasks.register<JooqTask>("accounting") {
+    jdbc {
+        driver = "oracle.jdbc.driver.OracleDriver"
+        url = oracleUrl
+        username = oracleUsername
+        password = oraclePassword
+        schema = oracleSchema
+    }
+    generator {
+        generate {
+            isJavaTimeTypes = true
+        }
+        database {
+            name = "org.jooq.meta.oracle.OracleDatabase"
+            includes = ".*"
+            excludes = "^BIN\\$.*|flyway_schema_history"
+            inputSchema = oracleSchema
+            forcedTypes {
+                forcedType {
+                    name = "BOOLEAN"
+                    expression = ".*_IND"
+                    types = ".*"
+                }
+            }
+        }
+        target {
+            directory = genDir
+            packageName = "com.acme.domain.db.oracle"
+        }
+    }
+    logging = Logging.DEBUG
+}
+
+tasks.getByName("compileJava").dependsOn(jooq2, tasks.getByName("jooq"))
+
+----
+
+To generate the code related to both databases, it is sufficient to simply call the `build` task since it has a dependency on both the `joo` and `accounting` tasks and will therefore ensure that the the source code has been generated from both databases first.
+
+[source,bash]
+----
+$ ./gradlew clean build
+----
+
