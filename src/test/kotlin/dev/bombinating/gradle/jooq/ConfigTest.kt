@@ -94,7 +94,7 @@ class ConfigTest {
     fun `single property`() {
         ConfigTypes.values().forEach { type ->
             type.type.configs.forEach {
-                val objConfig = Configuration()
+                val objConfig = createDefaultConfig()
                 val dslConfig = JooqConfigImpl()
                 val randomValue = type.type.generator.invoke()
                 (it.dslSetter as JooqConfig.(Any?)-> Unit).invoke(dslConfig, randomValue)
@@ -108,7 +108,7 @@ class ConfigTest {
     @Suppress("UNCHECKED_CAST")
     @Test
     fun `all properties`() {
-        val objConfig = Configuration()
+        val objConfig = createDefaultConfig()
         val dslConfig = JooqConfigImpl()
         ConfigTypes.values().forEach { type ->
             type.type.configs.forEach {
