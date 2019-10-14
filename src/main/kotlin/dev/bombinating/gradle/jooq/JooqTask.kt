@@ -82,7 +82,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         }
 
     @get:Input
-    override var logging: Logging?
+    override var logging: Logging
         get() = config.logging
         set(value) {
             config.logging = value
@@ -96,7 +96,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         }
 
     @get:Input
-    override var config: Configuration = Configuration()
+    override var config: Configuration = createDefaultConfig()
 
     private val outputDirName by lazy { config.generator.target.directory }
 

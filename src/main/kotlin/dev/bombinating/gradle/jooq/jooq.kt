@@ -24,6 +24,7 @@ import org.gradle.api.Project
 import org.jooq.Constants.XSD_CODEGEN
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
+import org.jooq.meta.jaxb.Logging
 import java.io.OutputStream
 import javax.xml.XMLConstants
 import javax.xml.bind.JAXBContext
@@ -38,6 +39,8 @@ internal const val JOOQ_TASK_GROUP = "jooq"
 internal const val JOOQ_EXT_NAME = "jooq"
 internal const val JOOQ_TASK_NAME = "jooq"
 internal const val JOOQ_TASK_DESC = "jOOQ code generator"
+
+internal fun createDefaultConfig() = Configuration().apply { logging = Logging.INFO }
 
 internal val JooqExtension.codeGenDeps: List<String>
     get() = listOf(
