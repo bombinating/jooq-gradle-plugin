@@ -8,7 +8,7 @@ import kotlin.streams.asStream
 
 abstract class TestConfigProvider(private val config: TestConfig) : ArgumentsProvider {
 
-    private val editions = listOf(JooqEdition.OpenSource, JooqEdition.Pro, null)
+    private val editions = listOf(JooqEdition.OpenSource, JooqEdition.Pro, JooqEdition.ProJava8, null)
     protected open val versions = listOf(jooqVersion11, jooqVersion12, null)
 
     private val applicableEditions: List<JooqEdition?>

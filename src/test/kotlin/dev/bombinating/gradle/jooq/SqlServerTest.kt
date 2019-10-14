@@ -29,7 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.nio.file.Path
 import java.sql.DriverManager
 
-// FIXME: replace @EnabledIf with @EnabledIfEnvironmentVariable when the latter is made repeatable
+// TODO: replace @EnabledIf with @EnabledIfEnvironmentVariable when the latter is made repeatable (JUnit v.5.6)
 // (https://github.com/junit-team/junit5/issues/1793)
 @EnabledIf("""java.lang.System.getenv("$envVarContainerTests") == "$containerEnabledValue"""")
 @EnabledIfEnvironmentVariable(named = envVarProTests, matches = proTestsEnabledValue)

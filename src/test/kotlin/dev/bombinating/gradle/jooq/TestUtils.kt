@@ -121,7 +121,6 @@ fun TestConfig.basicJooqConfig() = """
             |       url = "$url"
             |       user = "$username"
             |       password = "$password"
-            |       //schema = "$schema"
             |}
             |generator {
             |   database {
