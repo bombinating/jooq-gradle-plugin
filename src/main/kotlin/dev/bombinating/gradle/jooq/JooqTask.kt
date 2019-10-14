@@ -48,10 +48,24 @@ import javax.inject.Inject
 open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
 
     @get:Internal
-    override var runConfig: (JavaExecSpec.() -> Unit)? = null
+    var runConfigLambda: (() -> (JavaExecSpec.() -> Unit)?)? = null
 
     @get:Internal
-    override var resultHandler: (ExecResult.() -> Unit)? = null
+    var resultHandlerLambda: (() -> (ExecResult.() -> Unit)?)? = null
+
+    @get:Internal
+    override var runConfig: (JavaExecSpec.() -> Unit)?
+        get() = runConfigLambda?.invoke()
+        set(value) {
+            runConfigLambda = { value }
+        }
+
+    @get:Internal
+    override var resultHandler: (ExecResult.() -> Unit)?
+        get() = resultHandlerLambda?.invoke()
+        set(value) {
+            resultHandlerLambda = { value }
+        }
 
     @get:Input
     override var jdbc: Jdbc?

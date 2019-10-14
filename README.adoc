@@ -10,6 +10,34 @@ A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jO
 
 This started as a Kotlin port of the Groovy-based https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin] and was initially developed because it was decided that the Groovy plugin https://github.com/etiennestuder/gradle-jooq-plugin/pull/91[would not add Kotlin DSL support].
 
+Differences from the original include:
+
+* In this plugin, the `jooq` extension defines a single task jOOQ code generation task called `jooq`. Other jOOQ code generation tasks are explicitly defined using the Gradle task mechanism rather than being implicitly created in the `jooq` extension block.
+
+[source,build.gradle.kts]
+----
+...
+tasks.register<JooqTask>("...") {
+    jdbc {
+        ...
+    }
+    generator {
+        ...
+    }
+    ...
+}
+...
+----
+
+* This plugin does not create a task dependency between the jOOQ code generation and the Java compilation task.  Instead, if desired, the dependency can be set up explicitly in Gradle.
+
+[source,build.gradle.kts]
+----
+...
+tasks.getByName("compileJava").dependsOn(tasks.getByName("jooq"))
+...
+----
+
 == Using the plugin
 
 The plugin id needs to be added to the `plugins` block in the `build.gradle.kts` file in order to be used.
@@ -38,7 +66,9 @@ The plugin defines an extension, `jooq`, which (optionally) allows both the vers
 
 If the `edition` or `version` is not specified, they default to `OpenSource` and the same version as the plugin (e.g., `3.12.1`), respectively.
 
-The code generation properties (`logging`, `jdbc` and `generator`) come from the jOOQ code generation `Configuration` class (from the https://www.jooq.org/xsd/jooq-runtime-3.12.0.xsd[jOOQ codegen XSD]). The plugin provides extension methods to define the properties in a "closure" style.
+The code generation properties (`logging`, `onError`, `jdbc` and `generator`) come from the jOOQ code generation `Configuration` class (from the https://www.jooq.org/xsd/jooq-runtime-3.12.0.xsd[jOOQ codegen XSD]). The plugin provides extension methods to define the properties in a "closure" style.
+
+Finally, the plugin provides two additional properties, `runConfig` and `resultHandler`, that can be used to configure the JVM the jOOQ code generation process is run in and to provide a handler for termination of the JVM the code generation was run in, respectively.
 
 |===
 |Property | Description | Example
@@ -178,6 +208,17 @@ This task can be invoked like any other Gradle task:
 [source,bash]
 ----
 $ ./gradlew jooqAccounting
+----
+
+== Logging
+
+The plugin configures http://www.slf4j.org[SLF4J] and http://logback.qos.ch/[Logback] as the logging library for the plugin and provides a default `logback.xml` file that specifies the log format for the code generation.
+
+To provide a different Logback configuration, add the directory containing the `logback.xml` file to the `jooqRuntime` configuration. For example:
+
+[source,build.gradle.kts]
+----
+jooqRuntime(files("..."))
 ----
 
 == Internals

@@ -61,8 +61,8 @@ class JooqPlugin : Plugin<Project> {
         project.tasks.register(JOOQ_TASK_NAME, JooqTask::class.java).get().apply {
             config = jooqExt.config
             jooqClassPath = jooqRuntime
-            runConfig = jooqExt.runConfig
-            resultHandler = jooqExt.resultHandler
+            runConfigLambda = { jooqExt.runConfig }
+            resultHandlerLambda = { jooqExt.resultHandler }
         }
         /*
          * Modify jOOQ dependencies to match the version specified by the plugin extension.
