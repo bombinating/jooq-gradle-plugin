@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test
 import kotlin.random.Random.Default.nextBoolean
 import kotlin.random.Random.Default.nextInt
 import kotlin.test.assertEquals
+import org.jooq.meta.jaxb.Property
 
 internal val Configuration.xJdbc
     get() = withJdbc(jdbc ?: Jdbc()).jdbc
@@ -42,7 +43,10 @@ internal interface ConfigInfo<in T> {
 
 internal data class ConfigInfoGen<T>(val configs: List<ConfigInfo<T>>, val generator: () -> T)
 
-internal enum class StringConfigInfo(override val objSetter: Configuration.(String) -> Unit, override val dslSetter: JooqConfig.(String) -> Unit) : ConfigInfo<String> {
+internal enum class StringConfigInfo(
+    override val objSetter: Configuration.(String) -> Unit,
+    override val dslSetter: JooqConfig.(String) -> Unit
+) : ConfigInfo<String> {
     JdbcDriver({ xJdbc.driver = it }, { jdbc { driver = it } }),
     JdbcUsername({ xJdbc.username = it }, { jdbc { username = it } }),
     JdbcPassword({ xJdbc.password = it }, { jdbc { password = it } }),
@@ -59,32 +63,80 @@ internal enum class StringConfigInfo(override val objSetter: Configuration.(Stri
     TargetPackageName({ xGenerator.xTarget.packageName = it }, { generator { target { packageName = it } } })
 }
 
-internal enum class BooleanConfigInfo(override val objSetter: Configuration.(Boolean) -> Unit, override val dslSetter: JooqConfig.(Boolean) -> Unit) : ConfigInfo<Boolean> {
-    DbIncludeRoutines({ xGenerator.xDatabase.isIncludeRoutines = it }, { generator { database { isIncludeRoutines = it } } }),
-    DbDateAsTimestamp({ xGenerator.xDatabase.isDateAsTimestamp = it }, { generator { database { isDateAsTimestamp = it } } }),
-    DbForceIntegerTypesOnZeroScaleDecimals({ xGenerator.xDatabase.isForceIntegerTypesOnZeroScaleDecimals = it }, { generator { database { isForceIntegerTypesOnZeroScaleDecimals = it } } }),
-    DbIgnoreProcedureReturnValues({ xGenerator.xDatabase.isIgnoreProcedureReturnValues = it }, { generator { database { isIgnoreProcedureReturnValues = it } } }),
-    DbIncludeExcludeColumns({ xGenerator.xDatabase.isIncludeExcludeColumns = it }, { generator { database { isIncludeExcludeColumns = it } } }),
-    DbIncludeForeignKeys({ xGenerator.xDatabase.isIncludeForeignKeys = it }, { generator { database { isIncludeForeignKeys = it } } }),
-    DbIncludeIndexes({ xGenerator.xDatabase.isIncludeIndexes = it }, { generator { database { isIncludeIndexes = it } } }),
-    DBIncludePackageConstants({ xGenerator.xDatabase.isIncludePackageConstants = it }, { generator { database { isIncludePackageConstants = it } } }),
-    DbIncludePackageRoutines({ xGenerator.xDatabase.isIncludePackageRoutines = it }, { generator { database { isIncludePackageRoutines = it } } }),
-    DbIncludePackageUDTs({ xGenerator.xDatabase.isIncludePackageUDTs = it }, { generator { database { isIncludePackageUDTs = it } } }),
-    DbIncludePrimaryKeys({ xGenerator.xDatabase.isIncludePrimaryKeys = it }, { generator { database { isIncludePrimaryKeys = it } } }),
-    DbIncludeSequences({ xGenerator.xDatabase.isIncludeSequences = it }, { generator { database { isIncludeSequences = it } } }),
-    DbIncludeTriggerRoutines({ xGenerator.xDatabase.isIncludeTriggerRoutines = it }, { generator { database { isIncludeTriggerRoutines = it } } }),
-    DbIncludeUniqueKeys({ xGenerator.xDatabase.isIncludeUniqueKeys = it }, { generator { database { isIncludeUniqueKeys = it } } }),
+internal enum class BooleanConfigInfo(
+    override val objSetter: Configuration.(Boolean) -> Unit,
+    override val dslSetter: JooqConfig.(Boolean) -> Unit
+) : ConfigInfo<Boolean> {
+    DbIncludeRoutines(
+        { xGenerator.xDatabase.isIncludeRoutines = it },
+        { generator { database { isIncludeRoutines = it } } }),
+    DbDateAsTimestamp(
+        { xGenerator.xDatabase.isDateAsTimestamp = it },
+        { generator { database { isDateAsTimestamp = it } } }),
+    DbForceIntegerTypesOnZeroScaleDecimals(
+        { xGenerator.xDatabase.isForceIntegerTypesOnZeroScaleDecimals = it },
+        { generator { database { isForceIntegerTypesOnZeroScaleDecimals = it } } }),
+    DbIgnoreProcedureReturnValues(
+        { xGenerator.xDatabase.isIgnoreProcedureReturnValues = it },
+        { generator { database { isIgnoreProcedureReturnValues = it } } }),
+    DbIncludeExcludeColumns(
+        { xGenerator.xDatabase.isIncludeExcludeColumns = it },
+        { generator { database { isIncludeExcludeColumns = it } } }),
+    DbIncludeForeignKeys(
+        { xGenerator.xDatabase.isIncludeForeignKeys = it },
+        { generator { database { isIncludeForeignKeys = it } } }),
+    DbIncludeIndexes(
+        { xGenerator.xDatabase.isIncludeIndexes = it },
+        { generator { database { isIncludeIndexes = it } } }),
+    DBIncludePackageConstants(
+        { xGenerator.xDatabase.isIncludePackageConstants = it },
+        { generator { database { isIncludePackageConstants = it } } }),
+    DbIncludePackageRoutines(
+        { xGenerator.xDatabase.isIncludePackageRoutines = it },
+        { generator { database { isIncludePackageRoutines = it } } }),
+    DbIncludePackageUDTs(
+        { xGenerator.xDatabase.isIncludePackageUDTs = it },
+        { generator { database { isIncludePackageUDTs = it } } }),
+    DbIncludePrimaryKeys(
+        { xGenerator.xDatabase.isIncludePrimaryKeys = it },
+        { generator { database { isIncludePrimaryKeys = it } } }),
+    DbIncludeSequences(
+        { xGenerator.xDatabase.isIncludeSequences = it },
+        { generator { database { isIncludeSequences = it } } }),
+    DbIncludeTriggerRoutines(
+        { xGenerator.xDatabase.isIncludeTriggerRoutines = it },
+        { generator { database { isIncludeTriggerRoutines = it } } }),
+    DbIncludeUniqueKeys(
+        { xGenerator.xDatabase.isIncludeUniqueKeys = it },
+        { generator { database { isIncludeUniqueKeys = it } } }),
     TargetIsClean({ xGenerator.xTarget.isClean = it }, { generator { target { isClean = it } } }),
 }
 
-internal enum class IntConfigInfo(override val objSetter: Configuration.(Int) -> Unit, override val dslSetter: JooqConfig.(Int) -> Unit) : ConfigInfo<Int> {
-    LogSlowerQueriesAfterSecs({ xGenerator.xDatabase.logSlowQueriesAfterSeconds = it }, { generator { database { logSlowQueriesAfterSeconds = it } } })
+internal enum class IntConfigInfo(
+    override val objSetter: Configuration.(Int) -> Unit,
+    override val dslSetter: JooqConfig.(Int) -> Unit
+) : ConfigInfo<Int> {
+    LogSlowerQueriesAfterSecs(
+        { xGenerator.xDatabase.logSlowQueriesAfterSeconds = it },
+        { generator { database { logSlowQueriesAfterSeconds = it } } })
+}
+
+internal enum class StringPairConfigInfo(
+    override val objSetter: Configuration.(Pair<String, String>) -> Unit,
+    override val dslSetter: JooqConfig.(Pair<String, String>) -> Unit
+) : ConfigInfo<Pair<String, String>> {
+    DatabaseProperties({
+        xGenerator.xDatabase.properties = mutableListOf(Property().apply { key = it.first; value = it.second })
+    }, { generator { database { properties { property(it.first to it.second) } } } })
 }
 
 internal enum class ConfigTypes(val type: ConfigInfoGen<*>) {
     STRING(ConfigInfoGen(StringConfigInfo.values().toList()) { randomAlphanumeric(1, 20) }),
     BOOLEAN(ConfigInfoGen(BooleanConfigInfo.values().toList()) { nextBoolean() }),
-    INT(ConfigInfoGen(IntConfigInfo.values().toList()) { nextInt() })
+    INT(ConfigInfoGen(IntConfigInfo.values().toList()) { nextInt() }),
+    STRING_PROPS(ConfigInfoGen(StringPairConfigInfo.values().toList()) {
+        randomAlphanumeric(1, 20) to randomAlphanumeric(1, 20)
+    })
 }
 
 class ConfigTest {
@@ -97,8 +149,8 @@ class ConfigTest {
                 val objConfig = createDefaultConfig()
                 val dslConfig = JooqConfigImpl()
                 val randomValue = type.type.generator.invoke()
-                (it.dslSetter as JooqConfig.(Any?)-> Unit).invoke(dslConfig, randomValue)
-                (it.objSetter as Configuration.(Any?)-> Unit).invoke(objConfig, randomValue)
+                (it.dslSetter as JooqConfig.(Any?) -> Unit).invoke(dslConfig, randomValue)
+                (it.objSetter as Configuration.(Any?) -> Unit).invoke(objConfig, randomValue)
                 assertEquals(objConfig, dslConfig.config)
             }
 
@@ -113,8 +165,8 @@ class ConfigTest {
         ConfigTypes.values().forEach { type ->
             type.type.configs.forEach {
                 val randomValue = type.type.generator.invoke()
-                (it.dslSetter as JooqConfig.(Any?)-> Unit).invoke(dslConfig, randomValue)
-                (it.objSetter as Configuration.(Any?)-> Unit).invoke(objConfig, randomValue)
+                (it.dslSetter as JooqConfig.(Any?) -> Unit).invoke(dslConfig, randomValue)
+                (it.objSetter as Configuration.(Any?) -> Unit).invoke(objConfig, randomValue)
             }
 
         }
