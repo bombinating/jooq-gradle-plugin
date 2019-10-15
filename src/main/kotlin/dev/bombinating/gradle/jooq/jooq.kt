@@ -45,6 +45,7 @@ internal fun createDefaultConfig() = Configuration().apply { logging = Logging.I
 internal val JooqExtension.codeGenDeps: List<String>
     get() = listOf(
         "${edition.groupId}:jooq-codegen:${version}",
+        "${edition.groupId}:jooq-meta-extensions:${version}",
         "javax.xml.bind:jaxb-api:2.3.1",
         "javax.activation:activation:1.1.1",
         "com.sun.xml.bind:jaxb-core:2.3.0.1",
