@@ -31,6 +31,7 @@ import org.jooq.meta.jaxb.Jdbc
 import org.jooq.meta.jaxb.MatcherRule
 import org.jooq.meta.jaxb.Matchers
 import org.jooq.meta.jaxb.MatchersTableType
+import org.jooq.meta.jaxb.Property
 import org.jooq.meta.jaxb.Strategy
 import org.jooq.meta.jaxb.Target
 
@@ -172,4 +173,27 @@ fun Database.forcedTypes(action: MutableList<ForcedType>.() -> Unit) {
  */
 fun MutableList<ForcedType>.forcedType(action: ForcedType.() -> Unit) {
     this += ForcedType().apply(action)
+}
+
+/**
+ * Extension method for customizing the `properties` config in a `Database` config
+ *
+ * @receiver Parent `Database` the [MutableList] of `Property` config is associated with
+ * @param action lambda for customizing the [MutableList] of `Property` config
+ */
+fun Database.properties(action: MutableList<Property>.() -> Unit) {
+    properties = ((properties ?: mutableListOf()).apply(action))
+}
+
+/**
+ * Extension method for customizing the `property` config in a `properties` block.
+ *
+ * @receiver Parent [MutableList] of `Property` the `Property` config is associated with
+ * @param action lambda for customizing the `Property` config
+ */
+fun MutableList<Property>.property(action: Pair<String, String>) {
+    this += Property().apply {
+        key = action.first
+        value = action.second
+    }
 }

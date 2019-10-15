@@ -22,6 +22,7 @@ import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.ExecResult
@@ -48,41 +49,41 @@ import javax.inject.Inject
 open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
 
     @get:Internal
-    var runConfigLambda: (() -> (JavaExecSpec.() -> Unit)?)? = null
+    internal var runConfigLambda: (() -> (JavaExecSpec.() -> Unit)?)? = null
 
     @get:Internal
-    var resultHandlerLambda: (() -> (ExecResult.() -> Unit)?)? = null
+    internal var resultHandlerLambda: (() -> (ExecResult.() -> Unit)?)? = null
 
-    @get:Internal
+    @get:Input @get:Optional
     override var runConfig: (JavaExecSpec.() -> Unit)?
         get() = runConfigLambda?.invoke()
         set(value) {
             runConfigLambda = { value }
         }
 
-    @get:Internal
+    @get:Input @get:Optional
     override var resultHandler: (ExecResult.() -> Unit)?
         get() = resultHandlerLambda?.invoke()
         set(value) {
             resultHandlerLambda = { value }
         }
 
-    @get:Input
+    @get:Input @get:Optional
     override var jdbc: Jdbc?
         get() = config.jdbc
         set(value) {
             config.jdbc = value
         }
 
-    @get:Input
+    @get:Input @get:Optional
     override var generator: Generator?
         get() = config.generator
         set(value) {
             config.generator = value
         }
 
-    @get:Input
-    override var logging: Logging
+    @get:Input @get:Optional
+    override var logging: Logging?
         get() = config.logging
         set(value) {
             config.logging = value

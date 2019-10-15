@@ -40,7 +40,7 @@ internal const val JOOQ_EXT_NAME = "jooq"
 internal const val JOOQ_TASK_NAME = "jooq"
 internal const val JOOQ_TASK_DESC = "jOOQ code generator"
 
-internal fun createDefaultConfig() = Configuration().apply { logging = Logging.INFO }
+internal fun createDefaultConfig() = Configuration()
 
 internal val JooqExtension.codeGenDeps: List<String>
     get() = listOf(

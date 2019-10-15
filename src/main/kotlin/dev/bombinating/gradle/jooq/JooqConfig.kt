@@ -35,7 +35,7 @@ import org.jooq.meta.jaxb.OnError
 interface JooqConfig {
     var jdbc: Jdbc?
     var generator: Generator?
-    var logging: Logging
+    var logging: Logging?
     var onError: OnError?
     val config: Configuration
     var runConfig: (JavaExecSpec.() -> Unit)?
@@ -56,7 +56,7 @@ internal class JooqConfigImpl(override val config: Configuration = createDefault
             config.generator = value
         }
 
-    override var logging: Logging
+    override var logging: Logging?
         get() = config.logging
         set(value) {
             config.logging = value
