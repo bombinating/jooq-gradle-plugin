@@ -30,7 +30,7 @@ fun dependenciesBlock(jooqDependency: String, jdbcDriverDependency: String) = ""
     |   $jooqDependency
     |   compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     |   jooqRuntime($jdbcDriverDependency)
-""".trimMargin("|")
+""".trimMargin()
 
 fun String.packageToPath() = replace(".", "/")
 

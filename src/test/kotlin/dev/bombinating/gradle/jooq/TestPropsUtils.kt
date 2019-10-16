@@ -3,11 +3,10 @@ package dev.bombinating.gradle.jooq
 import java.io.File
 import java.nio.file.Path
 
-fun Path.createPropFile() {
+fun Path.createPropFile() =
     File(toFile(), "gradle.properties").also {
         it.writeText(createPropContent())
     }
-}
 
 fun createPropContent(): String = """
     |$envVarJooqRepoUrl=${System.getenv(envVarJooqRepoUrl) ?: ""}
