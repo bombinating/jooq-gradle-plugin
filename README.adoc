@@ -17,7 +17,7 @@ The plugin id needs to be added to the `plugins` block in the `build.gradle.kts`
 [source,build.gradle.kts]
 ----
 plugins {
-    id("dev.bombinating.jooq-codegen") version "3.12.1"
+    id("dev.bombinating.jooq-codegen") version "1.0.0"
 }
 ----
 
@@ -36,7 +36,7 @@ dependencies {
 
 The plugin defines an extension, `jooq`, which (optionally) allows both the version and edition of the jOOQ code generation library to be defined, as well as information about the code generation itself.
 
-If the `edition` or `version` is not specified, they default to `OpenSource` and the same version as the plugin (e.g., `3.12.1`), respectively.
+If the `edition` or `version` is not specified, they default to `OpenSource` and `3.12.1`, respectively.
 
 The code generation properties (`logging`, `onError`, `jdbc` and `generator`) come from the jOOQ code generation `Configuration` class (from the https://www.jooq.org/xsd/jooq-runtime-3.12.0.xsd[jOOQ codegen XSD]). The plugin provides extension methods to define the properties in a "closure" style.
 
@@ -215,6 +215,13 @@ To push a *snapshot* to https://oss.jfrog.org/artifactory/[Artifactory]:
 $ ./gradlew clean build artifactoryPublish -PbintrayUser=... -PbintrayKey=...
 ----
 
+To create a release and create a tag in git for it:
+
+[source,bash]
+----
+$ ./gradlew clean build release
+----
+
 To push a *release* to https://dl.bintray.com/bombinating/maven/[bintray]:
 
 [source,bash]
@@ -250,7 +257,7 @@ val jooqPassword: String by project
 
 plugins {
     java
-    id("dev.bombinating.jooq-codegen") version "3.12.1"
+    id("dev.bombinating.jooq-codegen") version "1.0.0"
 }
 
 sourceSets["main"].java {
@@ -323,7 +330,7 @@ val oracleSchema: String by project
 
 plugins {
     java
-    id("dev.bombinating.jooq-codegen") version "3.12.1"
+    id("dev.bombinating.jooq-codegen") version "1.0.0"
 }
 
 sourceSets["main"].java {
@@ -400,7 +407,7 @@ tasks.getByName("compileJava").dependsOn(jooq2, tasks.getByName("jooq"))
 
 ----
 
-To generate the code related to both databases, it is sufficient to simply call the `build` task since it has a dependency on both the `joo` and `accounting` tasks and will therefore ensure that the the source code has been generated from both databases first.
+To generate the code related to both databases, it is sufficient to simply call the `build` task since it has a dependency on both the `joo` and `accounting` tasks Gradle and will therefore ensure that the the source code has been generated from both databases first.
 
 [source,bash]
 ----
