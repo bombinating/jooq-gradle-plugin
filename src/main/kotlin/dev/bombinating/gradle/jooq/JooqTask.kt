@@ -137,7 +137,9 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
 
     private fun createJooqConfigFile(): File {
         val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
-        config.marshall(FileOutputStream(configFile))
+        FileOutputStream(configFile).use {
+            config.marshall(it)
+        }
         logger.info("Config XML file (${configFile.name}):\n${configFile.readText()}")
         return configFile
     }
