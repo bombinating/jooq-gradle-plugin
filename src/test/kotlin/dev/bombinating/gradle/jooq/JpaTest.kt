@@ -34,13 +34,39 @@ class JpaTest {
     private val className = "Person"
 
     @Test
-    fun `Test Generate jOOQ code from JPA Entities`() {
+    fun `Test Generate jOOQ code from JPA Entities using extension`() {
         createPersonClass()
         workspaceDir.createPropFile()
         workspaceDir.createSettingsFile(projectName = defaultProjectName)
         workspaceDir.createBuildFile(config = config, depBlock = deps) {
             """
             |jooq {
+            |   $jpaGeneratorConfig
+            |}
+            """.trimMargin("|")
+        }
+        val result = runGradle(workspaceDir, "clean", "build", "jooq", "--info", "--stacktrace")
+        validateGradleOutput(workspaceDir = workspaceDir, config = config, result = result, taskName = "jooq")
+    }
+
+    @Test
+    fun `Test Generate jOOQ code from JPA Entities using task`() {
+        createPersonClass()
+        workspaceDir.createPropFile()
+        workspaceDir.createSettingsFile(projectName = defaultProjectName)
+        workspaceDir.createBuildFile(config = config, depBlock = deps) {
+            """
+            |tasks.register<JooqTask>("jooqJpa") {
+            |   $jpaGeneratorConfig
+            |}
+            """.trimMargin("|")
+        }
+        val result = runGradle(workspaceDir, "clean", "build", "jooqJpa", "--info", "--stacktrace")
+        validateGradleOutput(workspaceDir = workspaceDir, config = config, result = result, taskName = "jooqJpa")
+    }
+
+    private val jpaGeneratorConfig =
+            """
             |   generator {
             |       database {
             |           name = "org.jooq.meta.extensions.jpa.JPADatabase"
@@ -52,17 +78,13 @@ class JpaTest {
             |           }
             |       }
             |       target {
-            |           directory = "$genDir"
+            |           directory = "${config.genDir}"
             |           packageName = "${config.packageName}"
             |       }
             |       logging = Logging.DEBUG
             |   }
-            |}
             """.trimMargin("|")
-        }
-        val result = runGradle(workspaceDir, "clean", "build", "jooq", "--info", "--stacktrace")
-        validateGradleOutput(workspaceDir = workspaceDir, config = config, result = result, taskName = "jooq")
-    }
+
 
     private fun createPersonClass() {
         val file = workspaceDir.toFile()
