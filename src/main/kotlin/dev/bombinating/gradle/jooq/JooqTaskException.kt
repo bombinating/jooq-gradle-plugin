@@ -15,4 +15,10 @@
  */
 package dev.bombinating.gradle.jooq
 
+/**
+ * Information about the jOOQ plugin failure.
+ *
+ * @param msg message about the failure
+ * @param cause exception that caused the failure
+ */
 class JooqTaskException(msg: String?, cause: Throwable) : RuntimeException(msg, cause)
