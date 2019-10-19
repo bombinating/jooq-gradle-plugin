@@ -143,12 +143,15 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         }
         javaExecResult.printMsg()
         resultHandler?.invoke(javaExecResult)
-        javaExecResult.exception?.let { throw it }
+        javaExecResult.exception?.let {
+            throw JooqTaskException(cause = it,
+                msg = "Error invoking the jOOQ code generation tool: ${javaExecResult.errorMsg}")
+        }
     }
 
     private fun JavaExecResult.printMsg() {
         if (!isSuccess) {
-            logger.error("An error occurred invoking the jOOQ code generation plugin: $errorMsg")
+            logger.info("An error occurred invoking the jOOQ code generation plugin:\n$errorMsg")
         } else {
             logger.info("The jOOQ code generation plugin finished without errors")
         }
@@ -156,10 +159,10 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
 
     private fun createJooqConfigFile(): File {
         val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
+        logger.info("jOOQ config XML path ${configFile.path}")
         FileOutputStream(configFile).use {
             config.marshall(it)
         }
-        logger.info("Path to jOOQ config XML file ${configFile.path}")
         logger.debug("jOOQ config file contents:\n${configFile.readText()}")
         return configFile
     }
