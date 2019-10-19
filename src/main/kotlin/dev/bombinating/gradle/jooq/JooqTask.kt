@@ -138,7 +138,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
                 runConfig?.invoke(spec)
             }
             JavaExecResult(result = result)
-        } catch (e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught ") e: Exception) {
             JavaExecResult(exception = e)
         }
         javaExecResult.printMsg()

@@ -199,75 +199,175 @@ fun MutableList<Property>.property(prop: Pair<String, String>) {
     this += prop.toProperty()
 }
 
-// FIXME: new below this -- need kdocs!
-
+/**
+ * Extension method for customizing the `properties` config in a `Database` config
+ *
+ * @receiver Parent `Database` the properties associated with
+ * @param props pairs of properties
+ */
 fun Database.properties(vararg props: Pair<String, String>) {
     properties = props.map(Pair<String, String>::toProperty).toMutableList()
 }
 
+/**
+ * Extension method for customizing the `properties` config in a `Jdbc` config
+ *
+ * @receiver Parent `Jdbc` the [MutableList] of `Property` config is associated with
+ * @param action lambda for customizing the [MutableList] of `Property` config
+ */
 fun Jdbc.properties(action: MutableList<Property>.() -> Unit) {
     properties = ((properties ?: mutableListOf()).apply(action))
 }
 
+/**
+ * Extension method for customizing the `properties` config in a `Jdbc` config
+ *
+ * @receiver Parent `Database` the properties associated with
+ * @param props pairs of properties
+ */
 fun Jdbc.properties(vararg props: Pair<String, String>) {
     properties = props.map(Pair<String, String>::toProperty).toMutableList()
 }
 
+/**
+ * Extension method for customizing the `enumTypes` config in a `Database` config
+ *
+ * @receiver Parent `Database` the [MutableList] of [EnumType] config is associated with
+ * @param action lambda for customizing the [MutableList] of [EnumType] config
+ */
 fun Database.enumTypes(action: MutableList<EnumType>.() -> Unit) {
-    // FIXME: I don't think this should be cumulative -- it's one shot!!!
     enumTypes = ((enumTypes ?: mutableListOf()).apply(action))
 }
 
+/**
+ * Extension method for adding an [EnumType] to a [MutableList].
+ *
+ * @receiver Parent [MutableList] the [EnumType] is being added to
+ * @param action to create an [EnumType] to add to the [MutableList] of enum types
+ */
 fun MutableList<EnumType>.enumType(action: EnumType.() -> Unit) {
     this += EnumType().apply(action)
 }
 
+/**
+ * Extension method for adding [String] [Pair]s as [EnumType]s to the [MutableList] of enum types associated with a
+ * [Database]
+ *
+ * @receiver Parent [Database] the [EnumType]s are being added to
+ * @param types [String] [Pair]s to turn into [EnumType]s and add to the receiver [Database]
+ */
 fun Database.enumTypes(vararg types: Pair<String, String>) {
     enumTypes = types.map(Pair<String, String>::toEnumType).toMutableList()
 }
 
+/**
+ * Extension method for adding a list of [CatalogMappingType]s to the [Database] receiver.
+ *
+ * @receiver Parent [Database] the [CatalogMappingType]s are being added to
+ * @param action create the list of [CatalogMappingType] to add to the [Database] receiver
+ */
 fun Database.catalogs(action: MutableList<CatalogMappingType>.() -> Unit) {
     catalogs = ((catalogs ?: mutableListOf()).apply(action))
 }
 
+/**
+ * Extension method for adding a [CatalogMappingType] object to a list.
+ *
+ * @receiver List of [CatalogMappingType] the [CatalogMappingType] is being added to
+ * @param action create the [CatalogMappingType] to add to the list
+ */
 fun MutableList<CatalogMappingType>.catalogMappingType(action: CatalogMappingType.() -> Unit) {
     this += CatalogMappingType().apply(action)
 }
 
+/**
+ * Extension method for adding a list of [SchemaMappingType] objects to the list of schemata.
+ *
+ * @receiver [CatalogMappingType] the [SchemaMappingType] is being added to
+ * @param action create the list of [SchemaMappingType] to add to the list of schemata
+ */
 fun CatalogMappingType.schemata(action: MutableList<SchemaMappingType>.() -> Unit) {
     schemata = ((schemata ?: mutableListOf()).apply(action))
 }
 
+/**
+ * Extension method for adding a list of [SchemaMappingType] objects to a list
+ *
+ * @receiver list [SchemaMappingType] is being added to
+ * @param action create the [SchemaMappingType] to add to the list
+ */
 fun MutableList<SchemaMappingType>.schemaMappingType(action: SchemaMappingType.() -> Unit) {
     this += SchemaMappingType().apply(action)
 }
 
+/**
+ * Extension method for adding a list of [Embeddable] objects to a list
+ *
+ * @receiver Database the [Embeddable] objects are being added to
+ * @param action create the list of [Embeddable] objects to add to the list
+ */
 fun Database.embeddables(action: MutableList<Embeddable>.() -> Unit) {
     embeddables = ((embeddables ?: mutableListOf()).apply(action))
 }
 
+/**
+ * Extension method for adding an [Embeddable] object to a list
+ *
+ * @receiver List of [Embeddable] objects to add to
+ * @param action create the [Embeddable] object to add to the list
+ */
 fun MutableList<Embeddable>.embeddable(action: Embeddable.() -> Unit) {
     this += Embeddable().apply(action)
 }
 
+/**
+ * Extension method for adding an [EmbeddableField] object to an [Embeddable]
+ *
+ * @receiver [Embeddable] object to add to
+ * @param action create the [EmbeddableField] object to add to the list
+ */
 fun Embeddable.field(action: EmbeddableField.() -> Unit) {
     getFields() += EmbeddableField().apply(action)
 }
 
+/**
+ * Extension method for adding String pairs as an [EmbeddableField] objects to an [Embeddable]
+ *
+ * @receiver [Embeddable] object to add to
+ * @param fields String [Pair] objects that are converted into [EmbeddableField] objects
+ */
 fun Embeddable.fields(vararg fields: Pair<String, String>) {
     this.fields = fields.map(Pair<String, String>::toEmbeddableField).toMutableList()
 }
 
+/**
+ * Extension method for converting a String [Pair] to a [Property] object
+ *
+ * @receiver String [Pair]
+ * @return [Property] object constructed from the [Pair] values
+ */
 internal fun Pair<String, String>.toProperty() = Property().apply {
     key = first
     value = second
 }
 
+/**
+ * Extension method for converting a String [Pair] to an [EnumType] object
+ *
+ * @receiver String [Pair]
+ * @return [EnumType] object constructed from the [Pair] values
+ */
 internal fun Pair<String, String>.toEnumType() = EnumType().apply {
     name = first
     literals = second
 }
 
+/**
+ * Extension method for converting a String [Pair] to an [EmbeddableField] object
+ *
+ * @receiver String [Pair]
+ * @return [EmbeddableField] object constructed from the [Pair] values
+ */
 internal fun Pair<String, String>.toEmbeddableField() = EmbeddableField().apply {
     name = first
     expression = second
