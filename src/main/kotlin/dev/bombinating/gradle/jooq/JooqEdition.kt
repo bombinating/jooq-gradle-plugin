@@ -31,8 +31,12 @@ internal data class JooqVersion(val major: Int, val minor: Int) {
 
 }
 
-private val JOOQ_3_12 = JooqVersion(3, 12)
-private val JOOQ_3_1 = JooqVersion(3, 1)
+private const val JOOQ_MAJOR_VERSION = 3
+private const val JOOQ_FIRST_MINOR_VERSION = 1
+private const val JOOQ_JAVA_9_MINOR_VERSION = 12
+
+private val JOOQ_3_12 = JooqVersion(JOOQ_MAJOR_VERSION, JOOQ_JAVA_9_MINOR_VERSION)
+private val JOOQ_3_1 = JooqVersion(JOOQ_MAJOR_VERSION, JOOQ_FIRST_MINOR_VERSION)
 
 /**
  * jOOQ edition info.
@@ -53,7 +57,7 @@ enum class JooqEdition(
     /**
      * Java 9+ Pro edition.
      */
-    Pro("org.jooq.pro", true, { if (it < JOOQ_3_12)JAVA_1_8 else JAVA_9 }, JOOQ_3_1),
+    Pro("org.jooq.pro", true, { if (it < JOOQ_3_12) JAVA_1_8 else JAVA_9 }, JOOQ_3_1),
     /**
      * Java 8+ Pro edition.
      */
@@ -82,4 +86,3 @@ enum class JooqEdition(
     }
 
 }
-

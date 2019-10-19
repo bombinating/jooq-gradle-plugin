@@ -25,7 +25,6 @@ import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.process.ExecResult
 import org.gradle.process.JavaExecSpec
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
@@ -52,37 +51,42 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
     internal var runConfigLambda: (() -> (JavaExecSpec.() -> Unit)?)? = null
 
     @get:Internal
-    internal var resultHandlerLambda: (() -> (ExecResult.() -> Unit)?)? = null
+    internal var resultHandlerLambda: (() -> (JavaExecResult.() -> Unit)?)? = null
 
-    @get:Input @get:Optional
+    @get:Input
+    @get:Optional
     override var runConfig: (JavaExecSpec.() -> Unit)?
         get() = runConfigLambda?.invoke()
         set(value) {
             runConfigLambda = { value }
         }
 
-    @get:Input @get:Optional
-    override var resultHandler: (ExecResult.() -> Unit)?
+    @get:Input
+    @get:Optional
+    override var resultHandler: (JavaExecResult.() -> Unit)?
         get() = resultHandlerLambda?.invoke()
         set(value) {
             resultHandlerLambda = { value }
         }
 
-    @get:Input @get:Optional
+    @get:Input
+    @get:Optional
     override var jdbc: Jdbc?
         get() = config.jdbc
         set(value) {
             config.jdbc = value
         }
 
-    @get:Input @get:Optional
+    @get:Input
+    @get:Optional
     override var generator: Generator?
         get() = config.generator
         set(value) {
             config.generator = value
         }
 
-    @get:Input @get:Optional
+    @get:Input
+    @get:Optional
     override var logging: Logging?
         get() = config.logging
         set(value) {
@@ -123,17 +127,52 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
     @TaskAction
     fun generate() {
         logger.info("jooqRuntime classpath: ${jooqClassPath.files}")
-        val result = project.javaexec { spec ->
-            val configFile = createJooqConfigFile()
-            val logFile = createLoggingConfigFile()
-            spec.main = GenerationTool::class.java.canonicalName
-            spec.classpath = jooqClassPath.plus(ImmutableFileCollection.of(logFile.parentFile))
-            spec.args = listOf(configFile.absolutePath)
-            spec.workingDir = project.projectDir
-            runConfig?.invoke(spec)
+        val javaExecResult = try {
+            val result = project.javaexec { spec ->
+                val configFile = createJooqConfigFile()
+                logger.info("Config file: ${configFile.path}")
+                val logFile = createLoggingConfigFile()
+                logger.info("Log file: ${logFile.path}")
+                spec.isIgnoreExitValue = true
+                spec.main = GenerationTool::class.java.canonicalName
+                spec.classpath = jooqClassPath.plus(ImmutableFileCollection.of(logFile.parentFile))
+                spec.args = listOf(configFile.absolutePath)
+                spec.workingDir = project.projectDir
+                runConfig?.invoke(spec)
+            }
+            JavaExecResult(result = result)
+        } catch (e: Exception) {
+            JavaExecResult(exception = e)
         }
-        resultHandler?.invoke(result)
+        javaExecResult.printMsg()
+        resultHandler?.invoke(javaExecResult)
+        javaExecResult.exception?.let { throw it }
     }
+
+    private fun JavaExecResult.printMsg() {
+        if (!isSuccess) {
+            logger.error("An error occurred invoking the jOOQ code generator: $errorMsg")
+        } else {
+            logger.info("The jOOQ plugin finished without errors")
+        }
+//        if (isSuccess) {
+//            logger.info(toMsg())
+//        } else {
+//            logger.error(toMsg())
+//        }
+    }
+
+    private fun JavaExecResult.toMsg() = """
+        |=================================================================
+        |* jOOQ Gradle Plugin
+        |* Success: $isSuccess${if (!isSuccess) toErrorMsg() else ""}
+        |=================================================================
+    """.trimMargin()
+
+    private fun JavaExecResult.toErrorMsg() = """
+        |
+        |* Error: $errorMsg
+    """.trimMargin()
 
     private fun createJooqConfigFile(): File {
         val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
@@ -166,7 +205,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         |</configuration>""".trimMargin()
 
     private val Logging?.logbackLevel: String
-        get() = when(this) {
+        get() = when (this) {
             null -> "info"
             Logging.FATAL -> "error"
             else -> name.toLowerCase()

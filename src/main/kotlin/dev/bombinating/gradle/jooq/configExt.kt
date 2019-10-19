@@ -21,9 +21,12 @@
 
 package dev.bombinating.gradle.jooq
 
-import org.gradle.process.ExecResult
 import org.gradle.process.JavaExecSpec
+import org.jooq.meta.jaxb.CatalogMappingType
 import org.jooq.meta.jaxb.Database
+import org.jooq.meta.jaxb.Embeddable
+import org.jooq.meta.jaxb.EmbeddableField
+import org.jooq.meta.jaxb.EnumType
 import org.jooq.meta.jaxb.ForcedType
 import org.jooq.meta.jaxb.Generate
 import org.jooq.meta.jaxb.Generator
@@ -32,6 +35,7 @@ import org.jooq.meta.jaxb.MatcherRule
 import org.jooq.meta.jaxb.Matchers
 import org.jooq.meta.jaxb.MatchersTableType
 import org.jooq.meta.jaxb.Property
+import org.jooq.meta.jaxb.SchemaMappingType
 import org.jooq.meta.jaxb.Strategy
 import org.jooq.meta.jaxb.Target
 
@@ -51,7 +55,7 @@ fun JooqConfig.runConfig(action: JavaExecSpec.() -> Unit) {
  * @receiver Parent jOOQ code generation [JooqConfig] the result handler is associated with
  * @param action lambda for specifying a handler to be invoked after the jOOQ code generation completes
  */
-fun JooqConfig.resultHandler(action: ExecResult.() -> Unit) {
+fun JooqConfig.resultHandler(action: JavaExecResult.() -> Unit) {
     resultHandler = action
 }
 
@@ -189,11 +193,82 @@ fun Database.properties(action: MutableList<Property>.() -> Unit) {
  * Extension method for customizing the `property` config in a `properties` block.
  *
  * @receiver Parent [MutableList] of `Property` the `Property` config is associated with
- * @param action lambda for customizing the `Property` config
+ * @param prop String Pair
  */
-fun MutableList<Property>.property(action: Pair<String, String>) {
-    this += Property().apply {
-        key = action.first
-        value = action.second
-    }
+fun MutableList<Property>.property(prop: Pair<String, String>) {
+    this += prop.toProperty()
+}
+
+// FIXME: new below this -- need kdocs!
+
+fun Database.properties(vararg props: Pair<String, String>) {
+    properties = props.map(Pair<String, String>::toProperty).toMutableList()
+}
+
+fun Jdbc.properties(action: MutableList<Property>.() -> Unit) {
+    properties = ((properties ?: mutableListOf()).apply(action))
+}
+
+fun Jdbc.properties(vararg props: Pair<String, String>) {
+    properties = props.map(Pair<String, String>::toProperty).toMutableList()
+}
+
+fun Database.enumTypes(action: MutableList<EnumType>.() -> Unit) {
+    // FIXME: I don't think this should be cumulative -- it's one shot!!!
+    enumTypes = ((enumTypes ?: mutableListOf()).apply(action))
+}
+
+fun MutableList<EnumType>.enumType(action: EnumType.() -> Unit) {
+    this += EnumType().apply(action)
+}
+
+fun Database.enumTypes(vararg types: Pair<String, String>) {
+    enumTypes = types.map(Pair<String, String>::toEnumType).toMutableList()
+}
+
+fun Database.catalogs(action: MutableList<CatalogMappingType>.() -> Unit) {
+    catalogs = ((catalogs ?: mutableListOf()).apply(action))
+}
+
+fun MutableList<CatalogMappingType>.catalogMappingType(action: CatalogMappingType.() -> Unit) {
+    this += CatalogMappingType().apply(action)
+}
+
+fun CatalogMappingType.schemata(action: MutableList<SchemaMappingType>.() -> Unit) {
+    schemata = ((schemata ?: mutableListOf()).apply(action))
+}
+
+fun MutableList<SchemaMappingType>.schemaMappingType(action: SchemaMappingType.() -> Unit) {
+    this += SchemaMappingType().apply(action)
+}
+
+fun Database.embeddables(action: MutableList<Embeddable>.() -> Unit) {
+    embeddables = ((embeddables ?: mutableListOf()).apply(action))
+}
+
+fun MutableList<Embeddable>.embeddable(action: Embeddable.() -> Unit) {
+    this += Embeddable().apply(action)
+}
+
+fun Embeddable.field(action: EmbeddableField.() -> Unit) {
+    getFields() += EmbeddableField().apply(action)
+}
+
+fun Embeddable.fields(vararg fields: Pair<String, String>) {
+    this.fields = fields.map(Pair<String, String>::toEmbeddableField).toMutableList()
+}
+
+internal fun Pair<String, String>.toProperty() = Property().apply {
+    key = first
+    value = second
+}
+
+internal fun Pair<String, String>.toEnumType() = EnumType().apply {
+    name = first
+    literals = second
+}
+
+internal fun Pair<String, String>.toEmbeddableField() = EmbeddableField().apply {
+    name = first
+    expression = second
 }
