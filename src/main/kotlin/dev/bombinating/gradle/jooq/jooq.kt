@@ -24,10 +24,10 @@ import org.gradle.api.Project
 import org.jooq.Constants.XSD_CODEGEN
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
-import org.jooq.meta.jaxb.Logging
 import java.io.OutputStream
 import javax.xml.XMLConstants
 import javax.xml.bind.JAXBContext
+import javax.xml.bind.Marshaller
 import javax.xml.validation.SchemaFactory
 
 internal const val DEFAULT_JOOQ_VERSION = "3.12.1"
@@ -60,6 +60,7 @@ internal fun Configuration.marshall(dest: OutputStream) {
     val factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
     val marshaller = JAXBContext.newInstance(Configuration::class.java).createMarshaller().apply {
         schema = factory.newSchema(GenerationTool::class.java.getResource("/xsd/$XSD_CODEGEN"))
+        setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
     }
     marshaller.marshal(this, dest)
 }
