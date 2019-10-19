@@ -131,7 +131,6 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
             val result = project.javaexec { spec ->
                 val configFile = createJooqConfigFile()
                 val logFile = createLoggingConfigFile()
-                spec.isIgnoreExitValue = true
                 spec.main = GenerationTool::class.java.canonicalName
                 spec.classpath = jooqClassPath.plus(ImmutableFileCollection.of(logFile.parentFile))
                 spec.args = listOf(configFile.absolutePath)
@@ -149,9 +148,9 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
 
     private fun JavaExecResult.printMsg() {
         if (!isSuccess) {
-            logger.error("An error occurred invoking the jOOQ code generator: $errorMsg")
+            logger.error("An error occurred invoking the jOOQ code generation plugin: $errorMsg")
         } else {
-            logger.info("The jOOQ plugin finished without errors")
+            logger.info("The jOOQ code generation plugin finished without errors")
         }
     }
 
@@ -160,14 +159,14 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         FileOutputStream(configFile).use {
             config.marshall(it)
         }
-        logger.info("Config XML file (${configFile.name}):\n${configFile.readText()}")
+        logger.info("Path to jOOQ config XML file ${configFile.path}")
+        logger.debug("jOOQ config file contents:\n${configFile.readText()}")
         return configFile
     }
 
     private fun createLoggingConfigFile(): File {
         val logFile = File(temporaryDir, "logback.xml")
         logFile.writeText(logbackConfig)
-        logger.info("Logback XML file (${logFile.name}):\n${logFile.readText()}")
         return logFile
     }
 
