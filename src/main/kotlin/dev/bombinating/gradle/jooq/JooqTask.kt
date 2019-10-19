@@ -130,9 +130,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         val javaExecResult = try {
             val result = project.javaexec { spec ->
                 val configFile = createJooqConfigFile()
-                logger.info("Config file: ${configFile.path}")
                 val logFile = createLoggingConfigFile()
-                logger.info("Log file: ${logFile.path}")
                 spec.isIgnoreExitValue = true
                 spec.main = GenerationTool::class.java.canonicalName
                 spec.classpath = jooqClassPath.plus(ImmutableFileCollection.of(logFile.parentFile))
@@ -155,24 +153,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         } else {
             logger.info("The jOOQ plugin finished without errors")
         }
-//        if (isSuccess) {
-//            logger.info(toMsg())
-//        } else {
-//            logger.error(toMsg())
-//        }
     }
-
-    private fun JavaExecResult.toMsg() = """
-        |=================================================================
-        |* jOOQ Gradle Plugin
-        |* Success: $isSuccess${if (!isSuccess) toErrorMsg() else ""}
-        |=================================================================
-    """.trimMargin()
-
-    private fun JavaExecResult.toErrorMsg() = """
-        |
-        |* Error: $errorMsg
-    """.trimMargin()
 
     private fun createJooqConfigFile(): File {
         val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
