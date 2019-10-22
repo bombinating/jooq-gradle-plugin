@@ -8,8 +8,9 @@ import kotlin.streams.asStream
 
 abstract class TestConfigProvider(private val config: TestConfig) : ArgumentsProvider {
 
-    private val editions = listOf(JooqEdition.OpenSource, JooqEdition.Pro, JooqEdition.ProJava8, null)
-    protected open val versions = listOf(jooqVersion11, jooqVersion12, null)
+    private val editions: List<JooqEdition?> =
+        listOf(JooqEdition.OpenSource, JooqEdition.Pro, JooqEdition.ProJava8, null)
+    protected open val versions: List<String?> = listOf(jooqVersion10, jooqVersion11, jooqVersion12, null)
 
     private val applicableEditions: List<JooqEdition?>
         get() = editions.filter { edition ->
@@ -20,7 +21,9 @@ abstract class TestConfigProvider(private val config: TestConfig) : ArgumentsPro
     override fun provideArguments(context: ExtensionContext): Stream<out Arguments> =
         applicableEditions.flatMap { edition ->
             versions.mapNotNull { version ->
-                if (edition.isJavaRuntimeSupported(version) && edition.isJooqVersionSupported(version)) {
+                if (edition.isJavaRuntimeSupported(version?.toJooqVersion())
+                    && edition.isJooqVersionSupported(version?.toJooqVersion())
+                ) {
                     config.copy(edition = edition, version = version)
                 } else null
             }

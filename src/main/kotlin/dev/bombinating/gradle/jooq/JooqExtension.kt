@@ -57,4 +57,7 @@ open class JooqExtension(private val jooqConfig: JooqConfig = JooqConfigImpl()) 
         return """version: $version, edition: $edition, config: $jooqConfig"""
     }
 
+    internal val jooqVersion: JooqVersion
+        get() = version.toJooqVersion()
+
 }

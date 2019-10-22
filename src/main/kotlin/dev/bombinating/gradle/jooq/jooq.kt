@@ -24,6 +24,7 @@ import org.gradle.api.Project
 import org.jooq.Constants.XSD_CODEGEN
 import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
+import org.slf4j.Logger
 import java.io.OutputStream
 import javax.xml.XMLConstants
 import javax.xml.bind.JAXBContext
@@ -40,8 +41,6 @@ internal const val JOOQ_EXT_NAME = "jooq"
 internal const val JOOQ_TASK_NAME = "jooq"
 internal const val JOOQ_TASK_DESC = "jOOQ code generator"
 
-internal fun createDefaultConfig() = Configuration()
-
 internal val JooqExtension.codeGenDeps: List<String>
     get() = listOf(
         "${edition.groupId}:jooq-codegen:${version}",
@@ -54,7 +53,22 @@ internal val JooqExtension.codeGenDeps: List<String>
         "ch.qos.logback:logback-classic:1.2.3"
     )
 
+internal const val PRE_VERSION_11_GEN_PACKAGE = "org.jooq.util"
+internal const val PRE_VERSION_11_GEN_NAME = "$PRE_VERSION_11_GEN_PACKAGE.JavaGenerator"
+internal const val VERSION_FF_11_GEN_PACKAGE = "org.jooq.codegen"
+internal const val GEN_TOOL = "GenerationTool"
+
 internal val JOOQ_GROUP_IDS = JooqEdition.values().map { it.groupId }.toSet()
+
+internal fun getGenerationTool(jooqVersion: JooqVersion) =
+    "${if (jooqVersion < JOOQ_3_11) PRE_VERSION_11_GEN_PACKAGE else VERSION_FF_11_GEN_PACKAGE}.$GEN_TOOL"
+
+internal fun Configuration.supplementByVersion(jooqVersion: JooqVersion, logger: Logger) {
+    if (jooqVersion < JOOQ_3_11 && generator.name.startsWith(VERSION_FF_11_GEN_PACKAGE)) {
+        logger.info("Changing Configuration.generator.name from '${generator.name}' to '$PRE_VERSION_11_GEN_NAME'")
+        generator.name = PRE_VERSION_11_GEN_NAME
+    }
+}
 
 internal fun Configuration.marshall(dest: OutputStream) {
     val factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)

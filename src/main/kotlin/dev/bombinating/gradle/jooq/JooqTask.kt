@@ -26,7 +26,6 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.JavaExecSpec
-import org.jooq.codegen.GenerationTool
 import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Jdbc
@@ -101,7 +100,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         }
 
     @get:Input
-    override var config: Configuration = createDefaultConfig()
+    override var config: Configuration = Configuration()
 
     private val outputDirName by lazy { config.generator.target.directory }
 
@@ -116,6 +115,9 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         }
     }
 
+    private val jooqVersion: JooqVersion
+        get() = project.jooqExt.jooqVersion
+
     init {
         description = JOOQ_TASK_DESC
         group = JOOQ_TASK_GROUP
@@ -129,9 +131,10 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         logger.info("jooqRuntime classpath: ${jooqClassPath.files}")
         val javaExecResult = try {
             val result = project.javaexec { spec ->
+                config.supplementByVersion(jooqVersion, project.logger)
                 val configFile = createJooqConfigFile()
                 val logFile = createLoggingConfigFile()
-                spec.main = GenerationTool::class.java.canonicalName
+                spec.main = getGenerationTool(jooqVersion)
                 spec.classpath = jooqClassPath.plus(ImmutableFileCollection.of(logFile.parentFile))
                 spec.args = listOf(configFile.absolutePath)
                 spec.workingDir = project.projectDir
