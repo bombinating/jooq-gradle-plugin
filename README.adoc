@@ -414,6 +414,6 @@ To generate the code related to both databases, it is sufficient to simply call 
 $ ./gradlew clean build
 ----
 
-== Appendix C: Example project
+== Appendix C: Example projects
 
-A complete example, using both the `jooq` extension and task with the https://www.h2database.com/html/main.html[H2] database, is available https://github.com/bombinating/jooq-gradle-plugin-example[here].
+A set of example projects, using both the `jooq` extension and task with the https://www.h2database.com/html/main.html[H2] database, is available https://github.com/bombinating/jooq-gradle-plugin-example[here]. An example of using the plugin from a Groovy Gradle build is also included.
