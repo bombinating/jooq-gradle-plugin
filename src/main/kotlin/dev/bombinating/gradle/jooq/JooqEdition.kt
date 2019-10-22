@@ -27,6 +27,7 @@ import org.apache.commons.lang3.SystemUtils
  * @property groupId Maven group id associated with the jOOQ edition
  * @property pro whether the version is non-OS
  */
+@Suppress("unused")
 enum class JooqEdition(
     val groupId: String,
     val pro: Boolean,

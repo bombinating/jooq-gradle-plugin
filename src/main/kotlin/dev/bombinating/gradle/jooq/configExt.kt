@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@file:Suppress("TooManyFunctions")
+@file:Suppress("TooManyFunctions", "unused")
 
 /**
  * Extension methods creating for building jOOQ codegen `Configuration`.
@@ -327,7 +327,7 @@ fun MutableList<Embeddable>.embeddable(action: Embeddable.() -> Unit) {
  * @param action create the [EmbeddableField] object to add to the list
  */
 fun Embeddable.field(action: EmbeddableField.() -> Unit) {
-    getFields() += EmbeddableField().apply(action)
+    withFields(EmbeddableField().apply(action))
 }
 
 /**

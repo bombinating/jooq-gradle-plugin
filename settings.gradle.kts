@@ -24,6 +24,7 @@ val detektPluginVersion: String by settings
 val publishPluginVersion: String by settings
 
 pluginManagement {
+    @Suppress("UnstableApiUsage")
     plugins {
         kotlin("jvm") version kotlinVersion
         id("com.jfrog.artifactory") version artifactoryPluginVersion

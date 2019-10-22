@@ -28,6 +28,7 @@ import org.gradle.api.plugins.JavaBasePlugin
  * - creates a `jooq` extension that can be used for specifying jooq code generation configurations and one generation
  * - changes any jOOQ dependencies to match the group and version specified
  */
+@Suppress("unused")
 class JooqPlugin : Plugin<Project> {
 
     /**

@@ -120,7 +120,8 @@ tasks.withType<KotlinCompile> {
 gradlePlugin {
     plugins {
         create(pubName) {
-            displayName = "jOOQ code gen plugin"
+            @Suppress("UnstableApiUsage")
+            displayName = "jOOQ codegen plugin"
             id = "dev.bombinating.jooq-codegen"
             implementationClass = "dev.bombinating.gradle.jooq.JooqPlugin"
         }
@@ -128,6 +129,7 @@ gradlePlugin {
 }
 
 tasks.withType<Test> {
+    @Suppress("UnstableApiUsage")
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")

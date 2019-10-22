@@ -28,6 +28,7 @@ class H2Test {
 
     companion object {
 
+        @Suppress("unused")
         @BeforeAll
         @JvmStatic
         fun setup() {
@@ -45,6 +46,7 @@ class H2Test {
             }
         }
 
+        @Suppress("unused")
         @AfterAll
         @JvmStatic
         fun cleanup() {

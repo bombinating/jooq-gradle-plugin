@@ -74,7 +74,7 @@ internal fun Configuration.marshall(dest: OutputStream) {
     val factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
     val marshaller = JAXBContext.newInstance(Configuration::class.java).createMarshaller().apply {
         schema = factory.newSchema(GenerationTool::class.java.getResource("/xsd/$XSD_CODEGEN"))
-        setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
     }
     marshaller.marshal(this, dest)
 }

@@ -13,19 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("unused")
+
 package dev.bombinating.gradle.jooq
 
 import org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric
-import org.gradle.api.Action
-import org.gradle.api.file.FileCollection
-import org.gradle.process.BaseExecSpec
-import org.gradle.process.CommandLineArgumentProvider
-import org.gradle.process.ExecResult
-import org.gradle.process.JavaDebugOptions
-import org.gradle.process.JavaExecSpec
-import org.gradle.process.JavaForkOptions
-import org.gradle.process.ProcessForkOptions
-import org.gradle.process.internal.JavaExecAction
 import org.jooq.meta.jaxb.CatalogMappingType
 import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Database
@@ -33,11 +25,15 @@ import org.jooq.meta.jaxb.Embeddable
 import org.jooq.meta.jaxb.EmbeddableField
 import org.jooq.meta.jaxb.EnumType
 import org.jooq.meta.jaxb.ForcedType
+import org.jooq.meta.jaxb.ForcedTypeObjectType
 import org.jooq.meta.jaxb.Generate
 import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Jdbc
+import org.jooq.meta.jaxb.MatcherRule
+import org.jooq.meta.jaxb.MatcherTransformType
 import org.jooq.meta.jaxb.Matchers
 import org.jooq.meta.jaxb.MatchersTableType
+import org.jooq.meta.jaxb.Nullability
 import org.jooq.meta.jaxb.Property
 import org.jooq.meta.jaxb.SchemaMappingType
 import org.jooq.meta.jaxb.Strategy
@@ -45,15 +41,8 @@ import org.jooq.meta.jaxb.Target
 import org.junit.jupiter.api.Test
 import kotlin.random.Random.Default.nextBoolean
 import kotlin.random.Random.Default.nextInt
-import kotlin.test.assertEquals
-import org.jooq.meta.jaxb.Nullability
-import org.jooq.meta.jaxb.ForcedTypeObjectType
-import java.io.File
-import java.io.InputStream
-import java.io.OutputStream
 import kotlin.reflect.KClass
-import org.jooq.meta.jaxb.MatcherRule
-import org.jooq.meta.jaxb.MatcherTransformType
+import kotlin.test.assertEquals
 
 internal val Configuration.xJdbc
     get() = withJdbc(jdbc ?: Jdbc()).jdbc
@@ -703,286 +692,6 @@ class ConfigTest {
         }
         val computed = (key to value).toEmbeddableField()
         assertEquals(expected, computed)
-    }
-
-//    @Test
-//    fun `Result Handler`() {
-//        val exitValue = 1
-//        var y: Int? = null
-//        val x = JooqConfigImpl().apply {
-//            resultHandler {
-//                y = exitValue
-//            }
-//        }
-//        x.resultHandler?.invoke(object : ExecResult {
-//            override fun getExitValue(): Int = exitValue
-//            override fun assertNormalExitValue(): ExecResult = this
-//            override fun rethrowFailure(): ExecResult = this
-//        })
-//        assertEquals(exitValue, y)
-//    }
-
-    @Test
-    fun `Run Config`() {
-        val executable = "abc"
-        var y: String? = null
-        val x = JooqConfigImpl().apply {
-            runConfig {
-                y = executable
-            }
-        }
-        x.runConfig?.invoke(object : JavaExecAction {
-            override fun setSystemProperties(properties: MutableMap<String, *>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getExecutable(): String = executable
-
-            override fun setDefaultCharacterEncoding(defaultCharacterEncoding: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun jvmArgs(arguments: MutableIterable<*>?): JavaForkOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun jvmArgs(vararg arguments: Any?): JavaForkOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun environment(environmentVariables: MutableMap<String, *>?): ProcessForkOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun environment(name: String?, value: Any?): ProcessForkOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setMinHeapSize(heapSize: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getCommandLine(): MutableList<String> {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun systemProperties(properties: MutableMap<String, *>?): JavaForkOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setExecutable(executable: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setExecutable(executable: Any?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun executable(executable: Any?): ProcessForkOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun debugOptions(action: Action<JavaDebugOptions>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun classpath(vararg paths: Any?): JavaExecSpec {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setJvmArgs(arguments: MutableList<String>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setJvmArgs(arguments: MutableIterable<*>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setAllJvmArgs(arguments: MutableList<String>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setAllJvmArgs(arguments: MutableIterable<*>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setDebug(enabled: Boolean) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getStandardOutput(): OutputStream {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getClasspath(): FileCollection {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getArgs(): MutableList<String> {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getWorkingDir(): File {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setBootstrapClasspath(classpath: FileCollection?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getDebugOptions(): JavaDebugOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getDefaultCharacterEncoding(): String? {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setMaxHeapSize(heapSize: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setArgs(args: MutableList<String>?): JavaExecSpec {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setArgs(args: MutableIterable<*>?): JavaExecSpec {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getErrorOutput(): OutputStream {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun systemProperty(name: String?, value: Any?): JavaForkOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setStandardOutput(outputStream: OutputStream?): BaseExecSpec {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getBootstrapClasspath(): FileCollection {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun workingDir(dir: Any?): ProcessForkOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setWorkingDir(dir: File?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setWorkingDir(dir: Any?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setEnvironment(environmentVariables: MutableMap<String, *>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun args(vararg args: Any?): JavaExecSpec {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun args(args: MutableIterable<*>?): JavaExecSpec {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getEnableAssertions(): Boolean {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getArgumentProviders(): MutableList<CommandLineArgumentProvider> {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setEnableAssertions(enabled: Boolean) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getMaxHeapSize(): String? {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setIgnoreExitValue(ignoreExitValue: Boolean): BaseExecSpec {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getStandardInput(): InputStream {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setStandardInput(inputStream: InputStream?): BaseExecSpec {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setErrorOutput(outputStream: OutputStream?): BaseExecSpec {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun copyTo(options: JavaForkOptions?): JavaForkOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun copyTo(options: ProcessForkOptions?): ProcessForkOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun isIgnoreExitValue(): Boolean {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getJvmArgs(): MutableList<String> {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getJvmArgumentProviders(): MutableList<CommandLineArgumentProvider> {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun execute(): ExecResult {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getSystemProperties(): MutableMap<String, Any> {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getMinHeapSize(): String? {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getEnvironment(): MutableMap<String, Any> {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getAllJvmArgs(): MutableList<String> {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getDebug(): Boolean {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun getMain(): String? {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setClasspath(classpath: FileCollection?): JavaExecSpec {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun setMain(main: String?): JavaExecSpec {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun bootstrapClasspath(vararg classpath: Any?): JavaForkOptions {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-        })
-        assertEquals(executable, y)
     }
 
 }
