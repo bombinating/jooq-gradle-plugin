@@ -146,10 +146,10 @@ fun createGroovyJooqRepo(): String? {
     return if (jooqRepoUrl != null && jooqRepoPassword != null && jooqRepoUsername != null) {
         """
             |maven {
-            |   url "System.getenv("$envVarJooqRepoUrl")"
+            |   url System.getenv("$envVarJooqRepoUrl")
             |   credentials {
-            |       username "System.getenv("$envVarJooqRepoUsername")" 
-            |       password "System.getenv("$envVarJooqRepoPassword")"
+            |       username System.getenv("$envVarJooqRepoUsername") 
+            |       password System.getenv("$envVarJooqRepoPassword")
             |   }
             |}
         """.trimMargin("|")
