@@ -19,10 +19,14 @@ package dev.bombinating.gradle.jooq
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.EnabledOnJre
+import org.junit.jupiter.api.condition.JRE
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Path
 import java.sql.DriverManager
 
+// NOTE: Gradle 5.6.x does not support Groovy on Java 13: https://github.com/gradle/gradle/issues/10785
+@EnabledOnJre(JRE.JAVA_8,JRE.JAVA_11)
 class GroovyTest {
 
     companion object {
