@@ -148,6 +148,14 @@ To provide a different Logback configuration, add the directory containing the `
 jooqRuntime(files("..."))
 ----
 
+== Properties
+
+The plugin will pass https://www.jooq.org/doc/latest/manual/code-generation/codegen-system-properties/[jOOQ-related codegen properties] to the code generation process.
+
+Using the jOOQ extension (which defines a task with the name `jooq`), properties that start with `jooq.` are passed to the generation tool.
+
+For other jOOQ tasks (i.e, ones that aren't named `jooq`), properties of the form `<task name>.jooq.` are passed to the generation tool with the `<task name>.` removed (e.g., for a task called `accounting`, the property `accounting.jooq.codegen.jdbc.url` would be passed to the code generator as `jooq.codegen.jdbc.url`).
+
 == Differences from the original plugin
 
 * In this plugin, the `jooq` extension defines a _single_ jOOQ code generation task called `jooq`. Other jOOQ code generation tasks are _explicitly_ defined using the Gradle task mechanism rather than being implicitly created in the `jooq` extension block. For example:
