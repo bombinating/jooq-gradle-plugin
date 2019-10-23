@@ -40,6 +40,7 @@ internal const val JOOQ_TASK_GROUP = "jooq"
 internal const val JOOQ_EXT_NAME = "jooq"
 internal const val JOOQ_TASK_NAME = "jooq"
 internal const val JOOQ_TASK_DESC = "jOOQ code generator"
+internal const val JOOQ_PROP_PREFIX = "jooq"
 
 internal val JooqExtension.codeGenDeps: List<String>
     get() = listOf(
@@ -71,9 +72,7 @@ internal fun Configuration.supplementByVersion(jooqVersion: JooqVersion, logger:
 }
 
 internal fun Configuration.marshall(dest: OutputStream) {
-    val factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
     val marshaller = JAXBContext.newInstance(Configuration::class.java).createMarshaller().apply {
-        schema = factory.newSchema(GenerationTool::class.java.getResource("/xsd/$XSD_CODEGEN"))
         setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true)
     }
     marshaller.marshal(this, dest)
