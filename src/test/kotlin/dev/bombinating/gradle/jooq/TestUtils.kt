@@ -26,10 +26,19 @@ import java.nio.file.Path
 fun jooqOsDependency(group: String, version: String) =
     """compile(group = "$group", name = "jooq", version = "$version")"""
 
+fun jooqGroovyOsDependency(group: String, version: String) =
+    """compile "$group:jooq:$version""""
+
 fun dependenciesBlock(jooqDependency: String, jdbcDriverDependency: String) = """
     |   $jooqDependency
     |   compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     |   jooqRuntime($jdbcDriverDependency)
+""".trimMargin()
+
+fun groovyDependenciesBlock(jooqDependency: String, jdbcDriverDependency: String) = """
+    |   $jooqDependency
+    |   compileOnly "javax.annotation:javax.annotation-api:1.3.2"
+    |   jooqRuntime "$jdbcDriverDependency"
 """.trimMargin()
 
 fun String.packageToPath() = replace(".", "/")
@@ -61,7 +70,8 @@ fun validateGradleOutput(workspaceDir: Path, config: TestConfig, result: BuildRe
 
 fun runGradle(workspaceDir: Path, vararg args: String): BuildResult {
     val settings = File(workspaceDir.toFile(), "settings.gradle.kts")
-    val build = File(workspaceDir.toFile(), "build.gradle.kts")
+    val ktsBuild = File(workspaceDir.toFile(), "build.gradle.kts")
+    val build = if (ktsBuild.exists()) ktsBuild else File(workspaceDir.toFile(), "build.gradle")
     printGradleInfo(settings, build)
     return GradleRunner.create()
         .withPluginClasspath()

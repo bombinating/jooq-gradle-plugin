@@ -32,6 +32,55 @@ fun Path.createBuildFile(
     )
 }
 
+fun Path.createGroovyBuildFile(
+    config: TestConfig,
+    depBlock: String,
+    body: TestConfig.() -> String
+) = File(toFile(), "build.gradle").also {
+    it.writeText(
+        createGroovyBuildContent(
+            config = config,
+            depBlock = depBlock,
+            body = body
+        )
+    )
+}
+
+private fun createGroovyBuildContent(
+    config: TestConfig,
+    depBlock: String,
+    body: TestConfig.() -> String
+) = """
+    |import dev.bombinating.gradle.jooq.*
+    |import org.jooq.meta.jaxb.Logging
+    |
+    |plugins {
+    |   id 'java'
+    |   id 'dev.bombinating.jooq-codegen'
+    |}
+    |
+    |def genDir = "${'$'}projectDir/${config.genDir}"
+    |
+    |sourceSets["main"].java {
+    |   srcDirs(genDir)
+    |}
+    |
+    |group = "com.acme"
+    |version = "1.0-SNAPSHOT"
+    |
+    |repositories {
+    |   mavenLocal()
+    |   mavenCentral()
+    |   ${createGroovyJooqRepo()?.let { it } ?: ""}
+    |}
+    |
+    |dependencies {
+    |$depBlock
+    |}
+    |
+    |${body(config)}
+    """.trimMargin("|")
+
 private fun createBuildContent(
     config: TestConfig,
     depBlock: String,
@@ -56,7 +105,8 @@ private fun createBuildContent(
     |
     |repositories {
     |    mavenLocal()
-    |    mavenCentral()${createJooqRepo()?.let { "\n|\t$it" } ?: ""} 
+    |    mavenCentral()
+    |    ${createJooqRepo()?.let { it } ?: ""} 
     |}
     |
     |dependencies {
@@ -81,6 +131,25 @@ fun createJooqRepo(): String? {
             |   credentials {
             |       username = System.getenv("$envVarJooqRepoUsername") 
             |       password = System.getenv("$envVarJooqRepoPassword")
+            |   }
+            |}
+        """.trimMargin("|")
+    } else {
+        null
+    }
+}
+
+fun createGroovyJooqRepo(): String? {
+    val jooqRepoUrl = System.getenv(envVarJooqRepoUrl)
+    val jooqRepoUsername = System.getenv(envVarJooqRepoUsername)
+    val jooqRepoPassword = System.getenv(envVarJooqRepoPassword)
+    return if (jooqRepoUrl != null && jooqRepoPassword != null && jooqRepoUsername != null) {
+        """
+            |maven {
+            |   url "System.getenv("$envVarJooqRepoUrl")"
+            |   credentials {
+            |       username "System.getenv("$envVarJooqRepoUsername")" 
+            |       password "System.getenv("$envVarJooqRepoPassword")"
             |   }
             |}
         """.trimMargin("|")
