@@ -102,25 +102,37 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
     @get:Input
     override var config: Configuration = Configuration()
 
-    private val outputDirName by lazy { config.generator.target.directory }
-
     @get:InputFiles
     @get:Classpath
     var jooqClassPath: FileCollection = project.jooqRuntime
 
+    @get:Optional
     @get:OutputDirectory
-    val outputDirectory: File by lazy {
-        File(outputDirName).let { dir ->
-            if (dir.isAbsolute) dir else project.file(outputDirName)
+    val outputDirectory: File? by lazy {
+        outputDirName?.let { dirName ->
+            File(dirName).let { dir ->
+                if (dir.isAbsolute) dir else project.file(dirName)
+            }
         }
     }
 
     private val jooqVersion: JooqVersion
         get() = project.jooqExt.jooqVersion
 
+    private val outputDirName by lazy { config.generator?.target?.directory }
+
+    private val isGeneratorSpecified: Boolean by lazy { config.generator != Configuration().generator }
+
     init {
         description = JOOQ_TASK_DESC
         group = JOOQ_TASK_GROUP
+        onlyIf {
+            val hasGeneratorInfo = isGeneratorSpecified
+            if (!hasGeneratorInfo) {
+                logger.info("jOOQ codegen generator configuration not specified")
+            }
+            hasGeneratorInfo
+        }
     }
 
     /**
@@ -138,7 +150,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
                 spec.classpath = jooqClassPath.plus(ImmutableFileCollection.of(logFile.parentFile))
                 spec.args = listOf(configFile.absolutePath)
                 spec.workingDir = project.projectDir
-                spec.systemProperties = spec.getJooqProps()
+                spec.systemProperties = getJooqProps()
                 runConfig?.invoke(spec)
             }
             JavaExecResult(result = result)
@@ -155,7 +167,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         }
     }
 
-    private fun JavaExecSpec.getJooqProps(): Map<String, *> {
+    private fun getJooqProps(): Map<String, *> {
         val (prefixToFind, prefixToRemove) = if (name == JOOQ_TASK_NAME)
             JOOQ_PROP_PREFIX to "" else "$name.$JOOQ_PROP_PREFIX" to "$name."
         return System.getProperties().filter { (key, _) ->

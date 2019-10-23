@@ -42,26 +42,54 @@ class NonRequiredTest {
 
     @Test
     fun `Empty jOOQ Extension Test`() {
+        val taskName = "clean"
         workspaceDir.createPropFile()
         workspaceDir.createSettingsFile(projectName = defaultProjectName)
         workspaceDir.createBuildFile(config = config, depBlock = "") { "jooq { }" }
-        val result = runGradle(workspaceDir, "clean", "--info", "--stacktrace")
+        val result = runGradle(workspaceDir, taskName, "--info", "--stacktrace")
         /*
          * Validate that Gradle doesn't throw an error re the jOOQ extension block being empty.
          */
-        assertEquals(TaskOutcome.UP_TO_DATE, result.task(":clean")?.outcome)
+        assertEquals(TaskOutcome.UP_TO_DATE, result.task(":$taskName")?.outcome)
+    }
+
+    @Test
+    fun `Invoking Empty jOOQ Extension Test`() {
+        val taskName = "jooq"
+        workspaceDir.createPropFile()
+        workspaceDir.createSettingsFile(projectName = defaultProjectName)
+        workspaceDir.createBuildFile(config = config, depBlock = "") { "jooq { }" }
+        val result = runGradle(workspaceDir, taskName, "--info", "--stacktrace")
+        /*
+         * Validate that Gradle skips the task.
+         */
+        assertEquals(TaskOutcome.SKIPPED, result.task(":$taskName")?.outcome)
     }
 
     @Test
     fun `Empty jOOQ Task Test`() {
+        val taskName = "clean"
         workspaceDir.createPropFile()
         workspaceDir.createSettingsFile(projectName = defaultProjectName)
         workspaceDir.createBuildFile(config = config, depBlock = "") { """tasks.register<JooqTask>("emptyJooq") { }""" }
-        val result = runGradle(workspaceDir, "clean", "--info", "--stacktrace")
+        val result = runGradle(workspaceDir, taskName, "--info", "--stacktrace")
         /*
          * Validate that Gradle doesn't throw an error re the jOOQ task block being empty.
          */
-        assertEquals(TaskOutcome.UP_TO_DATE, result.task(":clean")?.outcome)
+        assertEquals(TaskOutcome.UP_TO_DATE, result.task(":$taskName")?.outcome)
+    }
+
+    @Test
+    fun `Invoking Empty jOOQ Task Test`() {
+        val taskName = "emptyJooq"
+        workspaceDir.createPropFile()
+        workspaceDir.createSettingsFile(projectName = defaultProjectName)
+        workspaceDir.createBuildFile(config = config, depBlock = "") { """tasks.register<JooqTask>("$taskName") { }""" }
+        val result = runGradle(workspaceDir, taskName, "--info", "--stacktrace")
+        /*
+         * Validate that Gradle skips the task.
+         */
+        assertEquals(TaskOutcome.SKIPPED, result.task(":$taskName")?.outcome)
     }
 
 }
