@@ -33,9 +33,9 @@ internal fun JooqEdition?.isJooqVersionSupported(jooqVersion: JooqVersion?): Boo
 
 data class TestConfig(
     val driver: String,
-    val url: String,
-    val username: String,
-    val password: String,
+    val url: String? = null,
+    val username: String? = null,
+    val password: String? = null,
     val schema: String,
     val genDir: String,
     val javaVersion: String,

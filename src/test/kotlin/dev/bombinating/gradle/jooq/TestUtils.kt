@@ -71,8 +71,8 @@ fun runGradle(workspaceDir: Path, vararg args: String): BuildResult {
         .build()
 }
 
-fun runGradleAndValidate(workspaceDir: Path, config: TestConfig, taskName: String) {
-    val result = runGradle(workspaceDir, "clean", taskName, "build", "--info", "--stacktrace")
+fun runGradleAndValidate(workspaceDir: Path, config: TestConfig, taskName: String, vararg args: String) {
+    val result = runGradle(workspaceDir, "clean", taskName, "build", "--info", "--stacktrace", *args)
     validateGradleOutput(workspaceDir = workspaceDir, config = config, result = result, taskName = taskName)
 }
 
@@ -80,7 +80,8 @@ fun TestConfig.basicExtensionTest(
     workspaceDir: Path,
     deps: String,
     taskName: String,
-    projectName: String = defaultProjectName
+    projectName: String = defaultProjectName,
+    vararg args: String
 ) {
     workspaceDir.createPropFile()
     workspaceDir.createSettingsFile(projectName = projectName)
@@ -93,14 +94,15 @@ fun TestConfig.basicExtensionTest(
             |}
         """.trimMargin("|")
     }
-    runGradleAndValidate(workspaceDir = workspaceDir, config = this, taskName = taskName)
+    runGradleAndValidate(workspaceDir = workspaceDir, config = this, taskName = taskName, args = *args)
 }
 
 fun TestConfig.basicTaskTest(
     workspaceDir: Path,
     deps: String,
     taskName: String,
-    projectName: String = defaultProjectName
+    projectName: String = defaultProjectName,
+    vararg args: String
 ) {
     workspaceDir.createPropFile()
     workspaceDir.createSettingsFile(projectName = projectName)
@@ -112,15 +114,15 @@ fun TestConfig.basicTaskTest(
             |}
         """.trimMargin("|")
     }
-    runGradleAndValidate(workspaceDir = workspaceDir, config = this, taskName = taskName)
+    runGradleAndValidate(workspaceDir = workspaceDir, config = this, taskName = taskName, args = *args)
 }
 
 fun TestConfig.basicJooqConfig() = """
             |jdbc {
             |   driver = "$driver"
-            |       url = "$url"
-            |       user = "$username"
-            |       password = "$password"
+            |   ${url?.let { """url = "$it"""" } ?: ""}
+            |   ${username?.let {"""username = "$it""""} ?: ""}
+            |   ${password?.let {"""password = "$it""""} ?: ""}
             |}
             |generator {
             |   database {

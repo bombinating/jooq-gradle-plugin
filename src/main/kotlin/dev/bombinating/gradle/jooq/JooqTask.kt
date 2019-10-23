@@ -138,6 +138,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
                 spec.classpath = jooqClassPath.plus(ImmutableFileCollection.of(logFile.parentFile))
                 spec.args = listOf(configFile.absolutePath)
                 spec.workingDir = project.projectDir
+                spec.systemProperties = spec.getJooqProps()
                 runConfig?.invoke(spec)
             }
             JavaExecResult(result = result)
@@ -147,8 +148,22 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         javaExecResult.printMsg()
         resultHandler?.invoke(javaExecResult)
         javaExecResult.exception?.let {
-            throw JooqTaskException(cause = it,
-                msg = "Error invoking the jOOQ code generation tool: ${javaExecResult.errorMsg}")
+            throw JooqTaskException(
+                cause = it,
+                msg = "Error invoking the jOOQ code generation tool: ${javaExecResult.errorMsg}"
+            )
+        }
+    }
+
+    private fun JavaExecSpec.getJooqProps(): Map<String, *> {
+        val (prefixToFind, prefixToRemove) = if (name == JOOQ_TASK_NAME)
+            JOOQ_PROP_PREFIX to "" else "$name.$JOOQ_PROP_PREFIX" to "$name."
+        return System.getProperties().filter { (key, _) ->
+            key.toString().startsWith("$prefixToFind.")
+        }.map { (key, value) ->
+            key.toString().removePrefix(prefixToRemove) to value
+        }.toMap().also {
+            logger.info("System properties: $it")
         }
     }
 
