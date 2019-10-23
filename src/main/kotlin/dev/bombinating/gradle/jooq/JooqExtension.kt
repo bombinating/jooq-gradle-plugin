@@ -27,7 +27,7 @@ package dev.bombinating.gradle.jooq
  *
  * ```
  * jooq {
- *      version = "3.12.1"
+ *      version = "3.12.2"
  *      edition = JooqEdition.OpenSource
  *      jdbc {
  *          driver = "org.h2.Driver"

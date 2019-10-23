@@ -36,7 +36,7 @@ dependencies {
 
 The plugin defines an extension, `jooq`, which (optionally) allows both the version and edition of the jOOQ code generation library to be defined, as well as information about the code generation itself.
 
-If the `edition` or `version` is not specified, they default to `OpenSource` and `3.12.1`, respectively.
+If the `edition` or `version` is not specified, they default to `OpenSource` and `3.12.2`, respectively.
 
 The code generation properties (`logging`, `onError`, `jdbc` and `generator`) come from the jOOQ code generation `Configuration` class (from the https://www.jooq.org/xsd/jooq-runtime-3.12.0.xsd[jOOQ codegen XSD]). The plugin provides extension methods to define the properties in a "closure" style.
 
@@ -45,7 +45,7 @@ Finally, the plugin provides two additional properties, `runConfig` and `resultH
 |===
 |Property | Description | Example
 |`edition`|https://www.jooq.org/download/versions[jOOQ edition to use] (OpenSource, Pro, ProJava8, ProJava6)|`JooqEdition.Pro`
-|`version`|jOOQ version to use|`3.12.1`
+|`version`|jOOQ version to use|`3.12.2`
 |`logging`|jOOQ code generation config logging setting|`Logging.TRACE`
 |`onError`|jOOQ error configuration|`OnError.LOG`
 |`jdbc`|jOOQ code generation config jdbc settings`
@@ -270,7 +270,7 @@ repositories {
 }
 
 dependencies {
-    compile(group = "org.jooq", name = "jooq", version = "3.12.1")
+    compile(group = "org.jooq", name = "jooq", version = "3.12.2")
     jooqRuntime(group = "org.postgresql", name = "postgresql", version = "42.2.8")
 }
 
@@ -304,7 +304,7 @@ $ ./gradlew clean jooq build
 The first half of this example is the same as above, except:
 
 * the jOOQ edition is specified (`ProJava8`)
-* the jOOQ version is specified (`3.12.1`)
+* the jOOQ version is specified (`3.12.2`)
 * the JVM config for running the code generation tool is specified (`-Xmx2g`)
 * a result handler prints the exit value of the code generation tool
 * the code generation logging is specified (`DEBUG`)
@@ -343,14 +343,14 @@ repositories {
 }
 
 dependencies {
-    compile(group = "org.jooq", name = "jooq", version = "3.12.1")
+    compile(group = "org.jooq", name = "jooq", version = "3.12.2")
     jooqRuntime(group = "org.postgresql", name = "postgresql", version = "42.2.8")
     jooqRuntime(group = "com.oracle.ojdbc", name = "ojdbc8", version = "19.3.0.0")
 }
 
 jooq {
     edition = JooqEdition.ProJava8
-    version = "3.12.1"
+    version = "3.12.2"
     runConfig { jvmArgs = listOf("-Xmx2g") }
     resultHandler { println("The exit value of the code generation was: $exitValue") }
     logging = Logging.DEBUG
