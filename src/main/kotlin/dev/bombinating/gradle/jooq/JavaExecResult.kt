@@ -24,14 +24,18 @@ import org.gradle.process.ExecResult
  * @property result optional [ExecResult] that will be non-null if the process completed without throwing an exception
  * @property exception optional [Throwable] that will be non-null if the process threw an exception
  * @property isSuccess whether the Java process completed successfully
- * @property errorMsg the cause of the Java process not completing successfully
+ * @property errorMsgLog the cause of the Java process not completing successfully
  */
-data class JavaExecResult(val result: ExecResult? = null, val exception: Throwable? = null) {
+data class JavaExecResult(
+    val result: ExecResult? = null,
+    val exception: Throwable? = null,
+    val errorMsgLog: String? = null
+) {
 
     val isSuccess: Boolean
         get() = exception == null && result?.exitValue == 0
 
     val errorMsg: String?
-        get() = exception?.let { ExceptionUtils.getRootCauseMessage(it) }
+        get() = errorMsgLog ?: exception?.let { ExceptionUtils.getRootCauseMessage(it) }
 
 }

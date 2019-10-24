@@ -26,6 +26,7 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.process.JavaExecSpec
+import org.gradle.process.internal.ExecException
 import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Generator
 import org.jooq.meta.jaxb.Jdbc
@@ -141,11 +142,12 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
     @TaskAction
     fun generate() {
         logger.info("jooqRuntime classpath: ${jooqClassPath.files}")
+        val configFile = createJooqConfigFile()
+        val errorLog = File(temporaryDir, "error_msg_log.txt")
+        val logFile = createLoggingConfigFile(errorLog)
         val javaExecResult = try {
             val result = project.javaexec { spec ->
                 config.supplementByVersion(jooqVersion, project.logger)
-                val configFile = createJooqConfigFile()
-                val logFile = createLoggingConfigFile()
                 spec.main = getGenerationTool(jooqVersion)
                 spec.classpath = jooqClassPath.plus(ImmutableFileCollection.of(logFile.parentFile))
                 spec.args = listOf(configFile.absolutePath)
@@ -154,15 +156,15 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
                 runConfig?.invoke(spec)
             }
             JavaExecResult(result = result)
-        } catch (@Suppress("TooGenericExceptionCaught ") e: Exception) {
-            JavaExecResult(exception = e)
+        } catch (e: ExecException) {
+            JavaExecResult(exception = e, errorMsgLog = errorLog.readText())
         }
         javaExecResult.printMsg()
         resultHandler?.invoke(javaExecResult)
         javaExecResult.exception?.let {
             throw JooqTaskException(
                 cause = it,
-                msg = "Error invoking the jOOQ code generation tool: ${javaExecResult.errorMsg}"
+                msg = javaExecResult.errorMsg
             )
         }
     }
@@ -181,7 +183,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
 
     private fun JavaExecResult.printMsg() {
         if (!isSuccess) {
-            logger.info("An error occurred invoking the jOOQ code generation plugin:\n$errorMsg")
+            logger.error("An error occurred invoking the jOOQ code generation plugin: $errorMsg")
         } else {
             logger.info("The jOOQ code generation plugin finished without errors")
         }
@@ -197,14 +199,13 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         return configFile
     }
 
-    private fun createLoggingConfigFile(): File {
+    private fun createLoggingConfigFile(errorLog: File): File {
         val logFile = File(temporaryDir, "logback.xml")
-        logFile.writeText(logbackConfig)
+        logFile.writeText(logbackConfig(errorLog))
         return logFile
     }
 
-    private val logbackConfig: String
-        get() = """
+    private fun logbackConfig(errorLog: File): String = """
         |<configuration>
         |   <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
         |   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -212,8 +213,20 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         |           <pattern>%.-1level %-25.30logger{20} - %msg%n</pattern>
         |       </encoder>
         |   </appender>
+        |   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        |       <file>${errorLog.absolutePath}</file>
+        |       <append>false</append>
+        |       <immediateFlush>true</immediateFlush>
+        |       <encoder>
+        |           <pattern>%msg%n%nopex</pattern>
+        |       </encoder>
+        |       <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+        |         <level>ERROR</level>
+        |       </filter>
+        |   </appender>
         |   <root level="${logging.logbackLevel}">
         |       <appender-ref ref="CONSOLE"/>
+        |       <appender-ref ref="FILE"/>
         |   </root>
         |</configuration>""".trimMargin()
 
