@@ -16,60 +16,12 @@
 
 package dev.bombinating.gradle.jooq
 
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
-import java.nio.file.Path
-import java.sql.DriverManager
 
-class PropTest {
+class PropTest : AbstractH2Test() {
 
     companion object {
-
-        @Suppress("unused")
-        @BeforeAll
-        @JvmStatic
-        fun setup() {
-            DriverManager.getConnection(h2Url, h2Username, h2Password).use { conn ->
-                conn.createStatement().use { stmt ->
-                    /*
-                     * Create the schema.
-                     */
-                    stmt.execute("create schema if not exists $defaultSchemaName")
-                    /*
-                     * Create the table in the schema.
-                     */
-                    stmt.execute("create table if not exists $defaultSchemaName.$defaultTableName(id int)")
-                }
-            }
-        }
-
-        @Suppress("unused")
-        @AfterAll
-        @JvmStatic
-        fun cleanup() {
-            DriverManager.getConnection(h2Url, h2Username, h2Password).use { conn ->
-                conn.createStatement().use { stmt ->
-                    /*
-                     * Stop the database.
-                     */
-                    stmt.execute("SHUTDOWN")
-                }
-            }
-        }
-
-        @JvmStatic
-        private val config = TestConfig(
-            driver = h2Driver,
-            schema = defaultSchemaName,
-            genDir = defaultGenDir,
-            javaVersion = "JavaVersion.VERSION_1_8",
-            version = jooqVersion12,
-            packageName = defaultPackageName,
-            dbGenerator = """includes = ".*""""
-        )
 
         @JvmStatic
         private val deps = dependenciesBlock(
@@ -77,7 +29,7 @@ class PropTest {
             jdbcDriverDependency = h2JdbcDriverDependency
         )
 
-        class PropConfigProvider : TestConfigProvider(config) {
+        class PropConfigProvider : TestConfigProvider(h2Config.copy(url = null, username = null, password = null)) {
             /*
              * Properties not supported in < 3.11.x
              */
@@ -85,9 +37,6 @@ class PropTest {
         }
 
     }
-
-    @TempDir
-    lateinit var workspaceDir: Path
 
     @ParameterizedTest(name = "{index}: {0}")
     @ArgumentsSource(PropConfigProvider::class)

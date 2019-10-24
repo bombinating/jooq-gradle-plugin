@@ -16,63 +16,12 @@
 
 package dev.bombinating.gradle.jooq
 
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
-import java.nio.file.Path
-import java.sql.DriverManager
 
-class H2Test {
+class H2Test : AbstractH2Test() {
 
     companion object {
-
-        @Suppress("unused")
-        @BeforeAll
-        @JvmStatic
-        fun setup() {
-            DriverManager.getConnection(h2Url, h2Username, h2Password).use { conn ->
-                conn.createStatement().use { stmt ->
-                    /*
-                     * Create the schema.
-                     */
-                    stmt.execute("create schema if not exists $defaultSchemaName")
-                    /*
-                     * Create the table in the schema.
-                     */
-                    stmt.execute("create table if not exists $defaultSchemaName.$defaultTableName(id int)")
-                }
-            }
-        }
-
-        @Suppress("unused")
-        @AfterAll
-        @JvmStatic
-        fun cleanup() {
-            DriverManager.getConnection(h2Url, h2Username, h2Password).use { conn ->
-                conn.createStatement().use { stmt ->
-                    /*
-                     * Stop the database.
-                     */
-                    stmt.execute("SHUTDOWN")
-                }
-            }
-        }
-
-        @JvmStatic
-        private val config = TestConfig(
-            driver = h2Driver,
-            url = h2Url,
-            username = h2Username,
-            password = h2Password,
-            schema = defaultSchemaName,
-            genDir = defaultGenDir,
-            javaVersion = "JavaVersion.VERSION_1_8",
-            version = jooqVersion12,
-            packageName = defaultPackageName,
-            dbGenerator = """includes = ".*""""
-        )
 
         @JvmStatic
         private val deps = dependenciesBlock(
@@ -80,12 +29,9 @@ class H2Test {
             jdbcDriverDependency = h2JdbcDriverDependency
         )
 
-        class H2ConfigProvider : TestConfigProvider(config)
+        class H2ConfigProvider : TestConfigProvider(h2Config)
 
     }
-
-    @TempDir
-    lateinit var workspaceDir: Path
 
     @ParameterizedTest(name = "{index}: {0}")
     @ArgumentsSource(H2ConfigProvider::class)

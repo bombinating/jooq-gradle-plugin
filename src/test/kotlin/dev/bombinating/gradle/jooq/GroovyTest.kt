@@ -16,66 +16,15 @@
 
 package dev.bombinating.gradle.jooq
 
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledOnJre
 import org.junit.jupiter.api.condition.JRE
-import org.junit.jupiter.api.io.TempDir
-import java.nio.file.Path
-import java.sql.DriverManager
 
 // NOTE: Gradle 5.6.x does not support Groovy on Java 13: https://github.com/gradle/gradle/issues/10785
 @EnabledOnJre(JRE.JAVA_8,JRE.JAVA_11)
-class GroovyTest {
+class GroovyTest : AbstractH2Test() {
 
     companion object {
-
-        @Suppress("unused")
-        @BeforeAll
-        @JvmStatic
-        fun setup() {
-            DriverManager.getConnection(h2Url, h2Username, h2Password).use { conn ->
-                conn.createStatement().use { stmt ->
-                    /*
-                     * Create the schema.
-                     */
-                    stmt.execute("create schema if not exists $defaultSchemaName")
-                    /*
-                     * Create the table in the schema.
-                     */
-                    stmt.execute("create table if not exists $defaultSchemaName.$defaultTableName(id int)")
-                }
-            }
-        }
-
-        @Suppress("unused")
-        @AfterAll
-        @JvmStatic
-        fun cleanup() {
-            DriverManager.getConnection(h2Url, h2Username, h2Password).use { conn ->
-                conn.createStatement().use { stmt ->
-                    /*
-                     * Stop the database.
-                     */
-                    stmt.execute("SHUTDOWN")
-                }
-            }
-        }
-
-        @JvmStatic
-        private val config = TestConfig(
-            driver = h2Driver,
-            url = h2Url,
-            username = h2Username,
-            password = h2Password,
-            schema = defaultSchemaName,
-            genDir = defaultGenDir,
-            javaVersion = "JavaVersion.VERSION_1_8",
-            version = jooqVersion12,
-            packageName = defaultPackageName,
-            dbGenerator = """includes = ".*""""
-        )
 
         @JvmStatic
         private val deps = groovyDependenciesBlock(
@@ -85,15 +34,11 @@ class GroovyTest {
 
     }
 
-    @TempDir
-    lateinit var workspaceDir: Path
-
     @Test
     fun `Groovy jOOQ Extension Test`() {
-        val taskName = "clean"
         workspaceDir.createPropFile()
         workspaceDir.createSettingsFile(projectName = defaultProjectName)
-        workspaceDir.createGroovyBuildFile(config = config, depBlock = deps) {
+        workspaceDir.createGroovyBuildFile(config = h2Config, depBlock = deps) {
             """ |jooq {
                 |   use(ConfigExtKt) {
                 |       version = "$jooqVersion12"
@@ -115,7 +60,7 @@ class GroovyTest {
                 |   }
                 |}""".trimMargin()
         }
-        runGradleAndValidate(workspaceDir = workspaceDir, config = config, taskName = "jooq")
+        runGradleAndValidate(workspaceDir = workspaceDir, config = h2Config, taskName = "jooq")
     }
 
 }
