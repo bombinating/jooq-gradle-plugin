@@ -37,6 +37,7 @@ const val h2Driver = "org.h2.Driver"
 const val h2Url = "jdbc:h2:~/test_db;AUTO_SERVER=true"
 const val h2Username = "sa"
 const val h2Password = ""
+const val h2BadPassword = "wrong_password"
 
 const val defaultSchemaName = "test"
 const val defaultTableName = "Person"

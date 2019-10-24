@@ -105,8 +105,8 @@ class PropTest {
             taskName = taskName, args = *arrayOf(
                 "-D$taskName.jooq.codegen.jdbc.url=$h2Url",
                 "-D$taskName.jooq.codegen.jdbc.username=$h2Username",
-                "-Djooq.codegen.jdbc.password=wrong_password",
-                "-D$taskName.jooq.codegen.jdbc.password=$h2Password")
+                "-D$taskName.jooq.codegen.jdbc.password=$h2Password",
+                "-Djooq.codegen.jdbc.password=$h2BadPassword")
         )
     }
 
