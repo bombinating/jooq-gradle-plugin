@@ -147,7 +147,6 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         val logFile = createLoggingConfigFile(errorLog)
         val javaExecResult = try {
             val result = project.javaexec { spec ->
-                config.supplementByVersion(jooqVersion, project.logger)
                 spec.main = getGenerationTool(jooqVersion)
                 spec.classpath = jooqClassPath.plus(ImmutableFileCollection.of(logFile.parentFile))
                 spec.args = listOf(configFile.absolutePath)
@@ -191,6 +190,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
 
     private fun createJooqConfigFile(): File {
         val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
+        config.supplementByVersion(jooqVersion, project.logger)
         logger.info("jOOQ config XML path ${configFile.path}")
         FileOutputStream(configFile).use {
             config.marshall(it)
