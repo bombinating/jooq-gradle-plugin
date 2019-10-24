@@ -23,8 +23,18 @@ jobs:
         JOOQ_REPO_USERNAME: ${{ secrets.JOOQ_REPO_USERNAME }}
         JOOQ_REPO_PASSWORD: ${{ secrets.JOOQ_REPO_PASSWORD }}
       run: sh ./gradlew build
-#    - name: Save Build Artifacts
-#      uses: actions/upload-artifact@master
-#      with:
-#        name: build
-#        path: build
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: libs
+        path: build/libs
+    - name: Upload Test Results
+      uses: actions/upload-artifact@master
+      with:
+        name: tests
+        path: build/reports/tests/test
+    - name: Upload Static Analysis
+      uses: actions/upload-artifact@master
+      with:
+        name: analysis
+        path: build/reports/detekt
