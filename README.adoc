@@ -1,4 +1,5 @@
 = jOOQ Codegen Plugin
+:pluginVersion: 1.3.0
 
 == Overview
 
@@ -8,16 +9,16 @@ A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jO
 
 This project started as a Kotlin port of the Groovy-based https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin] and was initially developed because it was decided that the Groovy plugin https://github.com/etiennestuder/gradle-jooq-plugin/pull/91[would not add Kotlin DSL support].
 
-Tested with jOOQ versions 3.10, 3.11 and 3.12.
+Tested with jOOQ versions 3.10, 3.11 and 3.12 (Open Source and Pro editions) on Java 1.8, 11 and 13.
 
 == Using the plugin
 
 The plugin id needs to be added to the `plugins` block in the `build.gradle.kts` file in order to be used.
 
-[source,build.gradle.kts]
+[source,build.gradle.kts, subs="attributes"]
 ----
 plugins {
-    id("dev.bombinating.jooq-codegen") version "1.3.0"
+    id("dev.bombinating.jooq-codegen") version "{pluginVersion}"
 }
 ----
 
@@ -66,8 +67,8 @@ l|generator {
     }
     ...
 }
-|`runConfig`|JVM config for running the jOOQ `GenerationTool`| `{ ... }`
-|`resultHandler`|Result handler for result for running jOOQ `GenerationTool`|`{ ... }`
+|`runConfig`|JVM config for running the jOOQ `GenerationTool`| `runConfig { ... }`
+|`resultHandler`|Result handler for result for running jOOQ `GenerationTool`|`resultHandler { ... }`
 |===
 
 == Default task
@@ -109,8 +110,8 @@ l|generator {
     }
     ...
 }
-|`runConfig`|JVM config for running the jOOQ `GenerationTool`| `{ ... }`
-|`resultHandler`|Result handler for result for running jOOQ `GenerationTool`|`{ ... }`
+|`runConfig`|JVM config for running the jOOQ `GenerationTool`| `runConfig { ... }`
+|`resultHandler`|Result handler for result for running jOOQ `GenerationTool`|`resultHandler { ... }`
 |===
 
 For example:
@@ -254,7 +255,7 @@ In this example, a variable, `genDir`, is defined for the directory the code wil
 
 The database connection info comes from a properties file or from Gradle `-P` commandline arguments.
 
-[source,build.gradle.kts]
+[source,build.gradle.kts,subs="attributes"]
 ----
 import dev.bombinating.gradle.jooq.*
 
@@ -265,7 +266,7 @@ val jooqPassword: String by project
 
 plugins {
     java
-    id("dev.bombinating.jooq-codegen") version "1.3.0"
+    id("dev.bombinating.jooq-codegen") version "{pluginVersion}"
 }
 
 sourceSets["main"].java {
@@ -321,7 +322,7 @@ In addition, an explicit jOOQ task called `accounting` is defined. This is assoc
 
 Finally, the Java compilation is set to depend on the jOOQ code generation for both the `jooq` and `accounting` tasks.
 
-[source,build.gradle.kts]
+[source,build.gradle.kts,subs="attributes"]
 ----
 import dev.bombinating.gradle.jooq.*
 import org.jooq.meta.jaxb.Logging
@@ -338,7 +339,7 @@ val oracleSchema: String by project
 
 plugins {
     java
-    id("dev.bombinating.jooq-codegen") version "1.3.0"
+    id("dev.bombinating.jooq-codegen") version "{pluginVersion}"
 }
 
 sourceSets["main"].java {
@@ -425,3 +426,6 @@ $ ./gradlew clean build
 == Appendix C: Example projects
 
 A set of example projects, using both the `jooq` extension and task with the https://www.h2database.com/html/main.html[H2] database, is available https://github.com/bombinating/jooq-gradle-plugin-example[here]. An example of using the plugin from a Groovy Gradle build is also included.
+
+== Change Log
+include::CHANGELOG.adoc[]
