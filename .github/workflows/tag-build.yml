@@ -2,8 +2,8 @@ name: Tag Build
 
 on:
   push:
-    branches:
-      - refs/tags/*
+    tags:
+      - '*'
 
 jobs:
   tag-build:
