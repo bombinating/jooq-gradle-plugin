@@ -30,15 +30,15 @@ fun jooqGroovyOsDependency(group: String, version: String) =
     """compile "$group:jooq:$version""""
 
 fun dependenciesBlock(jooqDependency: String, jdbcDriverDependency: String) = """
-    |   $jooqDependency
-    |   compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    |   jooqRuntime($jdbcDriverDependency)
+    |$jooqDependency
+    |compileOnly("javax.annotation:javax.annotation-api:1.3.2")
+    |jooqRuntime($jdbcDriverDependency)
 """.trimMargin()
 
 fun groovyDependenciesBlock(jooqDependency: String, jdbcDriverDependency: String) = """
-    |   $jooqDependency
-    |   compileOnly "javax.annotation:javax.annotation-api:1.3.2"
-    |   jooqRuntime "$jdbcDriverDependency"
+    |$jooqDependency
+    |compileOnly "javax.annotation:javax.annotation-api:1.3.2"
+    |jooqRuntime "$jdbcDriverDependency"
 """.trimMargin()
 
 fun String.packageToPath() = replace(".", "/")
@@ -95,17 +95,18 @@ fun TestConfig.basicExtensionTest(
 ) {
     workspaceDir.createPropFile()
     workspaceDir.createSettingsFile(projectName = projectName)
-    workspaceDir.createBuildFile(config = this, depBlock = deps) {
-        """
+    workspaceDir.createBuildFile(config = this, depBlock = deps) { createJooqExtBlockWithConfig() }
+    runGradleAndValidate(workspaceDir = workspaceDir, config = this, taskName = taskName, args = *args)
+}
+
+fun TestConfig.createJooqExtBlockWithConfig() =
+    """
             |jooq {
             |   ${version?.let { """version = "$version"""" } ?: "" }
             |   ${edition?.let { "edition = ${JooqEdition::class.java.simpleName}.$edition" } ?: ""}
-            |   ${basicJooqConfig()}
+            |   ${basicJooqConfig().prependIndent("\t")}
             |}
         """.trimMargin("|")
-    }
-    runGradleAndValidate(workspaceDir = workspaceDir, config = this, taskName = taskName, args = *args)
-}
 
 fun TestConfig.basicTaskTest(
     workspaceDir: Path,
@@ -119,8 +120,9 @@ fun TestConfig.basicTaskTest(
     workspaceDir.createBuildFile(config = this, depBlock = deps) {
         """
             |${createJooqBlockForTask(edition = edition, version = version)}
+            |
             |tasks.register<JooqTask>("$taskName") {
-            |   ${basicJooqConfig()}
+            |   ${basicJooqConfig().prependIndent("\t")}
             |}
         """.trimMargin("|")
     }

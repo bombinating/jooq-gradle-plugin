@@ -30,6 +30,8 @@ import org.jooq.meta.jaxb.OnError
  * @property logging jOOQ logging info
  * @property onError jOOQ error handling
  * @property config jOOQ `Configuration` created from the other properties
+ * @property runConfig lambda for configuring the `JavaExecSpec` that will run the jOOQ codegen process
+ * @property resultHandler lambda for processing the `JavaExecResult` after the jOOQ codegen process runs
  */
 interface JooqConfig {
     var jdbc: Jdbc?

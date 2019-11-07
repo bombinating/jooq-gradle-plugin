@@ -71,11 +71,11 @@ private fun createGroovyBuildContent(
     |repositories {
     |   mavenLocal()
     |   mavenCentral()
-    |   ${createGroovyJooqRepo()?.let { it } ?: ""}
+    |   ${createGroovyJooqRepo() ?: ""}
     |}
     |
     |dependencies {
-    |$depBlock
+    |   $depBlock
     |}
     |
     |${body(config)}
@@ -93,8 +93,8 @@ private fun createBuildContent(
     |
     |plugins {
     |    java
-    |    id("dev.bombinating.jooq-codegen")
-    |}
+    |    id("dev.bombinating.jooq-codegen")${config.additionalPlugins?.let { "\n${it.prependIndent("\t") }" } ?: ""}
+    |}${config.additionalConfig?.let { "\n\n$it" } ?: ""}
     |
     |sourceSets["main"].java {
     |    srcDir(genDir)
@@ -105,12 +105,11 @@ private fun createBuildContent(
     |
     |repositories {
     |    mavenLocal()
-    |    mavenCentral()
-    |    ${createJooqRepo()?.let { it } ?: ""} 
+    |    mavenCentral()${createJooqRepo()?.let { "\n${it.prependIndent("\t") }" } ?: ""} 
     |}
     |
     |dependencies {
-    |$depBlock
+    |   ${depBlock.prependIndent("\t")}
     |}
     |
     |configure<JavaPluginConvention> {

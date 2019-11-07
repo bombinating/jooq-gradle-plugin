@@ -130,7 +130,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         onlyIf {
             val hasGeneratorInfo = isGeneratorSpecified
             if (!hasGeneratorInfo) {
-                logger.info("jOOQ codegen generator configuration not specified")
+                pluginLogger.info { "jOOQ codegen generator configuration not specified" }
             }
             hasGeneratorInfo
         }
@@ -141,7 +141,7 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
      */
     @TaskAction
     fun generate() {
-        logger.info("jooqRuntime classpath: ${jooqClassPath.files}")
+        pluginLogger.info { "jooqRuntime classpath: ${jooqClassPath.files}" }
         val configFile = createJooqConfigFile()
         val errorLog = File(temporaryDir, "error_msg_log.txt")
         val logFile = createLoggingConfigFile(errorLog)
@@ -176,26 +176,26 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
         }.map { (key, value) ->
             key.toString().removePrefix(prefixToRemove) to value
         }.toMap().also {
-            logger.info("System properties: $it")
+            pluginLogger.info { "System properties: $it" }
         }
     }
 
     private fun JavaExecResult.printMsg() {
         if (!isSuccess) {
-            logger.error("An error occurred invoking the jOOQ code generation plugin: $errorMsg")
+            pluginLogger.error { "An error occurred invoking the jOOQ code generation plugin: $errorMsg" }
         } else {
-            logger.info("The jOOQ code generation plugin finished without errors")
+            pluginLogger.info { "The jOOQ code generation plugin finished without errors" }
         }
     }
 
     private fun createJooqConfigFile(): File {
         val configFile = File(temporaryDir, JOOQ_CONFIG_NAME)
-        config.supplementByVersion(jooqVersion, project.logger)
-        logger.info("jOOQ config XML path ${configFile.path}")
+        config.supplementByVersion(jooqVersion)
+        pluginLogger.info { "jOOQ config XML path ${configFile.path}" }
         FileOutputStream(configFile).use {
             config.marshall(it)
         }
-        logger.debug("jOOQ config file contents:\n${configFile.readText()}")
+        pluginLogger.debug { "jOOQ config file contents:\n${configFile.readText()}" }
         return configFile
     }
 

@@ -85,6 +85,7 @@ dependencies {
      * Utils
      */
     api(group = "org.apache.commons", name = "commons-lang3", version = commonsLang3Version)
+    api(group = "io.github.microutils", name = "kotlin-logging", version = microutilsVersion)
 
     /*
      * Test
@@ -145,6 +146,9 @@ val dokka by tasks.getting(DokkaTask::class) {
     outputFormat = "html"
     outputDirectory = kdocLoc
     jdkVersion = 8
+    externalDocumentationLink {
+        url = uri("https://docs.gradle.org/current/javadoc/").toURL()
+    }
 }
 
 val dokkaJar by tasks.creating(Jar::class) {

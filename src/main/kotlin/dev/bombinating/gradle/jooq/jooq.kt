@@ -20,14 +20,14 @@
 
 package dev.bombinating.gradle.jooq
 
+import mu.KotlinLogging
 import org.gradle.api.Project
 import org.jooq.meta.jaxb.Configuration
-import org.slf4j.Logger
 import java.io.OutputStream
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Marshaller
 
-internal const val DEFAULT_JOOQ_VERSION = "3.12.2"
+internal const val DEFAULT_JOOQ_VERSION = "3.12.3"
 internal val DEFAULT_JOOQ_EDITION = JooqEdition.OpenSource
 internal const val JOOQ_RUNTIME_NAME = "jooqRuntime"
 internal const val JOOQ_CONFIG_NAME = "config.xml"
@@ -37,11 +37,23 @@ internal const val JOOQ_EXT_NAME = "jooq"
 internal const val JOOQ_TASK_NAME = "jooq"
 internal const val JOOQ_TASK_DESC = "jOOQ code generator"
 internal const val JOOQ_PROP_PREFIX = "jooq"
+internal const val SPRING_DEP_MAN_PLUGIN_NAME = "io.spring.dependency-management"
+internal const val SPRING_DEP_MAN_JOOQ_VERSION_EXT_NAME = "jooq.version"
+internal const val GRADLE_EXT_EXT_NAME = "ext"
 
+internal val pluginLogger = KotlinLogging.logger("dev.bombinating.gradle.jooq.JooqPlugin")
+
+/*
+ * The Spring Dependency Plugin does not manipulate dependencies where the version is specified using "dynamic" notation
+ * -- square brackets below (see: https://docs.gradle.org/current/userguide/declaring_dependencies.html). Note that
+ * since there is a single version in the range, the version isn't really dynamic.
+ */
 internal val JooqExtension.codeGenDeps: List<String>
     get() = listOf(
-        "${edition.groupId}:jooq-codegen:${version}",
-        "${edition.groupId}:jooq-meta-extensions:${version}",
+        "${edition.groupId}:jooq:[${version}]",
+        "${edition.groupId}:jooq-codegen:[${version}]",
+        "${edition.groupId}:jooq-meta:[${version}]",
+        "${edition.groupId}:jooq-meta-extensions:[${version}]",
         "javax.xml.bind:jaxb-api:2.3.1",
         "javax.activation:activation:1.1.1",
         "com.sun.xml.bind:jaxb-core:2.3.0.1",
@@ -60,9 +72,9 @@ internal val JOOQ_GROUP_IDS = JooqEdition.values().map { it.groupId }.toSet()
 internal fun getGenerationTool(jooqVersion: JooqVersion) =
     "${if (jooqVersion < JOOQ_3_11) PRE_VERSION_11_GEN_PACKAGE else VERSION_FF_11_GEN_PACKAGE}.$GEN_TOOL"
 
-internal fun Configuration.supplementByVersion(jooqVersion: JooqVersion, logger: Logger) {
+internal fun Configuration.supplementByVersion(jooqVersion: JooqVersion) {
     if (jooqVersion < JOOQ_3_11 && generator.name.startsWith(VERSION_FF_11_GEN_PACKAGE)) {
-        logger.info("Changing Configuration.generator.name from '${generator.name}' to '$PRE_VERSION_11_GEN_NAME'")
+        pluginLogger.info { "Changing Configuration.generator.name from '${generator.name}' to '$PRE_VERSION_11_GEN_NAME'" }
         generator.name = PRE_VERSION_11_GEN_NAME
     }
 }

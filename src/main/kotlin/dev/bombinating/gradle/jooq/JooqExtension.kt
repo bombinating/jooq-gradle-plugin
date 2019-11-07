@@ -27,7 +27,7 @@ package dev.bombinating.gradle.jooq
  *
  * ```
  * jooq {
- *      version = "3.12.2"
+ *      version = "3.12.3"
  *      edition = JooqEdition.OpenSource
  *      jdbc {
  *          driver = "org.h2.Driver"
@@ -49,9 +49,18 @@ package dev.bombinating.gradle.jooq
  * }
  * ```
  */
-open class JooqExtension(private val jooqConfig: JooqConfig = JooqConfigImpl()) : JooqConfig by jooqConfig  {
+open class JooqExtension(
+    private val versionChangeLambda: ((String) -> Unit)? = null,
+    private val jooqConfig: JooqConfig = JooqConfigImpl()) : JooqConfig by jooqConfig
+{
     var edition: JooqEdition = DEFAULT_JOOQ_EDITION
-    var version: String = DEFAULT_JOOQ_VERSION
+    private var _version: String = DEFAULT_JOOQ_VERSION
+    var version: String
+        get() = _version
+        set(version) {
+            _version = version
+            versionChangeLambda?.invoke(version)
+        }
 
     override fun toString(): String {
         return """version: $version, edition: $edition, config: $jooqConfig"""

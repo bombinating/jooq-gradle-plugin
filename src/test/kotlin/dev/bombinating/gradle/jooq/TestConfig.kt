@@ -43,7 +43,9 @@ data class TestConfig(
     val edition: JooqEdition? = null,
     val version: String? = null,
     val dbGenerator: String,
-    val addSchemaToPackage: Boolean = true
+    val addSchemaToPackage: Boolean = true,
+    val additionalPlugins: String? = null,
+    val additionalConfig: String? = null
 ) {
 
     override fun toString(): String =

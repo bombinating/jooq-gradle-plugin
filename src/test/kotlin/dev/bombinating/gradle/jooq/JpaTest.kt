@@ -56,7 +56,7 @@ class JpaTest {
         workspaceDir.createBuildFile(config = config, depBlock = deps) {
             """
             |jooq {
-            |   $jpaGeneratorConfig
+            |   ${jpaGeneratorConfig.prependIndent("\t")}
             |}
             """.trimMargin("|")
         }
@@ -72,7 +72,7 @@ class JpaTest {
         workspaceDir.createBuildFile(config = config, depBlock = deps) {
             """
             |tasks.register<JooqTask>("jooqJpa") {
-            |   $jpaGeneratorConfig
+            |   ${jpaGeneratorConfig.prependIndent("\t")}
             |}
             """.trimMargin("|")
         }
@@ -82,22 +82,22 @@ class JpaTest {
 
     private val jpaGeneratorConfig =
             """
-            |   generator {
-            |       database {
-            |           name = "org.jooq.meta.extensions.jpa.JPADatabase"
-            |           inputSchema = "PUBLIC"
-            |           properties {
-            |               property("packages" to "$sourcePackage")
-            |               property("useAttributeConverters" to "true")
-            |               property("unqualifiedSchema" to "true")
-            |           }
-            |       }
-            |       target {
-            |           directory = "${config.genDir}"
-            |           packageName = "${config.packageName}"
-            |       }
-            |       logging = Logging.DEBUG
-            |   }
+            |generator {
+            |    database {
+            |        name = "org.jooq.meta.extensions.jpa.JPADatabase"
+            |        inputSchema = "PUBLIC"
+            |        properties {
+            |            property("packages" to "$sourcePackage")
+            |            property("useAttributeConverters" to "true")
+            |            property("unqualifiedSchema" to "true")
+            |        }
+            |    }
+            |    target {
+            |        directory = "${config.genDir}"
+            |        packageName = "${config.packageName}"
+            |    }
+            |    logging = Logging.DEBUG
+            |}
             """.trimMargin("|")
 
 
