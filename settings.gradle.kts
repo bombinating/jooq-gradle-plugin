@@ -34,5 +34,6 @@ pluginManagement {
         id("com.gradle.plugin-publish") version publishPluginVersion
         id("net.researchgate.release") version releasePluginVersion
         id("com.gradle.build-scan") version buildScanVersion
+        id("com.gradle.build-scan") version buildScanVersion
     }
 }

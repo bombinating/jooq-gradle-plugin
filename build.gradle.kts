@@ -64,6 +64,7 @@ plugins {
     id("com.jfrog.bintray")
     id("com.jfrog.artifactory")
     id("com.gradle.plugin-publish")
+    id("com.gradle.build-scan")
 }
 
 repositories {
@@ -209,4 +210,10 @@ artifactory {
             setProperty("publishPom", true)
         })
     })
+}
+
+buildScan {
+    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+    termsOfServiceAgree = "yes"
+    publishAlwaysIf(!System.getenv("GRADLE_SCAN_PUBLISH").isNullOrBlank())
 }

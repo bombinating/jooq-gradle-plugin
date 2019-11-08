@@ -20,6 +20,7 @@ jobs:
         java-version: ${{ matrix.java }}
     - name: Build with Gradle
       env:
+        GRADLE_SCAN_PUBLISH: ${{ matrix.java == '1.8' }}
         JOOQ_CONTAINER_TESTS: true
         JOOQ_PRO_TESTS: true
         JOOQ_REPO_URL: ${{ secrets.JOOQ_REPO_URL }}
@@ -45,7 +46,7 @@ jobs:
     needs: master-build
     runs-on: ubuntu-latest
     name: Publish Master Branch Java ${{ matrix.java }} to Artifactory
-    if: "!contains(github.event.head_commit.message, 'pre tag commit')"
+    if: {{ !contains(github.event.head_commit.message, "pre tag commit") }}
     steps:
       - uses: actions/checkout@v1
       - name: Set up JDK 1.8
