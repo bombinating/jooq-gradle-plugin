@@ -221,7 +221,7 @@ artifactory {
 buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
     termsOfServiceAgree = "yes"
-    publishAlwaysIf(!System.getenv("GRADLE_SCAN_PUBLISH").isNullOrBlank())
+    publishAlwaysIf(System.getenv("GRADLE_SCAN_PUBLISH")?.toLowerCase() == "true")
 }
 
 release {
