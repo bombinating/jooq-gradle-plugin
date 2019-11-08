@@ -62,4 +62,3 @@ jobs:
           BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
           BINTRAY_KEY: ${{ secrets.BINTRAY_KEY }}
         run: sh ./gradlew artifactoryPublish -PbintrayUser=$BINTRAY_USER -PbintrayKey=$BINTRAY_KEY
-        if: always()

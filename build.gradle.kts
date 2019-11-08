@@ -15,6 +15,8 @@
  */
 import com.jfrog.bintray.gradle.BintrayExtension
 import groovy.lang.GroovyObject
+import net.researchgate.release.GitAdapter
+import net.researchgate.release.ReleaseExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
@@ -53,6 +55,10 @@ val bintrayKey: String? by project
 val pubName = "jooqPlugin"
 val kdocLoc = "$buildDir/kdoc"
 val gitUrl = "https://github.com/bombinating/jooq-gradle-plugin.git"
+
+fun ReleaseExtension.git(config : GitAdapter.GitConfig.() -> Unit) {
+    (propertyMissing("git") as GitAdapter.GitConfig).config()
+}
 
 plugins {
     kotlin("jvm")
@@ -216,4 +222,11 @@ buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
     termsOfServiceAgree = "yes"
     publishAlwaysIf(!System.getenv("GRADLE_SCAN_PUBLISH").isNullOrBlank())
+}
+
+release {
+    git {
+        requireBranch = "master"
+        pushReleaseVersionBranch = "release"
+    }
 }
