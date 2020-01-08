@@ -64,13 +64,12 @@ plugins {
     kotlin("jvm")
     `java-gradle-plugin`
     `maven-publish`
-    id("net.researchgate.release")
-    id("io.gitlab.arturbosch.detekt")
-    id("org.jetbrains.dokka")
     id("com.jfrog.bintray")
     id("com.jfrog.artifactory")
     id("com.gradle.plugin-publish")
-    id("com.gradle.build-scan")
+    id("io.gitlab.arturbosch.detekt")
+    id("net.researchgate.release")
+    id("org.jetbrains.dokka")
 }
 
 repositories {
@@ -152,9 +151,11 @@ val sourcesJar by tasks.creating(Jar::class) {
 val dokka by tasks.getting(DokkaTask::class) {
     outputFormat = "html"
     outputDirectory = kdocLoc
-    jdkVersion = 8
-    externalDocumentationLink {
-        url = uri("https://docs.gradle.org/current/javadoc/").toURL()
+    configuration {
+        jdkVersion = 8
+        externalDocumentationLink {
+            url = uri("https://docs.gradle.org/current/javadoc/").toURL()
+        }
     }
 }
 
@@ -216,12 +217,6 @@ artifactory {
             setProperty("publishPom", true)
         })
     })
-}
-
-buildScan {
-    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
-    publishAlwaysIf(System.getenv("GRADLE_SCAN_PUBLISH")?.toLowerCase() == "true")
 }
 
 release {
