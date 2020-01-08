@@ -68,12 +68,16 @@ fun validateGradleOutput(workspaceDir: Path, config: TestConfig, result: BuildRe
     assertTrue(javaClass.readText().contains("jOOQ version:${config.version ?: defaultJooqVersion}"))
 }
 
-fun runGradle(workspaceDir: Path, vararg args: String): BuildResult {
+fun runGradle(workspaceDir: Path, vararg args: String): BuildResult =
+    runGradle(null, workspaceDir, *args)
+
+fun runGradle(gradleVersion: String?, workspaceDir: Path, vararg args: String): BuildResult {
     val settings = File(workspaceDir.toFile(), "settings.gradle.kts")
     val ktsBuild = File(workspaceDir.toFile(), "build.gradle.kts")
     val build = if (ktsBuild.exists()) ktsBuild else File(workspaceDir.toFile(), "build.gradle")
     printGradleInfo(settings, build)
     return GradleRunner.create()
+        .withGradleVersion(gradleVersion ?: defaultGradleVersion)
         .withPluginClasspath()
         .withArguments(*args)
         .withProjectDir(workspaceDir.toFile())
@@ -82,7 +86,8 @@ fun runGradle(workspaceDir: Path, vararg args: String): BuildResult {
 }
 
 fun runGradleAndValidate(workspaceDir: Path, config: TestConfig, taskName: String, vararg args: String) {
-    val result = runGradle(workspaceDir, "clean", taskName, "build", "--info", "--stacktrace", *args)
+    val result = runGradle(config.gradleVersion, workspaceDir, "clean", taskName,
+        "build", "--info", "--stacktrace", *args)
     validateGradleOutput(workspaceDir = workspaceDir, config = config, result = result, taskName = taskName)
 }
 

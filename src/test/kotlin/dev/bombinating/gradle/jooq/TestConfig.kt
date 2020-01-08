@@ -45,10 +45,11 @@ data class TestConfig(
     val dbGenerator: String,
     val addSchemaToPackage: Boolean = true,
     val additionalPlugins: String? = null,
-    val additionalConfig: String? = null
+    val additionalConfig: String? = null,
+    val gradleVersion: String? = null
 ) {
 
     override fun toString(): String =
-        "edition: ${edition ?: "<not specified>"}, version: ${version ?: "<not specified>"}"
+        "gradle: ${gradleVersion ?: "<not specified>"}, edition: ${edition ?: "<not specified>"}, version: ${version ?: "<not specified>"}"
 
 }

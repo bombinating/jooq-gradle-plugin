@@ -30,6 +30,11 @@ const val jooqVersion11 = "3.11.12"
 const val jooqVersion10 = "3.10.8"
 const val defaultJooqVersion = jooqVersion12
 
+const val gradleVersion55 = "5.5.1"
+const val gradleVersion56 = "5.6.4"
+const val gradleVersion60 = "6.0.1"
+const val defaultGradleVersion = gradleVersion60
+
 const val defaultGenDir: String = "generated/src/main/java"
 const val defaultJooqTaskName: String = "jooq"
 

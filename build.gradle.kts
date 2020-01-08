@@ -155,6 +155,7 @@ val dokka by tasks.getting(DokkaTask::class) {
         jdkVersion = 8
         externalDocumentationLink {
             url = uri("https://docs.gradle.org/current/javadoc/").toURL()
+            packageListUrl = uri("https://docs.gradle.org/current/javadoc/package-list").toURL()
         }
     }
 }
