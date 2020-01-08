@@ -10,7 +10,7 @@ A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jO
 
 This project started as a Kotlin port of the Groovy-based https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin] and was initially developed because it was decided that the Groovy plugin https://github.com/etiennestuder/gradle-jooq-plugin/pull/91[would not add Kotlin DSL support].
 
-Tested with jOOQ versions 3.10, 3.11 and 3.12 (Open Source and Pro editions) on Java 1.8, 11 and 13.
+Tested with jOOQ versions 3.10, 3.11 and 3.12 (Open Source and Pro editions) on Java 1.8, 11 and 13, and with Gradle 5+.
 
 == Using the plugin
 
