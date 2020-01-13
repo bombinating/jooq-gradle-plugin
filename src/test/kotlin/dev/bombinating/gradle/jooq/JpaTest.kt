@@ -96,8 +96,8 @@ class JpaTest {
             |        directory = "${config.genDir}"
             |        packageName = "${config.packageName}"
             |    }
-            |    logging = Logging.DEBUG
             |}
+            |logging = Logging.DEBUG
             """.trimMargin("|")
 
 
