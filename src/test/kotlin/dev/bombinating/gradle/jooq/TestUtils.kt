@@ -60,8 +60,10 @@ fun printGradleInfo(settings: File, build: File) {
 }
 
 fun validateGradleOutput(workspaceDir: Path, config: TestConfig, result: BuildResult, taskName: String) {
-    val javaClass = workspaceDir.toFile("${config.genDir}/${config.packageName.packageToPath()}/" +
-            "${if (config.addSchemaToPackage) "${config.schema}/" else "" }tables/$defaultTableName.java")
+    val javaClass = workspaceDir.toFile(
+        "${config.genDir}/${config.packageName.packageToPath()}/" +
+                "${if (config.addSchemaToPackage) "${config.schema}/" else ""}tables/$defaultTableName.java"
+    )
     assertTrue(javaClass.exists())
     assertTrue(result.task(":$taskName") != null)
     assertEquals(TaskOutcome.SUCCESS, result.task(":$taskName")?.outcome)
@@ -86,8 +88,8 @@ fun runGradle(gradleVersion: String?, workspaceDir: Path, vararg args: String): 
 }
 
 fun runGradleAndValidate(workspaceDir: Path, config: TestConfig, taskName: String, vararg args: String) {
-    val result = runGradle(config.gradleVersion, workspaceDir, "clean", taskName,
-        "build", "--info", "--stacktrace", *args)
+    val result =
+        runGradle(config.gradleVersion, workspaceDir, "clean", taskName, "build", "--info", "--stacktrace", *args)
     validateGradleOutput(workspaceDir = workspaceDir, config = config, result = result, taskName = taskName)
 }
 
@@ -107,7 +109,7 @@ fun TestConfig.basicExtensionTest(
 fun TestConfig.createJooqExtBlockWithConfig() =
     """
             |jooq {
-            |   ${version?.let { """version = "$version"""" } ?: "" }
+            |   ${version?.let { """version = "$version"""" } ?: ""}
             |   ${edition?.let { "edition = ${JooqEdition::class.java.simpleName}.$edition" } ?: ""}
             |   ${basicJooqConfig().prependIndent("\t")}
             |}
@@ -138,8 +140,8 @@ fun TestConfig.basicJooqConfig() = """
             |jdbc {
             |   driver = "$driver"
             |   ${url?.let { """url = "$it"""" } ?: ""}
-            |   ${username?.let {"""username = "$it""""} ?: ""}
-            |   ${password?.let {"""password = "$it""""} ?: ""}
+            |   ${username?.let { """username = "$it"""" } ?: ""}
+            |   ${password?.let { """password = "$it"""" } ?: ""}
             |}
             |generator {
             |   database {

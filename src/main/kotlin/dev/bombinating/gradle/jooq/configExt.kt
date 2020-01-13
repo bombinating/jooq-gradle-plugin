@@ -45,7 +45,7 @@ import org.jooq.meta.jaxb.Target
  * @receiver Parent jOOQ code generation [JooqConfig] the run configuration is associated with
  * @param action lambda for customizing the JVM environment the jOOQ code generation process runs in
  */
-fun JooqConfig.runConfig(action: JavaExecSpec.() -> Unit) {
+fun JooqConfig.runConfig(action: (@JooqDsl JavaExecSpec).() -> Unit) {
     runConfig = action
 }
 
@@ -55,7 +55,7 @@ fun JooqConfig.runConfig(action: JavaExecSpec.() -> Unit) {
  * @receiver Parent jOOQ code generation [JooqConfig] the result handler is associated with
  * @param action lambda for specifying a handler to be invoked after the jOOQ code generation completes
  */
-fun JooqConfig.resultHandler(action: JavaExecResult.() -> Unit) {
+fun JooqConfig.resultHandler(action: (@JooqDsl JavaExecResult).() -> Unit) {
     resultHandler = action
 }
 
@@ -65,7 +65,7 @@ fun JooqConfig.resultHandler(action: JavaExecResult.() -> Unit) {
  * @receiver Parent jOOQ code generation [JooqConfig] the `Jdbc` config is associated with
  * @param action lambda for customizing the `Jdbc` config
  */
-fun JooqConfig.jdbc(action: Jdbc.() -> Unit) {
+fun JooqConfig.jdbc(action: (@JooqDsl Jdbc).() -> Unit) {
     jdbc = (jdbc ?: Jdbc()).apply(action)
 }
 
@@ -75,7 +75,7 @@ fun JooqConfig.jdbc(action: Jdbc.() -> Unit) {
  * @receiver Parent jOOQ code generation [JooqConfig] the `Generator` config is associated with
  * @param action lambda for customizing the `Generator` config
  */
-fun JooqConfig.generator(action: Generator.() -> Unit) {
+fun JooqConfig.generator(action: (@JooqDsl Generator).() -> Unit) {
     generator = (generator ?: Generator()).apply(action)
 }
 
@@ -85,7 +85,7 @@ fun JooqConfig.generator(action: Generator.() -> Unit) {
  * @receiver Parent `Generator` the `Database` config is associated with
  * @param action lambda for customizing the `Database` config
  */
-fun Generator.database(action: Database.() -> Unit) {
+fun Generator.database(action: (@JooqDsl Database).() -> Unit) {
     database = ((database ?: Database()).apply(action))
 }
 
@@ -95,7 +95,7 @@ fun Generator.database(action: Database.() -> Unit) {
  * @receiver Parent `Generator` the `Target` config is associated with
  * @param action lambda for customizing the `Target` config
  */
-fun Generator.target(action: Target.() -> Unit) {
+fun Generator.target(action: (@JooqDsl Target).() -> Unit) {
     target = ((target ?: Target()).apply(action))
 }
 
@@ -105,7 +105,7 @@ fun Generator.target(action: Target.() -> Unit) {
  * @receiver Parent `Generator` the `Strategy` config is associated with
  * @param action lambda for customizing the `Strategy` config
  */
-fun Generator.strategy(action: Strategy.() -> Unit) {
+fun Generator.strategy(action: (@JooqDsl Strategy).() -> Unit) {
     strategy = ((strategy ?: Strategy()).apply(action))
 }
 
@@ -115,7 +115,7 @@ fun Generator.strategy(action: Strategy.() -> Unit) {
  * @receiver Parent `Strategy` the `Matchers` config is associated with
  * @param action lambda for customizing the `Matchers` config
  */
-fun Strategy.matchers(action: Matchers.() -> Unit) {
+fun Strategy.matchers(action: (@JooqDsl Matchers).() -> Unit) {
     matchers = ((matchers ?: Matchers()).apply(action))
 }
 
@@ -125,7 +125,7 @@ fun Strategy.matchers(action: Matchers.() -> Unit) {
  * @receiver Parent `Matchers` the [MutableList] of `MatchersTableType` config is associated with
  * @param action lambda for customizing the [MutableList] of `MatchersTableType` config
  */
-fun Matchers.tables(action: MutableList<MatchersTableType>.() -> Unit) {
+fun Matchers.tables(action: (@JooqDsl MutableList<MatchersTableType>).() -> Unit) {
     tables = ((tables ?: mutableListOf()).apply(action))
 }
 
@@ -135,7 +135,7 @@ fun Matchers.tables(action: MutableList<MatchersTableType>.() -> Unit) {
  * @receiver Parent [MutableList] of `MatchersTableType` the `MatchersTableType` config is associated with
  * @param action lambda for customizing the `MatchersTableType` config
  */
-fun MutableList<MatchersTableType>.table(action: MatchersTableType.() -> Unit) {
+fun MutableList<MatchersTableType>.table(action: (@JooqDsl MatchersTableType).() -> Unit) {
     this += MatchersTableType().apply(action)
 }
 
@@ -145,7 +145,7 @@ fun MutableList<MatchersTableType>.table(action: MatchersTableType.() -> Unit) {
  * @receiver Parent `MatchersTableType` the `MatcherRule` config is associated with
  * @param action lambda for customizing the `MatcherRule` config
  */
-fun MatchersTableType.pojoClass(action: MatcherRule.() -> Unit) {
+fun MatchersTableType.pojoClass(action: (@JooqDsl MatcherRule).() -> Unit) {
     pojoClass = ((pojoClass ?: MatcherRule()).apply(action))
 }
 
@@ -155,7 +155,7 @@ fun MatchersTableType.pojoClass(action: MatcherRule.() -> Unit) {
  * @receiver Parent `Generator` the `Generate` config is associated with
  * @param action lambda for customizing the `Generate` config
  */
-fun Generator.generate(action: Generate.() -> Unit) {
+fun Generator.generate(action: (@JooqDsl Generate).() -> Unit) {
     generate = ((generate ?: Generate()).apply(action))
 }
 
@@ -165,7 +165,7 @@ fun Generator.generate(action: Generate.() -> Unit) {
  * @receiver Parent `Database` the [MutableList] of `ForcedType` config is associated with
  * @param action lambda for customizing the [MutableList] of `ForcedType` config
  */
-fun Database.forcedTypes(action: MutableList<ForcedType>.() -> Unit) {
+fun Database.forcedTypes(action: (@JooqDsl MutableList<ForcedType>).() -> Unit) {
     forcedTypes = ((forcedTypes ?: mutableListOf()).apply(action))
 }
 
@@ -175,7 +175,7 @@ fun Database.forcedTypes(action: MutableList<ForcedType>.() -> Unit) {
  * @receiver Parent [MutableList] of `ForcedType` the `ForcedType` config is associated with
  * @param action lambda for customizing the `ForcedType` config
  */
-fun MutableList<ForcedType>.forcedType(action: ForcedType.() -> Unit) {
+fun MutableList<ForcedType>.forcedType(action: (@JooqDsl ForcedType).() -> Unit) {
     this += ForcedType().apply(action)
 }
 
@@ -185,7 +185,7 @@ fun MutableList<ForcedType>.forcedType(action: ForcedType.() -> Unit) {
  * @receiver Parent `Database` the [MutableList] of `Property` config is associated with
  * @param action lambda for customizing the [MutableList] of `Property` config
  */
-fun Database.properties(action: MutableList<Property>.() -> Unit) {
+fun Database.properties(action: (@JooqDsl MutableList<Property>).() -> Unit) {
     properties = ((properties ?: mutableListOf()).apply(action))
 }
 
@@ -215,7 +215,7 @@ fun Database.properties(vararg props: Pair<String, String>) {
  * @receiver Parent `Jdbc` the [MutableList] of `Property` config is associated with
  * @param action lambda for customizing the [MutableList] of `Property` config
  */
-fun Jdbc.properties(action: MutableList<Property>.() -> Unit) {
+fun Jdbc.properties(action: (@JooqDsl MutableList<Property>).() -> Unit) {
     properties = ((properties ?: mutableListOf()).apply(action))
 }
 
@@ -235,7 +235,7 @@ fun Jdbc.properties(vararg props: Pair<String, String>) {
  * @receiver Parent `Database` the [MutableList] of [EnumType] config is associated with
  * @param action lambda for customizing the [MutableList] of [EnumType] config
  */
-fun Database.enumTypes(action: MutableList<EnumType>.() -> Unit) {
+fun Database.enumTypes(action: (@JooqDsl MutableList<EnumType>).() -> Unit) {
     enumTypes = ((enumTypes ?: mutableListOf()).apply(action))
 }
 
@@ -245,7 +245,7 @@ fun Database.enumTypes(action: MutableList<EnumType>.() -> Unit) {
  * @receiver Parent [MutableList] the [EnumType] is being added to
  * @param action to create an [EnumType] to add to the [MutableList] of enum types
  */
-fun MutableList<EnumType>.enumType(action: EnumType.() -> Unit) {
+fun MutableList<EnumType>.enumType(action: (@JooqDsl EnumType).() -> Unit) {
     this += EnumType().apply(action)
 }
 
@@ -266,7 +266,7 @@ fun Database.enumTypes(vararg types: Pair<String, String>) {
  * @receiver Parent [Database] the [CatalogMappingType]s are being added to
  * @param action create the list of [CatalogMappingType] to add to the [Database] receiver
  */
-fun Database.catalogs(action: MutableList<CatalogMappingType>.() -> Unit) {
+fun Database.catalogs(action: (@JooqDsl MutableList<CatalogMappingType>).() -> Unit) {
     catalogs = ((catalogs ?: mutableListOf()).apply(action))
 }
 
@@ -276,7 +276,7 @@ fun Database.catalogs(action: MutableList<CatalogMappingType>.() -> Unit) {
  * @receiver List of [CatalogMappingType] the [CatalogMappingType] is being added to
  * @param action create the [CatalogMappingType] to add to the list
  */
-fun MutableList<CatalogMappingType>.catalogMappingType(action: CatalogMappingType.() -> Unit) {
+fun MutableList<CatalogMappingType>.catalogMappingType(action: (@JooqDsl CatalogMappingType).() -> Unit) {
     this += CatalogMappingType().apply(action)
 }
 
@@ -286,7 +286,7 @@ fun MutableList<CatalogMappingType>.catalogMappingType(action: CatalogMappingTyp
  * @receiver [CatalogMappingType] the [SchemaMappingType] is being added to
  * @param action create the list of [SchemaMappingType] to add to the list of schemata
  */
-fun CatalogMappingType.schemata(action: MutableList<SchemaMappingType>.() -> Unit) {
+fun CatalogMappingType.schemata(action: (@JooqDsl MutableList<SchemaMappingType>).() -> Unit) {
     schemata = ((schemata ?: mutableListOf()).apply(action))
 }
 
@@ -296,7 +296,7 @@ fun CatalogMappingType.schemata(action: MutableList<SchemaMappingType>.() -> Uni
  * @receiver list [SchemaMappingType] is being added to
  * @param action create the [SchemaMappingType] to add to the list
  */
-fun MutableList<SchemaMappingType>.schemaMappingType(action: SchemaMappingType.() -> Unit) {
+fun MutableList<SchemaMappingType>.schemaMappingType(action: (@JooqDsl SchemaMappingType).() -> Unit) {
     this += SchemaMappingType().apply(action)
 }
 
@@ -306,7 +306,7 @@ fun MutableList<SchemaMappingType>.schemaMappingType(action: SchemaMappingType.(
  * @receiver Database the [Embeddable] objects are being added to
  * @param action create the list of [Embeddable] objects to add to the list
  */
-fun Database.embeddables(action: MutableList<Embeddable>.() -> Unit) {
+fun Database.embeddables(action: (@JooqDsl MutableList<Embeddable>).() -> Unit) {
     embeddables = ((embeddables ?: mutableListOf()).apply(action))
 }
 
@@ -316,7 +316,7 @@ fun Database.embeddables(action: MutableList<Embeddable>.() -> Unit) {
  * @receiver List of [Embeddable] objects to add to
  * @param action create the [Embeddable] object to add to the list
  */
-fun MutableList<Embeddable>.embeddable(action: Embeddable.() -> Unit) {
+fun MutableList<Embeddable>.embeddable(action: (@JooqDsl Embeddable).() -> Unit) {
     this += Embeddable().apply(action)
 }
 
@@ -326,7 +326,7 @@ fun MutableList<Embeddable>.embeddable(action: Embeddable.() -> Unit) {
  * @receiver [Embeddable] object to add to
  * @param action create the [EmbeddableField] object to add to the list
  */
-fun Embeddable.field(action: EmbeddableField.() -> Unit) {
+fun Embeddable.field(action: (@JooqDsl EmbeddableField).() -> Unit) {
     withFields(EmbeddableField().apply(action))
 }
 

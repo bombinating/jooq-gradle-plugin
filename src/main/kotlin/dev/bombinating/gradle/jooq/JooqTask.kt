@@ -45,6 +45,7 @@ import javax.inject.Inject
  * @property runConfig configuration for the execution environment for the jOOQ code generation process
  * @property resultHandler handler for the result of the jOOQ code generation process
  */
+@JooqDsl
 open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
 
     @get:Internal

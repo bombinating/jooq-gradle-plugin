@@ -43,6 +43,7 @@ interface JooqConfig {
     var resultHandler: (JavaExecResult.() -> Unit)?
 }
 
+@JooqDsl
 internal class JooqConfigImpl(override val config: Configuration = Configuration()) : JooqConfig {
 
     override var jdbc: Jdbc?

@@ -49,6 +49,7 @@ package dev.bombinating.gradle.jooq
  * }
  * ```
  */
+@JooqDsl
 open class JooqExtension(
     private val versionChangeLambda: ((String) -> Unit)? = null,
     private val jooqConfig: JooqConfig = JooqConfigImpl()) : JooqConfig by jooqConfig
