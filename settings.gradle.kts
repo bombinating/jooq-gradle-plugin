@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+rootProject.name= "jooq-gradle-plugin"
+
 pluginManagement {
     val kotlinVersion: String by settings
     val artifactoryPluginVersion: String by settings
