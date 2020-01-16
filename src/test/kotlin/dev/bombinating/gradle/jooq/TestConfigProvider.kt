@@ -26,7 +26,9 @@ abstract class TestConfigProvider(private val config: TestConfig) : ArgumentsPro
     private val editions: List<JooqEdition?> =
         listOf(JooqEdition.OpenSource, JooqEdition.Pro, JooqEdition.ProJava8, null)
     protected open val versions: List<String?> = listOf(jooqVersion10, jooqVersion11, jooqVersion12, null)
-    protected open val gradleVersions: List<String> = listOf(gradleVersion55, gradleVersion56, gradleVersion60)
+    protected open val gradleVersions: List<String> = listOf(
+        gradleVersion55, gradleVersion56, gradleVersion60, gradleVersion61
+    )
 
     private val applicableEditions: List<JooqEdition?>
         get() = editions.filter { edition ->

@@ -38,7 +38,8 @@ const val gradleVersion54 = "5.4.1"
 const val gradleVersion55 = "5.5.1"
 const val gradleVersion56 = "5.6.4"
 const val gradleVersion60 = "6.0.1"
-const val defaultGradleVersion = gradleVersion60
+const val gradleVersion61 = "6.1"
+const val defaultGradleVersion = gradleVersion61
 
 const val defaultGenDir: String = "generated/src/main/java"
 const val defaultJooqTaskName: String = "jooq"
