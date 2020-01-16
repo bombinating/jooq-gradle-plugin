@@ -84,7 +84,7 @@ class DslTest {
 
     @ParameterizedTest(name = "{index}: {0}")
     @ArgumentsSource(BadDslArgumentProvider::class)
-    fun `Bad DSL extension Tes`(badBlock: String) {
+    fun `Bad DSL extension Test`(badBlock: String) {
         val taskName = "clean"
         workspaceDir.createPropFile()
         workspaceDir.createSettingsFile(projectName = defaultProjectName)

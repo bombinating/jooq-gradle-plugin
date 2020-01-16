@@ -74,7 +74,9 @@ internal fun getGenerationTool(jooqVersion: JooqVersion) =
 
 internal fun Configuration.supplementByVersion(jooqVersion: JooqVersion) {
     if (jooqVersion < JOOQ_3_11 && generator.name.startsWith(VERSION_FF_11_GEN_PACKAGE)) {
-        pluginLogger.info { "Changing Configuration.generator.name from '${generator.name}' to '$PRE_VERSION_11_GEN_NAME'" }
+        pluginLogger.info {
+            "Changing Configuration.generator.name from '${generator.name}' to '$PRE_VERSION_11_GEN_NAME'"
+        }
         generator.name = PRE_VERSION_11_GEN_NAME
     }
 }

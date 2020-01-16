@@ -50,7 +50,8 @@ class JooqPlugin : Plugin<Project> {
         /*
          * Create the jooq extension
          */
-        val jooqExt = project.extensions.create(JOOQ_EXT_NAME, JooqExtension::class.java,
+        val jooqExt = project.extensions.create(
+            JOOQ_EXT_NAME, JooqExtension::class.java,
             { version: String -> updateJooqSpringBootVersion(project, version) }, JooqConfigImpl()
         )
 
@@ -95,7 +96,8 @@ class JooqPlugin : Plugin<Project> {
             val ext = (project as ExtensionAware).extensions.getByName(GRADLE_EXT_EXT_NAME) as? ExtraPropertiesExtension
             if (ext != null) {
                 pluginLogger.info {
-                    """Spring Dependency Management Plugin detected: setting ext["$SPRING_DEP_MAN_JOOQ_VERSION_EXT_NAME"] = "$version""""
+                    "Spring Dependency Management Plugin detected: " +
+                            """setting ext["$SPRING_DEP_MAN_JOOQ_VERSION_EXT_NAME"] = "$version""""
                 }
                 ext[SPRING_DEP_MAN_JOOQ_VERSION_EXT_NAME] = version
             } else {
@@ -103,7 +105,8 @@ class JooqPlugin : Plugin<Project> {
             }
         } else {
             pluginLogger.debug {
-                """Spring Dependency Management Plugin not detected: not setting ext["$SPRING_DEP_MAN_JOOQ_VERSION_EXT_NAME"]"""
+                "Spring Dependency Management Plugin not detected: " +
+                        """not setting ext["$SPRING_DEP_MAN_JOOQ_VERSION_EXT_NAME"]"""
             }
         }
     }
