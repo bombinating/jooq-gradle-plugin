@@ -17,12 +17,54 @@
 package dev.bombinating.gradle.jooq
 
 import org.gradle.testkit.runner.UnexpectedBuildFailure
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.io.TempDir
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.ArgumentsProvider
+import org.junit.jupiter.params.provider.ArgumentsSource
 import java.nio.file.Path
+import java.util.stream.Stream
+import kotlin.test.assertTrue
+
+class BadDslArgumentProvider : ArgumentsProvider {
+    private val badElement = "logging = Logging.INFO"
+    private val badBlocks = listOf(
+        "jdbc { $badElement }",
+        "jdbc { properties { $badElement } }",
+        "generator { $badElement }",
+        "generator { target { $badElement } }",
+        "generator { database { $badElement } }",
+        "generator { generate { $badElement } }",
+        "generator { strategy { $badElement } }",
+        "generator { strategy { matchers { $badElement } } }",
+        "generator { strategy { matchers { tables { $badElement } } } }",
+        "generator { strategy { matchers { tables { table { $badElement } } } } }",
+        "generator { strategy { matchers { tables { table { pojoClass { $badElement } } } } } }",
+        "generator { database { catalogs { $badElement } } }",
+        "generator { database { catalogs { catalogMappingType { $badElement } } } }",
+        "generator { database { catalogs { catalogMappingType { schemata { $badElement } } } } }",
+        "generator { database { catalogs { catalogMappingType { schemata { schemataMappingType { $badElement } } } } } } }",
+        "generator { database { embeddables { $badElement } } }",
+        "generator { database { embeddables { embeddable { $badElement } } } }",
+        "generator { database { embeddables { embeddable { field { $badElement } } } } }",
+        "generator { database { enumTypes { $badElement } } }",
+        "generator { database { enumTypes { enumType { $badElement } } } }",
+        "generator { database { forcedTypes { $badElement } } }",
+        "generator { database { forcedTypes { forcedType { $badElement } } } }",
+        "generator { database { properties { $badElement } } }",
+        "generator { database { properties { property { $badElement } } } }"
+    )
+
+    override fun provideArguments(context: ExtensionContext): Stream<out Arguments> =
+        badBlocks.map { Arguments.of(it) }.stream()
+}
 
 class DslTest {
+
+    private val expectedError =
+        "'var logging: Logging?' can't be called in this context by implicit receiver. Use the explicit one if necessary"
 
     private val config = TestConfig(
         driver = h2Driver,
@@ -40,43 +82,38 @@ class DslTest {
     @TempDir
     lateinit var workspaceDir: Path
 
-    @Test
-    fun `Bad DSL extension Test`() {
+    @ParameterizedTest(name = "{index}: {0}")
+    @ArgumentsSource(BadDslArgumentProvider::class)
+    fun `Bad DSL extension Tes`(badBlock: String) {
         val taskName = "clean"
         workspaceDir.createPropFile()
         workspaceDir.createSettingsFile(projectName = defaultProjectName)
         workspaceDir.createBuildFile(config = config, depBlock = "") {
             """jooq {
-            |   generator {
-            |       target {
-            |           jdbc {
-            |           }
-            |       }
-            |   }
-            |}""".trimMargin()
+                |   $badBlock
+                |}
+            """.trimIndent()
         }
-        assertThrows<UnexpectedBuildFailure> {
-            runGradle(workspaceDir, taskName, "--info", "--stacktrace")
+        val e = assertThrows<UnexpectedBuildFailure> {
+            runGradle(workspaceDir, taskName)
         }
+        assertTrue { e.localizedMessage.contains(expectedError) }
     }
 
-    @Test
-    fun `Bad DSL task Test`() {
+    @ParameterizedTest(name = "{index}: {0}")
+    @ArgumentsSource(BadDslArgumentProvider::class)
+    fun `Bad DSL task Test`(badBlock: String) {
         val taskName = "clean"
         workspaceDir.createPropFile()
         workspaceDir.createSettingsFile(projectName = defaultProjectName)
         workspaceDir.createBuildFile(config = config, depBlock = "") {
             """tasks.register<JooqTask>("jooq2") { 
-            |   generator {
-            |       target {
-            |           jdbc {
-            |           }
-            |       }
-            |   }
-            |}""".trimMargin()
+            |   $badBlock
+            """.trimIndent()
         }
-        assertThrows<UnexpectedBuildFailure> {
+        val e = assertThrows<UnexpectedBuildFailure> {
             runGradle(workspaceDir, taskName, "--info", "--stacktrace")
         }
+        assertTrue { e.localizedMessage.contains(expectedError) }
     }
 }
