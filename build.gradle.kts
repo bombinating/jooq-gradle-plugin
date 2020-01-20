@@ -15,6 +15,8 @@
  */
 import com.jfrog.bintray.gradle.BintrayExtension
 import groovy.lang.GroovyObject
+import net.researchgate.release.GitAdapter
+import net.researchgate.release.ReleaseExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
@@ -54,16 +56,20 @@ val pubName = "jooqPlugin"
 val kdocLoc = "$buildDir/kdoc"
 val gitUrl = "https://github.com/bombinating/jooq-gradle-plugin.git"
 
+fun ReleaseExtension.git(config : GitAdapter.GitConfig.() -> Unit) {
+    (propertyMissing("git") as GitAdapter.GitConfig).config()
+}
+
 plugins {
     kotlin("jvm")
     `java-gradle-plugin`
     `maven-publish`
-    id("net.researchgate.release")
-    id("io.gitlab.arturbosch.detekt")
-    id("org.jetbrains.dokka")
     id("com.jfrog.bintray")
     id("com.jfrog.artifactory")
     id("com.gradle.plugin-publish")
+    id("io.gitlab.arturbosch.detekt")
+    id("net.researchgate.release")
+    id("org.jetbrains.dokka")
 }
 
 repositories {
@@ -85,6 +91,7 @@ dependencies {
      * Utils
      */
     api(group = "org.apache.commons", name = "commons-lang3", version = commonsLang3Version)
+    api(group = "io.github.microutils", name = "kotlin-logging", version = microutilsVersion)
 
     /*
      * Test
@@ -120,7 +127,8 @@ tasks.withType<KotlinCompile> {
 gradlePlugin {
     plugins {
         create(pubName) {
-            displayName = "jOOQ code gen plugin"
+            @Suppress("UnstableApiUsage")
+            displayName = "jOOQ codegen plugin"
             id = "dev.bombinating.jooq-codegen"
             implementationClass = "dev.bombinating.gradle.jooq.JooqPlugin"
         }
@@ -128,6 +136,7 @@ gradlePlugin {
 }
 
 tasks.withType<Test> {
+    @Suppress("UnstableApiUsage")
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
@@ -142,7 +151,13 @@ val sourcesJar by tasks.creating(Jar::class) {
 val dokka by tasks.getting(DokkaTask::class) {
     outputFormat = "html"
     outputDirectory = kdocLoc
-    jdkVersion = 8
+    configuration {
+        jdkVersion = 8
+        externalDocumentationLink {
+            url = uri("https://docs.gradle.org/current/javadoc/").toURL()
+            packageListUrl = uri("https://docs.gradle.org/current/javadoc/package-list").toURL()
+        }
+    }
 }
 
 val dokkaJar by tasks.creating(Jar::class) {
@@ -203,4 +218,11 @@ artifactory {
             setProperty("publishPom", true)
         })
     })
+}
+
+release {
+    git {
+        requireBranch = "master"
+        pushReleaseVersionBranch = "release"
+    }
 }

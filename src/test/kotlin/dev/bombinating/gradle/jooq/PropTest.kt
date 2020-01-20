@@ -19,7 +19,7 @@ package dev.bombinating.gradle.jooq
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
 
-class H2Test : AbstractH2Test() {
+class PropTest : AbstractH2Test() {
 
     companion object {
 
@@ -29,21 +29,34 @@ class H2Test : AbstractH2Test() {
             jdbcDriverDependency = h2JdbcDriverDependency
         )
 
-        class H2ConfigProvider : TestConfigProvider(h2Config)
+        class PropConfigProvider : TestConfigProvider(h2Config.copy(url = null, username = null, password = null)) {
+            /*
+             * Properties not supported in < 3.11.x
+             */
+            override val versions: List<String?> = listOf(jooqVersion11, jooqVersion12, null)
+        }
 
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @ArgumentsSource(H2ConfigProvider::class)
+    @ArgumentsSource(PropConfigProvider::class)
     fun `Task Test`(config: TestConfig) {
-        config.basicExtensionTest(workspaceDir = workspaceDir, deps = deps, taskName = defaultJooqTaskName)
+        config.basicExtensionTest(workspaceDir = workspaceDir, deps = deps, taskName = defaultJooqTaskName,
+            args = *arrayOf("-Djooq.codegen.jdbc.url=$h2Url", "-Djooq.codegen.jdbc.username=$h2Username",
+                "-Djooq.codegen.jdbc.password=$h2Password"))
     }
 
     @ParameterizedTest(name = "{index}: {0}")
-    @ArgumentsSource(H2ConfigProvider::class)
+    @ArgumentsSource(PropConfigProvider::class)
     fun `Extension Test`(config: TestConfig) {
+        val taskName = "jooqTask"
         config.basicTaskTest(workspaceDir = workspaceDir, deps = deps,
-            taskName = "jooqTask")
+            taskName = taskName, args = *arrayOf(
+                "-D$taskName.jooq.codegen.jdbc.url=$h2Url",
+                "-D$taskName.jooq.codegen.jdbc.username=$h2Username",
+                "-D$taskName.jooq.codegen.jdbc.password=$h2Password",
+                "-Djooq.codegen.jdbc.password=$h2BadPassword")
+        )
     }
 
 }

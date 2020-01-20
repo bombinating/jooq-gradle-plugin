@@ -15,7 +15,6 @@
  */
 package dev.bombinating.gradle.jooq
 
-import org.gradle.process.ExecResult
 import org.gradle.process.JavaExecSpec
 import org.jooq.meta.jaxb.Configuration
 import org.jooq.meta.jaxb.Generator
@@ -31,18 +30,21 @@ import org.jooq.meta.jaxb.OnError
  * @property logging jOOQ logging info
  * @property onError jOOQ error handling
  * @property config jOOQ `Configuration` created from the other properties
+ * @property runConfig lambda for configuring the `JavaExecSpec` that will run the jOOQ codegen process
+ * @property resultHandler lambda for processing the `JavaExecResult` after the jOOQ codegen process runs
  */
 interface JooqConfig {
     var jdbc: Jdbc?
     var generator: Generator?
-    var logging: Logging
+    var logging: Logging?
     var onError: OnError?
     val config: Configuration
     var runConfig: (JavaExecSpec.() -> Unit)?
-    var resultHandler: (ExecResult.() -> Unit)?
+    var resultHandler: (JavaExecResult.() -> Unit)?
 }
 
-internal class JooqConfigImpl(override val config: Configuration = createDefaultConfig()) : JooqConfig {
+@JooqDsl
+internal class JooqConfigImpl(override val config: Configuration = Configuration()) : JooqConfig {
 
     override var jdbc: Jdbc?
         get() = config.jdbc
@@ -56,7 +58,7 @@ internal class JooqConfigImpl(override val config: Configuration = createDefault
             config.generator = value
         }
 
-    override var logging: Logging
+    override var logging: Logging?
         get() = config.logging
         set(value) {
             config.logging = value
@@ -70,6 +72,6 @@ internal class JooqConfigImpl(override val config: Configuration = createDefault
 
     override var runConfig: (JavaExecSpec.() -> Unit)? = null
 
-    override var resultHandler: (ExecResult.() -> Unit)? = null
+    override var resultHandler: (JavaExecResult.() -> Unit)? = null
 }
 

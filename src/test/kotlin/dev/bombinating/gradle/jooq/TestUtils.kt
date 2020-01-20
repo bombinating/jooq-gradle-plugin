@@ -26,11 +26,20 @@ import java.nio.file.Path
 fun jooqOsDependency(group: String, version: String) =
     """compile(group = "$group", name = "jooq", version = "$version")"""
 
+fun jooqGroovyOsDependency(group: String, version: String) =
+    """compile "$group:jooq:$version""""
+
 fun dependenciesBlock(jooqDependency: String, jdbcDriverDependency: String) = """
-    |   $jooqDependency
-    |   compileOnly("javax.annotation:javax.annotation-api:1.3.2")
-    |   jooqRuntime($jdbcDriverDependency)
-""".trimMargin("|")
+    |$jooqDependency
+    |compileOnly("javax.annotation:javax.annotation-api:1.3.2")
+    |jooqRuntime($jdbcDriverDependency)
+""".trimMargin()
+
+fun groovyDependenciesBlock(jooqDependency: String, jdbcDriverDependency: String) = """
+    |$jooqDependency
+    |compileOnly "javax.annotation:javax.annotation-api:1.3.2"
+    |jooqRuntime "$jdbcDriverDependency"
+""".trimMargin()
 
 fun String.packageToPath() = replace(".", "/")
 
@@ -51,19 +60,26 @@ fun printGradleInfo(settings: File, build: File) {
 }
 
 fun validateGradleOutput(workspaceDir: Path, config: TestConfig, result: BuildResult, taskName: String) {
-    val javaClass = workspaceDir.toFile("${config.genDir}/${config.packageName.packageToPath()}/" +
-            "${if (config.addSchemaToPackage) "${config.schema}/" else "" }tables/$defaultTableName.java")
+    val javaClass = workspaceDir.toFile(
+        "${config.genDir}/${config.packageName.packageToPath()}/" +
+                "${if (config.addSchemaToPackage) "${config.schema}/" else ""}tables/$defaultTableName.java"
+    )
     assertTrue(javaClass.exists())
     assertTrue(result.task(":$taskName") != null)
     assertEquals(TaskOutcome.SUCCESS, result.task(":$taskName")?.outcome)
     assertTrue(javaClass.readText().contains("jOOQ version:${config.version ?: defaultJooqVersion}"))
 }
 
-fun runGradle(workspaceDir: Path, vararg args: String): BuildResult {
+fun runGradle(workspaceDir: Path, vararg args: String): BuildResult =
+    runGradle(null, workspaceDir, *args)
+
+fun runGradle(gradleVersion: String?, workspaceDir: Path, vararg args: String): BuildResult {
     val settings = File(workspaceDir.toFile(), "settings.gradle.kts")
-    val build = File(workspaceDir.toFile(), "build.gradle.kts")
+    val ktsBuild = File(workspaceDir.toFile(), "build.gradle.kts")
+    val build = if (ktsBuild.exists()) ktsBuild else File(workspaceDir.toFile(), "build.gradle")
     printGradleInfo(settings, build)
     return GradleRunner.create()
+        .withGradleVersion(gradleVersion ?: defaultGradleVersion)
         .withPluginClasspath()
         .withArguments(*args)
         .withProjectDir(workspaceDir.toFile())
@@ -71,8 +87,9 @@ fun runGradle(workspaceDir: Path, vararg args: String): BuildResult {
         .build()
 }
 
-fun runGradleAndValidate(workspaceDir: Path, config: TestConfig, taskName: String) {
-    val result = runGradle(workspaceDir, "clean", taskName, "build", "--info", "--stacktrace")
+fun runGradleAndValidate(workspaceDir: Path, config: TestConfig, taskName: String, vararg args: String) {
+    val result =
+        runGradle(config.gradleVersion, workspaceDir, "clean", taskName, "build", "--info", "--stacktrace", *args)
     validateGradleOutput(workspaceDir = workspaceDir, config = config, result = result, taskName = taskName)
 }
 
@@ -80,47 +97,51 @@ fun TestConfig.basicExtensionTest(
     workspaceDir: Path,
     deps: String,
     taskName: String,
-    projectName: String = defaultProjectName
+    projectName: String = defaultProjectName,
+    vararg args: String
 ) {
     workspaceDir.createPropFile()
     workspaceDir.createSettingsFile(projectName = projectName)
-    workspaceDir.createBuildFile(config = this, depBlock = deps) {
-        """
+    workspaceDir.createBuildFile(config = this, depBlock = deps) { createJooqExtBlockWithConfig() }
+    runGradleAndValidate(workspaceDir = workspaceDir, config = this, taskName = taskName, args = *args)
+}
+
+fun TestConfig.createJooqExtBlockWithConfig() =
+    """
             |jooq {
-            |   ${version?.let { """version = "$version"""" } ?: "" }
+            |   ${version?.let { """version = "$version"""" } ?: ""}
             |   ${edition?.let { "edition = ${JooqEdition::class.java.simpleName}.$edition" } ?: ""}
-            |   ${basicJooqConfig()}
+            |   ${basicJooqConfig().prependIndent("\t")}
             |}
         """.trimMargin("|")
-    }
-    runGradleAndValidate(workspaceDir = workspaceDir, config = this, taskName = taskName)
-}
 
 fun TestConfig.basicTaskTest(
     workspaceDir: Path,
     deps: String,
     taskName: String,
-    projectName: String = defaultProjectName
+    projectName: String = defaultProjectName,
+    vararg args: String
 ) {
     workspaceDir.createPropFile()
     workspaceDir.createSettingsFile(projectName = projectName)
     workspaceDir.createBuildFile(config = this, depBlock = deps) {
         """
             |${createJooqBlockForTask(edition = edition, version = version)}
+            |
             |tasks.register<JooqTask>("$taskName") {
-            |   ${basicJooqConfig()}
+            |   ${basicJooqConfig().prependIndent("\t")}
             |}
         """.trimMargin("|")
     }
-    runGradleAndValidate(workspaceDir = workspaceDir, config = this, taskName = taskName)
+    runGradleAndValidate(workspaceDir = workspaceDir, config = this, taskName = taskName, args = *args)
 }
 
 fun TestConfig.basicJooqConfig() = """
             |jdbc {
             |   driver = "$driver"
-            |       url = "$url"
-            |       user = "$username"
-            |       password = "$password"
+            |   ${url?.let { """url = "$it"""" } ?: ""}
+            |   ${username?.let { """username = "$it"""" } ?: ""}
+            |   ${password?.let { """password = "$it"""" } ?: ""}
             |}
             |generator {
             |   database {

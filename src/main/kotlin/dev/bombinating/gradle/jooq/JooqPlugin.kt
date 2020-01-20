@@ -17,6 +17,8 @@ package dev.bombinating.gradle.jooq
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.plugins.ExtraPropertiesExtension
 import org.gradle.api.plugins.JavaBasePlugin
 
 /**
@@ -28,6 +30,7 @@ import org.gradle.api.plugins.JavaBasePlugin
  * - creates a `jooq` extension that can be used for specifying jooq code generation configurations and one generation
  * - changes any jOOQ dependencies to match the group and version specified
  */
+@Suppress("unused")
 class JooqPlugin : Plugin<Project> {
 
     /**
@@ -47,7 +50,10 @@ class JooqPlugin : Plugin<Project> {
         /*
          * Create the jooq extension
          */
-        project.extensions.create(JOOQ_EXT_NAME, JooqExtension::class.java)
+        val jooqExt = project.extensions.create(
+            JOOQ_EXT_NAME, JooqExtension::class.java,
+            { version: String -> updateJooqSpringBootVersion(project, version) }, JooqConfigImpl()
+        )
 
         /*
          * Set up the classpath for the code generation.
@@ -57,7 +63,6 @@ class JooqPlugin : Plugin<Project> {
         /*
          * Create the jooq task
          */
-        val jooqExt = project.jooqExt
         project.tasks.register(JOOQ_TASK_NAME, JooqTask::class.java).get().apply {
             config = jooqExt.config
             jooqClassPath = jooqRuntime
@@ -77,13 +82,33 @@ class JooqPlugin : Plugin<Project> {
                     val oldDep = "${requested.group}:${requested.name}:${requested.version}"
                     val newDep = "${jooqExt.edition.groupId}:${requested.name}:${jooqExt.version}"
                     if (oldDep != newDep) {
-                        project.logger.info("Changing ${config.name} dependency from '$requested' to '$newDep'")
+                        pluginLogger.info { "Changing '${config.name}' dependency from '$requested' to '$newDep'" }
                         dep.useTarget(newDep)
                     }
                 }
             }
         }
 
+    }
+
+    private fun updateJooqSpringBootVersion(project: Project, version: String) {
+        if (project.plugins.findPlugin(SPRING_DEP_MAN_PLUGIN_NAME) != null) {
+            val ext = (project as ExtensionAware).extensions.getByName(GRADLE_EXT_EXT_NAME) as? ExtraPropertiesExtension
+            if (ext != null) {
+                pluginLogger.info {
+                    "Spring Dependency Management Plugin detected: " +
+                            """setting ext["$SPRING_DEP_MAN_JOOQ_VERSION_EXT_NAME"] = "$version""""
+                }
+                ext[SPRING_DEP_MAN_JOOQ_VERSION_EXT_NAME] = version
+            } else {
+                pluginLogger.debug { """The 'ext' extension is not present""" }
+            }
+        } else {
+            pluginLogger.debug {
+                "Spring Dependency Management Plugin not detected: " +
+                        """not setting ext["$SPRING_DEP_MAN_JOOQ_VERSION_EXT_NAME"]"""
+            }
+        }
     }
 
 }

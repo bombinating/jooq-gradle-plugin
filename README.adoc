@@ -1,4 +1,6 @@
 = jOOQ Codegen Plugin
+:pluginVersion: 1.5.0
+:jooqVersion: 3.12.3
 
 == Overview
 
@@ -8,16 +10,16 @@ A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jO
 
 This project started as a Kotlin port of the Groovy-based https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin] and was initially developed because it was decided that the Groovy plugin https://github.com/etiennestuder/gradle-jooq-plugin/pull/91[would not add Kotlin DSL support].
 
-Test with jOOQ versions 3.11 and 3.12.
+Tested with jOOQ versions 3.10, 3.11 and 3.12 (Open Source and Pro editions) on Java 1.8, 11 and 13, and with Gradle 5+.
 
 == Using the plugin
 
 The plugin id needs to be added to the `plugins` block in the `build.gradle.kts` file in order to be used.
 
-[source,build.gradle.kts]
+[source,build.gradle.kts, subs="attributes"]
 ----
 plugins {
-    id("dev.bombinating.jooq-codegen") version "3.12.1"
+    id("dev.bombinating.jooq-codegen") version "{pluginVersion}"
 }
 ----
 
@@ -36,7 +38,7 @@ dependencies {
 
 The plugin defines an extension, `jooq`, which (optionally) allows both the version and edition of the jOOQ code generation library to be defined, as well as information about the code generation itself.
 
-If the `edition` or `version` is not specified, they default to `OpenSource` and the same version as the plugin (e.g., `3.12.1`), respectively.
+If the `edition` or `version` is not specified, they default to `OpenSource` and `{jooqVersion}`, respectively.
 
 The code generation properties (`logging`, `onError`, `jdbc` and `generator`) come from the jOOQ code generation `Configuration` class (from the https://www.jooq.org/xsd/jooq-runtime-3.12.0.xsd[jOOQ codegen XSD]). The plugin provides extension methods to define the properties in a "closure" style.
 
@@ -45,7 +47,7 @@ Finally, the plugin provides two additional properties, `runConfig` and `resultH
 |===
 |Property | Description | Example
 |`edition`|https://www.jooq.org/download/versions[jOOQ edition to use] (OpenSource, Pro, ProJava8, ProJava6)|`JooqEdition.Pro`
-|`version`|jOOQ version to use|`3.12.1`
+|`version`|jOOQ version to use|`{jooqVersion}`
 |`logging`|jOOQ code generation config logging setting|`Logging.TRACE`
 |`onError`|jOOQ error configuration|`OnError.LOG`
 |`jdbc`|jOOQ code generation config jdbc settings`
@@ -66,8 +68,8 @@ l|generator {
     }
     ...
 }
-|`runConfig`|JVM config for running the jOOQ `GenerationTool`| `{ ... }`
-|`resultHandler`|Result handler for result for running jOOQ `GenerationTool`|`{ ... }`
+|`runConfig`|JVM config for running the jOOQ `GenerationTool`| `runConfig { ... }`
+|`resultHandler`|Result handler for result for running jOOQ `GenerationTool`|`resultHandler { ... }`
 |===
 
 == Default task
@@ -109,8 +111,8 @@ l|generator {
     }
     ...
 }
-|`runConfig`|JVM config for running the jOOQ `GenerationTool`| `{ ... }`
-|`resultHandler`|Result handler for result for running jOOQ `GenerationTool`|`{ ... }`
+|`runConfig`|JVM config for running the jOOQ `GenerationTool`| `runConfig { ... }`
+|`resultHandler`|Result handler for result for running jOOQ `GenerationTool`|`resultHandler { ... }`
 |===
 
 For example:
@@ -147,6 +149,18 @@ To provide a different Logback configuration, add the directory containing the `
 ----
 jooqRuntime(files("..."))
 ----
+
+== Properties
+
+The plugin will pass https://www.jooq.org/doc/latest/manual/code-generation/codegen-system-properties/[jOOQ-related codegen properties] to the code generation process.
+
+Using the jOOQ extension (which defines a task with the name `jooq`), properties that start with `jooq.` are passed to the generation tool.
+
+For other jOOQ tasks (i.e, ones that aren't named `jooq`), properties of the form `<task name>.jooq.` are passed to the generation tool with the `<task name>.` removed (e.g., for a task called `accounting`, the property `accounting.jooq.codegen.jdbc.url` would be passed to the code generator as `jooq.codegen.jdbc.url`).
+
+== Use with the Spring Boot and Spring Dependency Management Plugins
+
+The https://docs.spring.io/spring-boot/docs/current/gradle-plugin/reference/html/[Spring Boot Plugin] uses the https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/[Spring Dependency Management Plugin] to manage dependencies. The jOOQ library is one of the dependencies that the Spring Boot plugin manages. If the Spring Dependency Management Plugin is detected, the jOOQ plugin will set the `ext["jooq.version"]` value based on the value configured in the jOOQ plugin.
 
 == Differences from the original plugin
 
@@ -215,6 +229,13 @@ To push a *snapshot* to https://oss.jfrog.org/artifactory/[Artifactory]:
 $ ./gradlew clean build artifactoryPublish -PbintrayUser=... -PbintrayKey=...
 ----
 
+To create a release and create a tag in git for it:
+
+[source,bash]
+----
+$ ./gradlew clean build release
+----
+
 To push a *release* to https://dl.bintray.com/bombinating/maven/[bintray]:
 
 [source,bash]
@@ -239,7 +260,7 @@ In this example, a variable, `genDir`, is defined for the directory the code wil
 
 The database connection info comes from a properties file or from Gradle `-P` commandline arguments.
 
-[source,build.gradle.kts]
+[source,build.gradle.kts,subs="attributes"]
 ----
 import dev.bombinating.gradle.jooq.*
 
@@ -250,7 +271,7 @@ val jooqPassword: String by project
 
 plugins {
     java
-    id("dev.bombinating.jooq-codegen") version "3.12.1"
+    id("dev.bombinating.jooq-codegen") version "{pluginVersion}"
 }
 
 sourceSets["main"].java {
@@ -263,7 +284,7 @@ repositories {
 }
 
 dependencies {
-    compile(group = "org.jooq", name = "jooq", version = "3.12.1")
+    compile(group = "org.jooq", name = "jooq", version = "{jooqVersion}")
     jooqRuntime(group = "org.postgresql", name = "postgresql", version = "42.2.8")
 }
 
@@ -297,7 +318,7 @@ $ ./gradlew clean jooq build
 The first half of this example is the same as above, except:
 
 * the jOOQ edition is specified (`ProJava8`)
-* the jOOQ version is specified (`3.12.1`)
+* the jOOQ version is specified (`{jooqVersion}`)
 * the JVM config for running the code generation tool is specified (`-Xmx2g`)
 * a result handler prints the exit value of the code generation tool
 * the code generation logging is specified (`DEBUG`)
@@ -306,7 +327,7 @@ In addition, an explicit jOOQ task called `accounting` is defined. This is assoc
 
 Finally, the Java compilation is set to depend on the jOOQ code generation for both the `jooq` and `accounting` tasks.
 
-[source,build.gradle.kts]
+[source,build.gradle.kts,subs="attributes"]
 ----
 import dev.bombinating.gradle.jooq.*
 import org.jooq.meta.jaxb.Logging
@@ -323,7 +344,7 @@ val oracleSchema: String by project
 
 plugins {
     java
-    id("dev.bombinating.jooq-codegen") version "3.12.1"
+    id("dev.bombinating.jooq-codegen") version "{pluginVersion}"
 }
 
 sourceSets["main"].java {
@@ -336,14 +357,14 @@ repositories {
 }
 
 dependencies {
-    compile(group = "org.jooq", name = "jooq", version = "3.12.1")
+    compile(group = "org.jooq", name = "jooq", version = "{jooqVersion}")
     jooqRuntime(group = "org.postgresql", name = "postgresql", version = "42.2.8")
     jooqRuntime(group = "com.oracle.ojdbc", name = "ojdbc8", version = "19.3.0.0")
 }
 
 jooq {
     edition = JooqEdition.ProJava8
-    version = "3.12.1"
+    version = "{jooqVersion}"
     runConfig { jvmArgs = listOf("-Xmx2g") }
     resultHandler { println("The exit value of the code generation was: $exitValue") }
     logging = Logging.DEBUG
@@ -400,13 +421,16 @@ tasks.getByName("compileJava").dependsOn(jooq2, tasks.getByName("jooq"))
 
 ----
 
-To generate the code related to both databases, it is sufficient to simply call the `build` task since it has a dependency on both the `joo` and `accounting` tasks and will therefore ensure that the the source code has been generated from both databases first.
+To generate the code related to both databases, it is sufficient to simply call the `build` task since it has a dependency on both the `joo` and `accounting` tasks Gradle and will therefore ensure that the the source code has been generated from both databases first.
 
 [source,bash]
 ----
 $ ./gradlew clean build
 ----
 
-== Appendix C: Example project
+== Appendix C: Example projects
 
-A complete example, using both the `jooq` extension and task with the https://www.h2database.com/html/main.html[H2] database, is available https://github.com/bombinating/jooq-gradle-plugin-example[here].
+A set of example projects, using both the `jooq` extension and task with the https://www.h2database.com/html/main.html[H2] database, is available https://github.com/bombinating/jooq-gradle-plugin-example[here]. An example of using the plugin from a Groovy Gradle build is also included.
+
+== Change Log
+include::CHANGELOG.adoc[]

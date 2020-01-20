@@ -35,6 +35,7 @@ class PgTest {
         @Container
         private val db = PostgreSQLContainer<Nothing>("postgres:11.2")
 
+        @Suppress("unused")
         @BeforeAll
         @JvmStatic
         fun setup() {

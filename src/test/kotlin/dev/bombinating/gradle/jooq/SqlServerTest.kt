@@ -41,6 +41,7 @@ class SqlServerTest {
         @Container
         private val db = MSSQLServerContainer<Nothing>("mcr.microsoft.com/mssql/server:2017-CU12")
 
+        @Suppress("unused")
         @BeforeAll
         @JvmStatic
         fun setup() {

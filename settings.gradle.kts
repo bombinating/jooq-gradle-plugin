@@ -13,25 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-val kotlinVersion: String by settings
 
-val artifactoryPluginVersion: String by settings
-val bintrayPluginVersion: String by settings
-val buildScanVersion: String by settings
-val dokkaPluginVersion: String by settings
-val releasePluginVersion: String by settings
-val detektPluginVersion: String by settings
-val publishPluginVersion: String by settings
+rootProject.name= "jooq-gradle-plugin"
 
 pluginManagement {
+    val kotlinVersion: String by settings
+    val artifactoryPluginVersion: String by settings
+    val bintrayPluginVersion: String by settings
+    val enterprisePluginVersion: String by settings
+    val dokkaPluginVersion: String by settings
+    val releasePluginVersion: String by settings
+    val detektPluginVersion: String by settings
+    val publishPluginVersion: String by settings
+    @Suppress("UnstableApiUsage")
     plugins {
         kotlin("jvm") version kotlinVersion
         id("com.jfrog.artifactory") version artifactoryPluginVersion
         id("com.jfrog.bintray") version bintrayPluginVersion
-        id("io.gitlab.arturbosch.detekt") version detektPluginVersion
-        id("org.jetbrains.dokka") version dokkaPluginVersion
+        id("com.gradle.enterprise") version enterprisePluginVersion
         id("com.gradle.plugin-publish") version publishPluginVersion
+        id("io.gitlab.arturbosch.detekt") version detektPluginVersion
         id("net.researchgate.release") version releasePluginVersion
-        id("com.gradle.build-scan") version buildScanVersion
+        id("org.jetbrains.dokka") version dokkaPluginVersion
+    }
+}
+
+plugins {
+    id("com.gradle.enterprise")
+}
+
+gradleEnterprise {
+    buildScan {
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+        publishAlwaysIf(System.getenv("GRADLE_SCAN_PUBLISH")?.toLowerCase() == "true")
     }
 }

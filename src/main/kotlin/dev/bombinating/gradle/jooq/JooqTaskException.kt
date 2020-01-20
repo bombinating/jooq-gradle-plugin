@@ -15,16 +15,10 @@
  */
 package dev.bombinating.gradle.jooq
 
-import java.io.File
-import java.nio.file.Path
-
-fun Path.createPropFile() =
-    File(toFile(), "gradle.properties").also {
-        it.writeText(createPropContent())
-    }
-
-fun createPropContent(): String = """
-    |$envVarJooqRepoUrl=${System.getenv(envVarJooqRepoUrl) ?: ""}
-    |$envVarJooqRepoUsername=${System.getenv(envVarJooqRepoUsername) ?: ""}
-    |$envVarJooqRepoPassword=${System.getenv(envVarJooqRepoPassword) ?: ""}
-""".trimMargin("|")
+/**
+ * Information about the jOOQ plugin failure.
+ *
+ * @param msg message about the failure
+ * @param cause exception that caused the failure
+ */
+class JooqTaskException(msg: String?, cause: Throwable) : RuntimeException(msg, cause)
