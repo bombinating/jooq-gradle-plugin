@@ -4,7 +4,7 @@
 
 == Overview
 
-image:https://github.com/bombinating/jooq-gradle-plugin/workflows/build/badge.svg["Actions Status", link="https://github.com/bombinating/jooq-gradle-plugin/actions"] image:https://sonarcloud.io/api/project_badges/measure?project=bombinating_jooq-gradle-plugin&metric=alert_status["SonarCloud", link="https://sonarcloud.io/dashboard?id=bombinating_jooq-gradle-plugin"]
+image:https://github.com/bombinating/jooq-gradle-plugin/workflows/Master Branch Build/badge.svg["Actions Status", link="https://github.com/bombinating/jooq-gradle-plugin/actions"] image:https://sonarcloud.io/api/project_badges/measure?project=bombinating_jooq-gradle-plugin&metric=alert_status["SonarCloud", link="https://sonarcloud.io/dashboard?id=bombinating_jooq-gradle-plugin"]
 
 A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jOOQ] https://www.jooq.org/doc/3.11/manual/code-generation/codegen-configuration/[code generation tool] that supports the https://docs.gradle.org/current/userguide/kotlin_dsl.html[Gradle Kotlin DSL].
 
