@@ -18,8 +18,8 @@
 package dev.bombinating.gradle.jooq
 
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.condition.EnabledIf
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariables
 import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ArgumentsSource
@@ -29,10 +29,10 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import java.nio.file.Path
 import java.sql.DriverManager
 
-// TODO: replace @EnabledIf with @EnabledIfEnvironmentVariable when the latter is made repeatable (JUnit v.5.6)
-// (https://github.com/junit-team/junit5/issues/1793)
-@EnabledIf("""java.lang.System.getenv("$envVarContainerTests") == "$containerEnabledValue"""")
-@EnabledIfEnvironmentVariable(named = envVarProTests, matches = proTestsEnabledValue)
+@EnabledIfEnvironmentVariables(
+    EnabledIfEnvironmentVariable(named = envVarProTests, matches = proTestsEnabledValue),
+    EnabledIfEnvironmentVariable(named = envVarContainerTests, matches = containerEnabledValue)
+)
 @Testcontainers
 class SqlServerTest {
 

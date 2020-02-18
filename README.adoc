@@ -1,6 +1,6 @@
 = jOOQ Codegen Plugin
 :pluginVersion: 1.6.0
-:jooqVersion: 3.12.3
+:jooqVersion: 3.12.4
 
 == Overview
 

@@ -1,3 +1,9 @@
+== 1.7.0
+
+* Upgraded to work with jOOQ version 3.13
+
+* Bumped the default jOOQ version to 3.13.0
+
 == 1.6.0
 
 * Improved jOOQ DSL (for more information see: https://kotlinlang.org/docs/reference/type-safe-builders.html#scope-control-dslmarker-since-11[DSL Scope Control])
