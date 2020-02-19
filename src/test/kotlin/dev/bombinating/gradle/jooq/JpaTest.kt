@@ -33,7 +33,7 @@ class JpaTest {
         schema = defaultSchemaName,
         genDir = defaultGenDir,
         javaVersion = "JavaVersion.VERSION_1_8",
-        version = jooqVersion12,
+        version = jooqVersion13,
         packageName = "dev.bombinating.gradle.jooq.entity.db",
         dbGenerator = """includes = ".*"""",
         addSchemaToPackage = false
@@ -96,6 +96,7 @@ class JpaTest {
             |        directory = "${config.genDir}"
             |        packageName = "${config.packageName}"
             |    }
+            |    ${config.createGenerateBlock().prependIndent("\t")}
             |}
             |logging = Logging.DEBUG
             """.trimMargin("|")

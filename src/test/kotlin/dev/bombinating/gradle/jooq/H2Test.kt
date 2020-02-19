@@ -25,7 +25,7 @@ class H2Test : AbstractH2Test() {
 
         @JvmStatic
         private val deps = dependenciesBlock(
-            jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion12),
+            jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion13),
             jdbcDriverDependency = h2JdbcDriverDependency
         )
 

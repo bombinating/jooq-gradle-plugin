@@ -32,7 +32,7 @@ class NonRequiredTest {
         schema = defaultSchemaName,
         genDir = defaultGenDir,
         javaVersion = "JavaVersion.VERSION_1_8",
-        version = jooqVersion12,
+        version = jooqVersion13,
         packageName = defaultPackageName,
         dbGenerator = """includes = ".*""""
     )

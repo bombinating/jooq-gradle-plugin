@@ -28,7 +28,7 @@ class GroovyTest : AbstractH2Test() {
 
         @JvmStatic
         private val deps = groovyDependenciesBlock(
-            jooqDependency = jooqGroovyOsDependency(group = jooqOsGroup, version = jooqVersion12),
+            jooqDependency = jooqGroovyOsDependency(group = jooqOsGroup, version = jooqVersion13),
             jdbcDriverDependency = h2GroovyJdbcDriverDependency
         )
 
@@ -41,7 +41,7 @@ class GroovyTest : AbstractH2Test() {
         workspaceDir.createGroovyBuildFile(config = h2Config, depBlock = deps) {
             """ |jooq {
                 |   use(ConfigExtKt) {
-                |       version = "$jooqVersion12"
+                |       version = "$jooqVersion13"
                 |       jdbc {
                 |           it.url = "$h2Url"
                 |           it.username = "$h2Username"
@@ -55,6 +55,7 @@ class GroovyTest : AbstractH2Test() {
                 |               it.directory = genDir
                 |               it.packageName = "$defaultPackageName"
                 |           }
+                |           ${createGenerateBlock(groovy = true).prependIndent("\t")}
                 |       }
                 |       logging = Logging.DEBUG
                 |   }

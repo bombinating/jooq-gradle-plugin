@@ -58,7 +58,7 @@ class SqlServerTest {
 
         @JvmStatic
         private val deps = dependenciesBlock(
-            jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion12),
+            jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion13),
             jdbcDriverDependency = sqlServerJdbcDriverDependency
         )
 
@@ -72,7 +72,7 @@ class SqlServerTest {
                 schema = defaultSchemaName,
                 genDir = defaultGenDir,
                 javaVersion = "JavaVersion.VERSION_1_8",
-                version = jooqVersion12,
+                version = jooqVersion13,
                 packageName = defaultPackageName,
                 edition = JooqEdition.Pro,
                 dbGenerator = """inputCatalog = "master"
@@ -83,7 +83,7 @@ class SqlServerTest {
             )
 
         class SqlServerConfigProvider : TestConfigProvider(config) {
-            override val versions = listOf(jooqVersion12, null)
+            override val versions = listOf(jooqVersion13, null)
         }
 
     }
