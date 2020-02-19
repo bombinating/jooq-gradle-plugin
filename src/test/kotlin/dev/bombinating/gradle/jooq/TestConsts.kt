@@ -25,10 +25,11 @@ const val sqlServerJdbcDriverDependency =
     """group = "com.microsoft.sqlserver", name = "mssql-jdbc", version = "7.4.1.jre8""""
 
 const val jooqOsGroup = "org.jooq"
-const val jooqVersion12 = "3.12.3"
+const val jooqVersion13 = "3.13.0"
+const val jooqVersion12 = "3.12.4"
 const val jooqVersion11 = "3.11.12"
 const val jooqVersion10 = "3.10.8"
-const val defaultJooqVersion = jooqVersion12
+const val defaultJooqVersion = jooqVersion13
 
 const val gradleVersion50 = "5.0"
 const val gradleVersion51 = "5.1.1"
@@ -38,7 +39,8 @@ const val gradleVersion54 = "5.4.1"
 const val gradleVersion55 = "5.5.1"
 const val gradleVersion56 = "5.6.4"
 const val gradleVersion60 = "6.0.1"
-const val gradleVersion61 = "6.1"
+const val gradleVersion61 = "6.1.1"
+const val gradleVersion62 = "6.2"
 const val defaultGradleVersion = gradleVersion61
 
 const val defaultGenDir: String = "generated/src/main/java"

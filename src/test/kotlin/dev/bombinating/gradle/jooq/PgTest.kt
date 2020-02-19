@@ -49,7 +49,7 @@ class PgTest {
 
         @JvmStatic
         private val deps = dependenciesBlock(
-            jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion12),
+            jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion13),
             jdbcDriverDependency = pgJdbcDriverDependency
         )
 
@@ -63,7 +63,7 @@ class PgTest {
                 schema = defaultSchemaName,
                 genDir = defaultGenDir,
                 javaVersion = "JavaVersion.VERSION_1_8",
-                version = jooqVersion12,
+                version = jooqVersion13,
                 packageName = defaultPackageName,
                 dbGenerator = """includes = "$defaultSchemaName.*""""
             )

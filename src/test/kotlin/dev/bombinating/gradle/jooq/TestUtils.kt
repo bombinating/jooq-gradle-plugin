@@ -151,6 +151,7 @@ fun TestConfig.basicJooqConfig() = """
             |       directory = genDir
             |       packageName = "$packageName"
             |   }
+            |   ${createGenerateBlock().prependIndent("\t")}
             |}
             |logging = Logging.INFO
 """.trimMargin()
@@ -162,7 +163,24 @@ private fun createJooqBlockForTask(edition: JooqEdition?, version: String?): Str
             |   ${if (version != null) """version = "$version"""" else ""}
             |   ${if (edition != null) "edition = ${JooqEdition::class.java.simpleName}.$edition" else ""}
             |}
-        """.trimMargin()
+        """.trimMargin("|")
+    } else {
+        ""
+    }
+
+fun TestConfig.createGenerateBlock(groovy: Boolean = false) =
+    /*
+     * Starting with jOOQ version 3.13, code generation does not by, default, add the library version number
+     * used for generation. Instead, this has to be manually enabled.
+     */
+    if ((version ?: defaultJooqVersion).toJooqVersion() >= JOOQ_3_13) {
+        val prefix = if (groovy) "it." else ""
+        val generatedAnnotationProp = if (groovy) "generatedAnnotation" else "isGeneratedAnnotation"
+        """
+            |${prefix}generate {
+            |    $prefix$generatedAnnotationProp = true
+            |}
+        """.trimMargin("|")
     } else {
         ""
     }

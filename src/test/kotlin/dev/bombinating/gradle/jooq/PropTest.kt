@@ -25,7 +25,7 @@ class PropTest : AbstractH2Test() {
 
         @JvmStatic
         private val deps = dependenciesBlock(
-            jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion12),
+            jooqDependency = jooqOsDependency(group = jooqOsGroup, version = jooqVersion13),
             jdbcDriverDependency = h2JdbcDriverDependency
         )
 
@@ -33,7 +33,7 @@ class PropTest : AbstractH2Test() {
             /*
              * Properties not supported in < 3.11.x
              */
-            override val versions: List<String?> = listOf(jooqVersion11, jooqVersion12, null)
+            override val versions: List<String?> = listOf(jooqVersion11, jooqVersion13, null)
         }
 
     }

@@ -1,16 +1,16 @@
 = jOOQ Codegen Plugin
-:pluginVersion: 1.5.0
-:jooqVersion: 3.12.3
+:pluginVersion: 1.7.0
+:jooqVersion: 3.13.0
 
 == Overview
 
-image:https://github.com/bombinating/jooq-gradle-plugin/workflows/build/badge.svg["Actions Status", link="https://github.com/bombinating/jooq-gradle-plugin/actions"] image:https://sonarcloud.io/api/project_badges/measure?project=bombinating_jooq-gradle-plugin&metric=alert_status["SonarCloud", link="https://sonarcloud.io/dashboard?id=bombinating_jooq-gradle-plugin"]
+image:https://github.com/bombinating/jooq-gradle-plugin/workflows/Master Branch Build/badge.svg["Actions Status", link="https://github.com/bombinating/jooq-gradle-plugin/actions"] image:https://sonarcloud.io/api/project_badges/measure?project=bombinating_jooq-gradle-plugin&metric=alert_status["SonarCloud", link="https://sonarcloud.io/dashboard?id=bombinating_jooq-gradle-plugin"]
 
 A https://gradle.org[Gradle] plugin for working with the https://www.jooq.org[jOOQ] https://www.jooq.org/doc/3.11/manual/code-generation/codegen-configuration/[code generation tool] that supports the https://docs.gradle.org/current/userguide/kotlin_dsl.html[Gradle Kotlin DSL].
 
 This project started as a Kotlin port of the Groovy-based https://github.com/etiennestuder/gradle-jooq-plugin[gradle-jooq-plugin] and was initially developed because it was decided that the Groovy plugin https://github.com/etiennestuder/gradle-jooq-plugin/pull/91[would not add Kotlin DSL support].
 
-Tested with jOOQ versions 3.10, 3.11 and 3.12 (Open Source and Pro editions) on Java 1.8, 11 and 13, and with Gradle 5+.
+Tested with jOOQ versions 3.10, 3.11, 3.12 and 3.13 (Open Source and Pro editions) on Java 1.8, 11 and 13, and with Gradle 5+.
 
 == Using the plugin
 

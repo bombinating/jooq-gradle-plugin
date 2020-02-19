@@ -157,7 +157,11 @@ open class JooqTask @Inject constructor() : DefaultTask(), JooqConfig {
             }
             JavaExecResult(result = result)
         } catch (e: ExecException) {
-            JavaExecResult(exception = e, errorMsgLog = errorLog.readText())
+            if (errorLog.exists()) {
+                JavaExecResult(exception = e, errorMsgLog = errorLog.readText())
+            } else {
+                throw e
+            }
         }
         javaExecResult.printMsg()
         resultHandler?.invoke(javaExecResult)
