@@ -27,7 +27,7 @@ import java.io.OutputStream
 import javax.xml.bind.JAXBContext
 import javax.xml.bind.Marshaller
 
-internal const val DEFAULT_JOOQ_VERSION = "3.13.0"
+internal const val DEFAULT_JOOQ_VERSION = "3.13.1"
 internal val DEFAULT_JOOQ_EDITION = JooqEdition.OpenSource
 internal const val JOOQ_RUNTIME_NAME = "jooqRuntime"
 internal const val JOOQ_CONFIG_NAME = "config.xml"
